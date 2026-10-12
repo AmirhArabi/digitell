@@ -4,34 +4,48 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-12">
 
     <!-- Hero Banner Slider Section -->
+    {% with hero_banners=banners|dictsort:"order" %}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-        <!-- Main Hero Banner (8 cols) -->
-        <div class="lg:col-span-8 rounded-3xl bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 text-white p-8 sm:p-12 relative overflow-hidden shadow-lg flex flex-col justify-between min-h-[340px]">
-            <div class="absolute -left-10 -bottom-10 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-            <div class="absolute right-0 top-0 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
 
-            <div class="relative z-10 max-w-lg space-y-4">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/20">
-                    <span class="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
-                    فروش ویژه نوروز و پاییز کالای دیجیتال
-                </span>
-                <h1 class="text-2xl sm:text-4xl font-black leading-tight">
-                    خرید اقساطی آسان انواع گوشی و لپ‌تاپ بدون ضامن
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                    با ضمانت اصالت ۱۰۰٪، رجیستری معتبر و تحویل اکسپرس به سراسر کشور در فروشگاه اینترنتی زیترو
-                </p>
-            </div>
+        <!-- Main Hero Slider (8 cols) -->
+        <div class="lg:col-span-8 relative rounded-3xl overflow-hidden shadow-lg min-h-[340px] bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800" id="hero-slider">
+            {% for banner in banners %}
+                {% if banner.position == 'hero' %}
+                    <a href="{{ banner.link_url }}"
+                       class="hero-slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}"
+                       data-slide-index="{{ forloop.counter0 }}">
+                        <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
+                             class="w-full h-full object-cover">
+                    </a>
+                {% endif %}
+            {% empty %}
+                <!-- Fallback if no hero banners in DB -->
+                <div class="absolute inset-0 flex flex-col justify-between p-8 sm:p-12 text-white">
+                    <div class="space-y-4">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/20">
+                            <span class="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
+                            فروش ویژه کالای دیجیتال
+                        </span>
+                        <h1 class="text-2xl sm:text-4xl font-black leading-tight">خرید اقساطی آسان انواع گوشی و لپ‌تاپ بدون ضامن</h1>
+                        <p class="text-xs sm:text-sm text-slate-200">با ضمانت اصالت ۱۰۰٪ و تحویل اکسپرس به سراسر کشور</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-4 pt-6">
+                        <a href="{% url 'products:shop' %}" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-bold text-xs sm:text-sm shadow-md transition">مشاهده محصولات</a>
+                    </div>
+                </div>
+            {% endfor %}
 
-            <div class="relative z-10 flex flex-wrap items-center gap-4 pt-6">
-                <a href="{% url 'products:shop' %}" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
-                    <span>مشاهده محصولات و خرید</span>
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-                </a>
-                <a href="{% url 'home:installment' %}" class="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition">
-                    شرایط خرید اقساطی
-                </a>
+            <!-- Slider Dots -->
+            {% with hero_count=banners|length %}
+            {% if hero_count > 1 %}
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+                {% for banner in banners %}{% if banner.position == 'hero' %}
+                <button onclick="goToSlide({{ forloop.counter0 }})" data-dot-index="{{ forloop.counter0 }}"
+                        class="hero-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition {% if forloop.first %}!bg-white scale-125{% endif %}"></button>
+                {% endif %}{% endfor %}
             </div>
+            {% endif %}
+            {% endwith %}
         </div>
 
         <!-- Side Promo Banners (4 cols) -->
@@ -65,6 +79,7 @@
             </div>
         </div>
     </div>
+    {% endwith %}
 
     <!-- Category Grid (Identical to zitro.ir 8 main categories) -->
     <section>
@@ -81,9 +96,13 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
             {% for cat in categories %}
                 <a href="{% url 'products:category_detail' slug=cat.slug %}" class="bg-white rounded-2xl border border-slate-200/80 p-4 flex flex-col items-center text-center hover:border-blue-500 hover:shadow-md transition duration-200 group">
-                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition duration-200">
-                        {% if cat.icon_svg %}
-                            {{ cat.icon_svg|safe }}
+                    <div class="w-14 h-14 rounded-2xl overflow-hidden bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition duration-200">
+                        {% if cat.image %}
+                            <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-full h-full object-cover">
+                        {% elif cat.icon_svg %}
+                            <div class="group-hover:text-white group-hover:bg-blue-600 w-full h-full flex items-center justify-center rounded-2xl transition">
+                                {{ cat.icon_svg|safe }}
+                            </div>
                         {% else %}
                             <span class="text-xl">📦</span>
                         {% endif %}
@@ -173,7 +192,20 @@
         </div>
     </section>
 
-    <!-- Mid Banners -->
+    <!-- Mid Banners (from DB: banner_pair position) -->
+    {% with mid_banners=banners|dictsort:"order" %}
+    {% if banners %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {% for banner in banners %}
+            {% if banner.position == 'banner_pair' %}
+            <a href="{{ banner.link_url }}" class="rounded-2xl overflow-hidden hover:scale-[1.02] transition duration-200 shadow-sm block aspect-[785/300]">
+                <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-full object-cover">
+            </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Fallback if no banner_pair banners in DB -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <a href="{% url 'products:category_detail' slug='smartphones' %}" class="rounded-3xl bg-gradient-to-r from-blue-900 to-slate-900 text-white p-8 flex items-center justify-between hover:scale-[1.01] transition shadow-md">
             <div class="space-y-2">
@@ -184,7 +216,6 @@
             </div>
             <div class="text-5xl">📱</div>
         </a>
-
         <a href="{% url 'products:category_detail' slug='accessories' %}" class="rounded-3xl bg-gradient-to-r from-amber-800 to-orange-950 text-white p-8 flex items-center justify-between hover:scale-[1.01] transition shadow-md">
             <div class="space-y-2">
                 <span class="text-xs font-bold text-amber-400">لوازم جانبی اورجینال</span>
@@ -195,6 +226,17 @@
             <div class="text-5xl">⚡</div>
         </a>
     </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Wide Banners (banner_wide position) -->
+    {% for banner in banners %}
+        {% if banner.position == 'banner_wide' %}
+        <a href="{{ banner.link_url }}" class="block rounded-3xl overflow-hidden hover:scale-[1.005] transition duration-200 shadow-md">
+            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-auto object-cover">
+        </a>
+        {% endif %}
+    {% endfor %}
 
     <!-- Smartphones Category Row -->
     {% if smartphone_products %}
@@ -247,8 +289,17 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {% for post in latest_posts %}
-                    <a href="{{ post.get_absolute_url }}" class="bg-white rounded-2xl border border-slate-200/80 p-5 hover:border-blue-300 hover:shadow-md transition duration-200 flex flex-col justify-between group">
-                        <div class="space-y-2">
+                    <a href="{{ post.get_absolute_url }}" class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden hover:border-blue-300 hover:shadow-md transition duration-200 flex flex-col justify-between group">
+                        <!-- Post cover image -->
+                        <div class="aspect-video bg-gradient-to-tr from-slate-100 to-blue-50 overflow-hidden">
+                            {% if post.cover_image %}
+                                <img src="{{ post.cover_image.url }}" alt="{{ post.title }}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-4xl text-blue-300">📰</div>
+                            {% endif %}
+                        </div>
+                        <div class="p-5 space-y-2 flex-1">
                             <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
                                 {{ post.category.name|default:"تکنولوژی" }}
                             </span>
@@ -259,7 +310,7 @@
                                 {{ post.excerpt }}
                             </p>
                         </div>
-                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 mt-4">
+                        <div class="px-5 pb-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 pt-3">
                             <span>نویسنده: تحریریه زیترو</span>
                             <span class="text-blue-600 font-bold">ادامه مطلب &larr;</span>
                         </div>
@@ -270,4 +321,44 @@
     {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.hero-dot');
+    if (!slides.length) return;
+
+    let current = 0;
+    let timer;
+
+    function goToSlide(idx) {
+        slides[current].classList.remove('opacity-100');
+        slides[current].classList.add('opacity-0');
+        dots[current]?.classList.remove('!bg-white', 'scale-125');
+
+        current = (idx + slides.length) % slides.length;
+
+        slides[current].classList.add('opacity-100');
+        slides[current].classList.remove('opacity-0');
+        dots[current]?.classList.add('!bg-white', 'scale-125');
+    }
+
+    // Make goToSlide globally accessible for dot onclick handlers
+    window.goToSlide = goToSlide;
+
+    function autoPlay() {
+        timer = setInterval(() => goToSlide(current + 1), 5000);
+    }
+
+    const slider = document.getElementById('hero-slider');
+    if (slider) {
+        slider.addEventListener('mouseenter', () => clearInterval(timer));
+        slider.addEventListener('mouseleave', autoPlay);
+    }
+
+    autoPlay();
+})();
+</script>
 {% endblock %}
