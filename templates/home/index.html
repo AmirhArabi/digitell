@@ -1,85 +1,123 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-12">
-
-    <!-- Hero Banner Slider Section -->
-    {% with hero_banners=banners|dictsort:"order" %}
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-
-        <!-- Main Hero Slider (8 cols) -->
-        <div class="lg:col-span-8 relative rounded-3xl overflow-hidden shadow-lg min-h-[340px] bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800" id="hero-slider">
-            {% for banner in banners %}
-                {% if banner.position == 'hero' %}
-                    <a href="{{ banner.link_url }}"
-                       class="hero-slide absolute inset-0 transition-opacity duration-700 {% if forloop.first %}opacity-100{% else %}opacity-0{% endif %}"
-                       data-slide-index="{{ forloop.counter0 }}">
-                        <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
-                             class="w-full h-full object-cover">
-                    </a>
-                {% endif %}
-            {% empty %}
-                <!-- Fallback if no hero banners in DB -->
-                <div class="absolute inset-0 flex flex-col justify-between p-8 sm:p-12 text-white">
-                    <div class="space-y-4">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/20">
-                            <span class="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
-                            فروش ویژه کالای دیجیتال
+<!-- Full-Viewport Hero Slider (100vw × 100vh) -->
+<section id="hero-slider" class="relative w-full h-screen h-[100svh] overflow-hidden select-none bg-slate-950 group">
+    <!-- Slider Track -->
+    <div id="slider-track" dir="ltr" class="flex w-full h-full transition-transform duration-700 ease-out will-change-transform">
+        {% for banner in hero_banners %}
+            <div class="hero-slide flex-shrink-0 w-full h-full relative" data-index="{{ forloop.counter0 }}">
+                <a href="{{ banner.link_url }}" class="block w-full h-full relative group/slide">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
+                         class="w-full h-full object-cover object-center pointer-events-none select-none transition-transform duration-1000 ease-out group-hover/slide:scale-105"
+                         loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                    
+                    <!-- Premium gradient overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-slate-950/30"></div>
+                    
+                    <!-- Overlay Content (RTL) -->
+                    <div dir="rtl" class="absolute bottom-20 sm:bottom-24 right-6 sm:right-16 md:right-24 max-w-xl text-white space-y-3 z-10">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-600/90 backdrop-blur-md text-white border border-blue-400/30 shadow-lg">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            پیشنهاد ویژه زیترو
                         </span>
-                        <h1 class="text-2xl sm:text-4xl font-black leading-tight">خرید اقساطی آسان انواع گوشی و لپ‌تاپ بدون ضامن</h1>
-                        <p class="text-xs sm:text-sm text-slate-200">با ضمانت اصالت ۱۰۰٪ و تحویل اکسپرس به سراسر کشور</p>
+                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight drop-shadow-lg">
+                            {{ banner.title }}
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-200 line-clamp-2 max-w-md drop-shadow">
+                            خرید اقساطی انواع کالای دیجیتال با ضمانت اصالت ۱۰۰٪ فیزیکی و ارسال سریع به سراسر کشور
+                        </p>
+                        <div class="pt-2">
+                            <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow-xl transition-all duration-200 group-hover/slide:translate-x-1">
+                                مشاهده و خرید
+                                <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </span>
+                        </div>
                     </div>
-                    <div class="flex flex-wrap items-center gap-4 pt-6">
-                        <a href="{% url 'products:shop' %}" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-bold text-xs sm:text-sm shadow-md transition">مشاهده محصولات</a>
-                    </div>
-                </div>
-            {% endfor %}
-
-            <!-- Slider Dots -->
-            {% with hero_count=banners|length %}
-            {% if hero_count > 1 %}
-            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
-                {% for banner in banners %}{% if banner.position == 'hero' %}
-                <button onclick="goToSlide({{ forloop.counter0 }})" data-dot-index="{{ forloop.counter0 }}"
-                        class="hero-dot w-2 h-2 rounded-full bg-white/50 hover:bg-white transition {% if forloop.first %}!bg-white scale-125{% endif %}"></button>
-                {% endif %}{% endfor %}
+                </a>
             </div>
-            {% endif %}
-            {% endwith %}
+        {% empty %}
+            <!-- Fallback slide if no banners exist -->
+            <div class="hero-slide flex-shrink-0 w-full h-full relative bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 flex items-center justify-center text-white p-8">
+                <div class="max-w-2xl text-center space-y-4">
+                    <h1 class="text-3xl sm:text-5xl font-black">خرید اقساطی کالای دیجیتال در زیترو</h1>
+                    <p class="text-sm sm:text-base text-slate-200">گوشی، لپ‌تاپ، کنسول بازی و لوازم جانبی با ضمانت اصالت ۱۰۰٪</p>
+                    <a href="{% url 'products:shop' %}" class="inline-block px-8 py-3.5 rounded-2xl bg-white text-blue-700 font-bold text-sm shadow-lg">مشاهده فروشگاه</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Navigation Arrows -->
+    <!-- Prev Button (Right side in RTL) -->
+    <button id="slider-prev-btn" type="button" aria-label="اسلاید قبلی"
+            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+        </svg>
+    </button>
+
+    <!-- Next Button (Left side in RTL) -->
+    <button id="slider-next-btn" type="button" aria-label="اسلاید بعدی"
+            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+        </svg>
+    </button>
+
+    <!-- Bottom Controls: Dots + Slide Counter -->
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 bg-slate-900/50 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full">
+        <!-- Dots container -->
+        <div id="slider-dots" class="flex items-center gap-2"></div>
+
+        <!-- Slide Counter -->
+        <div id="slider-counter" class="text-xs font-mono font-bold text-white/90 border-r border-white/20 pr-3 mr-1">
+            <span id="slider-current-num">01</span> / <span id="slider-total-num">01</span>
+        </div>
+    </div>
+
+    <!-- Scroll Down Hint to see rest of store -->
+    <a href="#main-content" class="hidden md:flex absolute bottom-6 right-8 z-30 items-center gap-2 text-xs font-medium text-white/80 hover:text-white bg-black/30 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-white/10 transition">
+        <span>مشاهده محصولات</span>
+        <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+    </a>
+</section>
+
+<!-- Main Store Content Container -->
+<div id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12">
+
+    <!-- Promo Highlights Row (SnappPay + PS5) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Promo 1: SnappPay -->
+        <div class="rounded-3xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white p-6 shadow-md flex flex-col justify-between">
+            <div>
+                <span class="text-[11px] font-bold bg-black/20 px-2 py-0.5 rounded-md">همکاری با اسنپ‌پی</span>
+                <h3 class="text-lg font-black mt-2">خرید در ۴ قسط بدون سود</h3>
+                <p class="text-xs text-amber-100 mt-1">تا سقف ۲۰ میلیون تومان اعتبار فوری بدون چک</p>
+            </div>
+            <div class="pt-4 text-left">
+                <a href="{% url 'home:installment' %}" class="inline-flex items-center gap-1 text-xs font-bold bg-white text-orange-600 px-3.5 py-2 rounded-xl shadow-xs hover:bg-amber-50 transition">
+                    اطلاعات بیشتر &larr;
+                </a>
+            </div>
         </div>
 
-        <!-- Side Promo Banners (4 cols) -->
-        <div class="lg:col-span-4 flex flex-col gap-4">
-            <!-- Promo 1: SnappPay -->
-            <div class="flex-1 rounded-3xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white p-6 shadow-md flex flex-col justify-between">
-                <div>
-                    <span class="text-[11px] font-bold bg-black/20 px-2 py-0.5 rounded-md">همکاری با اسنپ‌پی</span>
-                    <h3 class="text-lg font-black mt-2">خرید در ۴ قسط بدون سود</h3>
-                    <p class="text-xs text-amber-100 mt-1">تا سقف ۲۰ میلیون تومان اعتبار فوری بدون چک</p>
-                </div>
-                <div class="pt-4 text-left">
-                    <a href="{% url 'home:installment' %}" class="inline-flex items-center gap-1 text-xs font-bold bg-white text-orange-600 px-3.5 py-2 rounded-xl shadow-xs hover:bg-amber-50 transition">
-                        اطلاعات بیشتر &larr;
-                    </a>
-                </div>
+        <!-- Promo 2: PS5 & Gaming -->
+        <div class="rounded-3xl bg-slate-900 text-white p-6 shadow-md flex flex-col justify-between border border-slate-800">
+            <div>
+                <span class="text-[11px] font-bold bg-blue-600 px-2 py-0.5 rounded-md">تجهیزات گیمینگ</span>
+                <h3 class="text-lg font-black mt-2">کنسول PS5 Slim و لوازم جانبی</h3>
+                <p class="text-xs text-slate-400 mt-1">با گارانتی اصالت فیزیکی و ارسال فوری</p>
             </div>
-
-            <!-- Promo 2: PS5 & Gaming -->
-            <div class="flex-1 rounded-3xl bg-slate-900 text-white p-6 shadow-md flex flex-col justify-between border border-slate-800">
-                <div>
-                    <span class="text-[11px] font-bold bg-blue-600 px-2 py-0.5 rounded-md">تجهیزات گیمینگ</span>
-                    <h3 class="text-lg font-black mt-2">کنسول PS5 Slim و لوازم جانبی</h3>
-                    <p class="text-xs text-slate-400 mt-1">با گارانتی اصالت فیزیکی و ارسال فوری</p>
-                </div>
-                <div class="pt-4 text-left">
-                    <a href="{% url 'products:category_detail' slug='gaming' %}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-white transition">
-                        مشاهده کنسول‌ها &larr;
-                    </a>
-                </div>
+            <div class="pt-4 text-left">
+                <a href="{% url 'products:category_detail' slug='gaming' %}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-white transition">
+                    مشاهده کنسول‌ها &larr;
+                </a>
             </div>
         </div>
     </div>
-    {% endwith %}
 
     <!-- Category Grid (Identical to zitro.ir 8 main categories) -->
     <section>
@@ -326,39 +364,236 @@
 {% block extra_scripts %}
 <script>
 (function () {
+    const slider = document.getElementById('hero-slider');
+    const track = document.getElementById('slider-track');
     const slides = document.querySelectorAll('.hero-slide');
-    const dots = document.querySelectorAll('.hero-dot');
-    if (!slides.length) return;
+    const dotsContainer = document.getElementById('slider-dots');
+    const currentNumEl = document.getElementById('slider-current-num');
+    const totalNumEl = document.getElementById('slider-total-num');
+    const prevBtn = document.getElementById('slider-prev-btn');
+    const nextBtn = document.getElementById('slider-next-btn');
 
+    if (!slider || !track || !slides.length) return;
+
+    const totalSlides = slides.length;
     let current = 0;
-    let timer;
+    let timer = null;
+    const intervalMs = 5000;
+
+    // Set total count formatted
+    if (totalNumEl) {
+        totalNumEl.textContent = String(totalSlides).padStart(2, '0');
+    }
+
+    // Generate Dots
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.setAttribute('aria-label', `رفتن به اسلاید ${i + 1}`);
+            dot.className = `hero-dot h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                i === 0 ? 'w-7 bg-white shadow-md' : 'w-2 bg-white/40 hover:bg-white/70'
+            }`;
+            dot.addEventListener('click', () => {
+                goToSlide(i);
+                restartTimer();
+            });
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    const dots = dotsContainer ? dotsContainer.querySelectorAll('.hero-dot') : [];
+
+    function updateUI() {
+        // Track transition (LTR container, so translateX is negative)
+        track.style.transform = `translateX(-${current * 100}%)`;
+
+        // Update counter
+        if (currentNumEl) {
+            currentNumEl.textContent = String(current + 1).padStart(2, '0');
+        }
+
+        // Update dots
+        dots.forEach((dot, idx) => {
+            if (idx === current) {
+                dot.className = 'hero-dot h-2 rounded-full transition-all duration-300 cursor-pointer w-7 bg-white shadow-md';
+            } else {
+                dot.className = 'hero-dot h-2 rounded-full transition-all duration-300 cursor-pointer w-2 bg-white/40 hover:bg-white/70';
+            }
+        });
+    }
 
     function goToSlide(idx) {
-        slides[current].classList.remove('opacity-100');
-        slides[current].classList.add('opacity-0');
-        dots[current]?.classList.remove('!bg-white', 'scale-125');
-
-        current = (idx + slides.length) % slides.length;
-
-        slides[current].classList.add('opacity-100');
-        slides[current].classList.remove('opacity-0');
-        dots[current]?.classList.add('!bg-white', 'scale-125');
+        current = (idx + totalSlides) % totalSlides;
+        updateUI();
     }
 
-    // Make goToSlide globally accessible for dot onclick handlers
+    function nextSlide() {
+        goToSlide(current + 1);
+    }
+
+    function prevSlide() {
+        goToSlide(current - 1);
+    }
+
+    // Expose globally if needed
     window.goToSlide = goToSlide;
 
-    function autoPlay() {
-        timer = setInterval(() => goToSlide(current + 1), 5000);
+    // Auto-scroll Timer
+    function startTimer() {
+        stopTimer();
+        if (totalSlides > 1) {
+            timer = setInterval(nextSlide, intervalMs);
+        }
     }
 
-    const slider = document.getElementById('hero-slider');
-    if (slider) {
-        slider.addEventListener('mouseenter', () => clearInterval(timer));
-        slider.addEventListener('mouseleave', autoPlay);
+    function stopTimer() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
     }
 
-    autoPlay();
+    function restartTimer() {
+        stopTimer();
+        startTimer();
+    }
+
+    // Button Listeners
+    if (prevBtn) {
+        prevBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            prevSlide();
+            restartTimer();
+        });
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            nextSlide();
+            restartTimer();
+        });
+    }
+
+    // Hover pause
+    slider.addEventListener('mouseenter', stopTimer);
+    slider.addEventListener('mouseleave', startTimer);
+
+    // Touch / Swipe Navigation (لمس در موبایل و تبلت)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isSwiping = false;
+
+    slider.addEventListener('touchstart', (e) => {
+        stopTimer();
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = true;
+    }, { passive: true });
+
+    slider.addEventListener('touchmove', (e) => {
+        if (!isSwiping) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const diffX = touchStartX - currentX;
+        const diffY = touchStartY - currentY;
+
+        // If predominantly horizontal, prevent browser default gestures
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+            if (e.cancelable) e.preventDefault();
+        }
+    }, { passive: false });
+
+    slider.addEventListener('touchend', (e) => {
+        if (!isSwiping) return;
+        isSwiping = false;
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
+
+        // Swipe threshold of 40px
+        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX > 0) {
+                // Swiped Left -> Next Slide
+                nextSlide();
+            } else {
+                // Swiped Right -> Prev Slide
+                prevSlide();
+            }
+        }
+        startTimer();
+    }, { passive: true });
+
+    // Wheel / Scroll Navigation (اسکرول با ماوس یا تاچ‌پد)
+    let isWheelLocked = false;
+    slider.addEventListener('wheel', (e) => {
+        if (totalSlides <= 1) return;
+
+        const deltaY = e.deltaY;
+        const deltaX = e.deltaX;
+
+        // Vertical scroll interaction
+        if (Math.abs(deltaY) > 25) {
+            if (deltaY > 0) {
+                // Scrolling Down
+                // If not at the last slide, advance slide and lock page scrolling
+                if (current < totalSlides - 1) {
+                    e.preventDefault();
+                    if (!isWheelLocked) {
+                        isWheelLocked = true;
+                        nextSlide();
+                        restartTimer();
+                        setTimeout(() => { isWheelLocked = false; }, 650);
+                    }
+                }
+                // If at the last slide, let the wheel event scroll the page down naturally!
+            } else {
+                // Scrolling Up
+                // If page is at top and we are not on first slide, go back a slide
+                if (window.scrollY <= 10 && current > 0) {
+                    e.preventDefault();
+                    if (!isWheelLocked) {
+                        isWheelLocked = true;
+                        prevSlide();
+                        restartTimer();
+                        setTimeout(() => { isWheelLocked = false; }, 650);
+                    }
+                }
+            }
+        } else if (Math.abs(deltaX) > 25) {
+            // Horizontal scroll (Trackpad 2-finger gesture)
+            e.preventDefault();
+            if (!isWheelLocked) {
+                isWheelLocked = true;
+                if (deltaX > 0) nextSlide();
+                else prevSlide();
+                restartTimer();
+                setTimeout(() => { isWheelLocked = false; }, 650);
+            }
+        }
+    }, { passive: false });
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+        // Only trigger if hero slider is within viewport
+        const rect = slider.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+            if (e.key === 'ArrowLeft') {
+                nextSlide();
+                restartTimer();
+            } else if (e.key === 'ArrowRight') {
+                prevSlide();
+                restartTimer();
+            }
+        }
+    });
+
+    // Initialize UI and Start
+    updateUI();
+    startTimer();
 })();
 </script>
 {% endblock %}

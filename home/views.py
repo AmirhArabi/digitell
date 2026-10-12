@@ -6,6 +6,7 @@ from .models import Banner, SiteSetting
 
 def index_view(request):
     banners = Banner.objects.filter(is_active=True).order_by('order')
+    hero_banners = Banner.objects.filter(is_active=True, position='hero').order_by('order')
 
     # Categories for grid
     categories = Category.objects.filter(is_active=True, parent__isnull=True).order_by('order')[:8]
@@ -42,6 +43,7 @@ def index_view(request):
 
     context = {
         'banners': banners,
+        'hero_banners': hero_banners,
         'categories': categories,
         'special_offers': special_offers,
         'featured_products': featured_products,
