@@ -2,43 +2,27 @@
 
 {% block content %}
 <!-- Full-Viewport Hero Slider (100vw × 100vh) -->
-<section id="hero-slider" class="relative w-full h-screen h-[100svh] overflow-hidden select-none bg-slate-950 group">
-    <!-- Slider Track -->
-    <div id="slider-track" dir="ltr" class="flex w-full h-full transition-transform duration-700 ease-out will-change-transform">
+<!-- Full-Viewport Hero Slider (Fills exact visible viewport below header) -->
+<section id="hero-slider" class="relative w-full h-[calc(100svh-65px)] md:h-[calc(100vh-146px)] min-h-[400px] max-h-[850px] overflow-hidden select-none bg-slate-950 group">
+    <!-- Slides Container -->
+    <div id="slider-container" class="relative w-full h-full">
         {% for banner in hero_banners %}
-            <div class="hero-slide flex-shrink-0 w-full h-full relative" data-index="{{ forloop.counter0 }}">
-                <a href="{{ banner.link_url }}" class="block w-full h-full relative group/slide">
+            <div class="hero-slide absolute inset-0 w-full h-full transition-all duration-700 ease-out {% if forloop.first %}opacity-100 z-10 pointer-events-auto{% else %}opacity-0 z-0 pointer-events-none{% endif %}"
+                 data-index="{{ forloop.counter0 }}">
+                <a href="{{ banner.link_url }}" class="block w-full h-full relative overflow-hidden flex items-center justify-center">
+                    <!-- Ambient blurred background matching banner colors -->
+                    <img src="{{ banner.image.url }}" alt=""
+                         class="absolute inset-0 w-full h-full object-cover filter blur-3xl opacity-30 scale-125 pointer-events-none select-none">
+                    
+                    <!-- Sharp Full Banner Foreground -->
                     <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
-                         class="w-full h-full object-cover object-center pointer-events-none select-none transition-transform duration-1000 ease-out group-hover/slide:scale-105"
+                         class="relative z-10 w-full h-full object-contain object-center pointer-events-none select-none drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.01]"
                          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
-                    
-                    <!-- Premium gradient overlay -->
-                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/25 to-slate-950/30"></div>
-                    
-                    <!-- Overlay Content (RTL) -->
-                    <div dir="rtl" class="absolute bottom-20 sm:bottom-24 right-6 sm:right-16 md:right-24 max-w-xl text-white space-y-3 z-10">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-600/90 backdrop-blur-md text-white border border-blue-400/30 shadow-lg">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            پیشنهاد ویژه زیترو
-                        </span>
-                        <h2 class="text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight drop-shadow-lg">
-                            {{ banner.title }}
-                        </h2>
-                        <p class="text-xs sm:text-sm text-slate-200 line-clamp-2 max-w-md drop-shadow">
-                            خرید اقساطی انواع کالای دیجیتال با ضمانت اصالت ۱۰۰٪ فیزیکی و ارسال سریع به سراسر کشور
-                        </p>
-                        <div class="pt-2">
-                            <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow-xl transition-all duration-200 group-hover/slide:translate-x-1">
-                                مشاهده و خرید
-                                <svg class="w-4 h-4 rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            </span>
-                        </div>
-                    </div>
                 </a>
             </div>
         {% empty %}
             <!-- Fallback slide if no banners exist -->
-            <div class="hero-slide flex-shrink-0 w-full h-full relative bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 flex items-center justify-center text-white p-8">
+            <div class="hero-slide absolute inset-0 w-full h-full bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 flex items-center justify-center text-white p-8">
                 <div class="max-w-2xl text-center space-y-4">
                     <h1 class="text-3xl sm:text-5xl font-black">خرید اقساطی کالای دیجیتال در زیترو</h1>
                     <p class="text-sm sm:text-base text-slate-200">گوشی، لپ‌تاپ، کنسول بازی و لوازم جانبی با ضمانت اصالت ۱۰۰٪</p>
@@ -51,7 +35,7 @@
     <!-- Navigation Arrows -->
     <!-- Prev Button (Right side in RTL) -->
     <button id="slider-prev-btn" type="button" aria-label="اسلاید قبلی"
-            class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none">
+            class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/60 hover:bg-slate-900/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
         </svg>
@@ -59,27 +43,27 @@
 
     <!-- Next Button (Left side in RTL) -->
     <button id="slider-next-btn" type="button" aria-label="اسلاید بعدی"
-            class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-slate-900/40 hover:bg-slate-900/80 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none">
+            class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/60 hover:bg-slate-900/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
         </svg>
     </button>
 
     <!-- Bottom Controls: Dots + Slide Counter -->
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-4 bg-slate-900/50 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full">
+    <div class="absolute bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-slate-900/70 backdrop-blur-md border border-white/15 px-4 py-2 rounded-full shadow-xl">
         <!-- Dots container -->
         <div id="slider-dots" class="flex items-center gap-2"></div>
 
         <!-- Slide Counter -->
-        <div id="slider-counter" class="text-xs font-mono font-bold text-white/90 border-r border-white/20 pr-3 mr-1">
+        <div id="slider-counter" class="text-xs font-mono font-bold text-white/90 border-r border-white/20 pr-3 mr-1 select-none">
             <span id="slider-current-num">01</span> / <span id="slider-total-num">01</span>
         </div>
     </div>
 
     <!-- Scroll Down Hint to see rest of store -->
-    <a href="#main-content" class="hidden md:flex absolute bottom-6 right-8 z-30 items-center gap-2 text-xs font-medium text-white/80 hover:text-white bg-black/30 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-white/10 transition">
+    <a href="#main-content" class="hidden md:flex absolute bottom-5 right-6 z-30 items-center gap-2 text-xs font-medium text-white/80 hover:text-white bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/15 shadow-lg transition hover:scale-105">
         <span>مشاهده محصولات</span>
-        <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
         </svg>
     </a>
@@ -365,7 +349,6 @@
 <script>
 (function () {
     const slider = document.getElementById('hero-slider');
-    const track = document.getElementById('slider-track');
     const slides = document.querySelectorAll('.hero-slide');
     const dotsContainer = document.getElementById('slider-dots');
     const currentNumEl = document.getElementById('slider-current-num');
@@ -373,7 +356,7 @@
     const prevBtn = document.getElementById('slider-prev-btn');
     const nextBtn = document.getElementById('slider-next-btn');
 
-    if (!slider || !track || !slides.length) return;
+    if (!slider || !slides.length) return;
 
     const totalSlides = slides.length;
     let current = 0;
@@ -405,9 +388,16 @@
 
     const dots = dotsContainer ? dotsContainer.querySelectorAll('.hero-dot') : [];
 
-    function updateUI() {
-        // Track transition (LTR container, so translateX is negative)
-        track.style.transform = `translateX(-${current * 100}%)`;
+    function updateSlideVisibility() {
+        slides.forEach((slide, idx) => {
+            if (idx === current) {
+                slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
+                slide.classList.add('opacity-100', 'pointer-events-auto', 'z-10');
+            } else {
+                slide.classList.remove('opacity-100', 'pointer-events-auto', 'z-10');
+                slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
+            }
+        });
 
         // Update counter
         if (currentNumEl) {
@@ -426,7 +416,7 @@
 
     function goToSlide(idx) {
         current = (idx + totalSlides) % totalSlides;
-        updateUI();
+        updateSlideVisibility();
     }
 
     function nextSlide() {
@@ -530,16 +520,16 @@
     // Wheel / Scroll Navigation (اسکرول با ماوس یا تاچ‌پد)
     let isWheelLocked = false;
     slider.addEventListener('wheel', (e) => {
-        if (totalSlides <= 1) return;
+        if (totalSlides <= 1 || e.ctrlKey) return;
 
         const deltaY = e.deltaY;
         const deltaX = e.deltaX;
 
         // Vertical scroll interaction
-        if (Math.abs(deltaY) > 25) {
+        if (Math.abs(deltaY) > 30) {
             if (deltaY > 0) {
                 // Scrolling Down
-                // If not at the last slide, advance slide and lock page scrolling
+                // Only intercept if NOT on the last slide, so user is never trapped!
                 if (current < totalSlides - 1) {
                     e.preventDefault();
                     if (!isWheelLocked) {
@@ -549,11 +539,10 @@
                         setTimeout(() => { isWheelLocked = false; }, 650);
                     }
                 }
-                // If at the last slide, let the wheel event scroll the page down naturally!
+                // On last slide, normal vertical page scroll smoothly scrolls down!
             } else {
                 // Scrolling Up
-                // If page is at top and we are not on first slide, go back a slide
-                if (window.scrollY <= 10 && current > 0) {
+                if (window.scrollY <= 15 && current > 0) {
                     e.preventDefault();
                     if (!isWheelLocked) {
                         isWheelLocked = true;
@@ -563,7 +552,7 @@
                     }
                 }
             }
-        } else if (Math.abs(deltaX) > 25) {
+        } else if (Math.abs(deltaX) > 30) {
             // Horizontal scroll (Trackpad 2-finger gesture)
             e.preventDefault();
             if (!isWheelLocked) {
@@ -578,7 +567,6 @@
 
     // Keyboard Navigation
     document.addEventListener('keydown', (e) => {
-        // Only trigger if hero slider is within viewport
         const rect = slider.getBoundingClientRect();
         if (rect.bottom > 0 && rect.top < window.innerHeight) {
             if (e.key === 'ArrowLeft') {
@@ -592,7 +580,7 @@
     });
 
     // Initialize UI and Start
-    updateUI();
+    updateSlideVisibility();
     startTimer();
 })();
 </script>
