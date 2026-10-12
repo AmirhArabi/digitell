@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}تکمیل اطلاعات و تسویه حساب | فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Progress steps -->
+    <div class="max-w-xl mx-auto mb-10">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-500">
+            <a href="{% url 'cart:cart_detail' %}" class="flex items-center gap-2 text-emerald-600">
+                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">✓</span>
+                <span>سبد خرید</span>
+            </a>
+            <div class="flex-1 h-0.5 bg-blue-600 mx-4"></div>
+            <div class="flex items-center gap-2 text-blue-600">
+                <span class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">۲</span>
+                <span>مشخصات و ارسال</span>
+            </div>
+            <div class="flex-1 h-0.5 bg-slate-200 mx-4"></div>
+            <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs">۳</span>
+                <span>پرداخت و فاکتور</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {% csrf_token %}
+
+        <!-- Left 8 cols: Shipping and payment methods -->
+        <div class="lg:col-span-8 space-y-6">
+
+            <!-- Shipping Information Card -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+                <h2 class="font-black text-sm text-slate-900 pb-4 mb-6 border-b border-slate-100 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    اطلاعات آدرس و تحویل‌گیرنده
+                </h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">نام و نام خانوادگی تحویل‌گیرنده *</label>
+                        <input
+                            type="text"
+                            name="recipient_name"
+                            value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"
+                            required
+                            placeholder="مثال: علیرضا محمدی"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">شماره موبایل جهت هماهنگی *</label>
+                        <input
+                            type="tel"
+                            name="recipient_phone"
+                            value="{% if user.is_authenticated %}{{ user.phone_number|default:'' }}{% endif %}"
+                            required
+                            placeholder="مثال: 09123456789"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">استان *</label>
+                        <input
+                            type="text"
+                            name="province"
+                            value="تهران"
+                            required
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">شهر *</label>
+                        <input
+                            type="text"
+                            name="city"
+                            value="تهران"
+                            required
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1.5">آدرس پستی دقیق *</label>
+                        <textarea
+                            name="shipping_address"
+                            rows="2"
+                            required
+                            placeholder="نام خیابان، کوچه، پلاک، واحد..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        ></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">کد پستی (۱۰ رقمی)</label>
+                        <input
+                            type="text"
+                            name="postal_code"
+                            placeholder="۱۲۳۴۵۶۷۸۹۰"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">توضیحات و یادداشت سفارش (اختیاری)</label>
+                        <input
+                            type="text"
+                            name="notes"
+                            placeholder="مثلاً: زنگ دوم، تحویل بعد از ظهر"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method Selection -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+                <h2 class="font-black text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                    انتخاب روش پرداخت
+                </h2>
+
+                <div class="space-y-3">
+                    <label class="flex items-center gap-4 p-4 rounded-2xl border-2 border-blue-600 bg-blue-50/40 cursor-pointer">
+                        <input type="radio" name="payment_method" value="mock_gateway" checked class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                        <div class="flex-1">
+                            <span class="font-bold text-xs text-slate-800 block">پرداخت آنلاین بانکی (درگاه آزمایشی شاپرک / زرین‌پال)</span>
+                            <span class="text-[11px] text-slate-500">پرداخت امن با کلیه کارت‌های عضو شتاب</span>
+                        </div>
+                        <span class="text-xl">💳</span>
+                    </label>
+
+                    <label class="flex items-center gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white cursor-pointer">
+                        <input type="radio" name="payment_method" value="cod" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                        <div class="flex-1">
+                            <span class="font-bold text-xs text-slate-800 block">پرداخت درب منزل (ویژه شهر تهران)</span>
+                            <span class="text-[11px] text-slate-500">پرداخت با کارتخوان هنگام دریافت سفارش</span>
+                        </div>
+                        <span class="text-xl">📦</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right 4 cols: Order Summary -->
+        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-5 sticky top-24">
+            <h3 class="font-black text-sm text-slate-900 pb-3 border-b border-slate-100">
+                مرور سفارش
+            </h3>
+
+            <!-- Mini items list -->
+            <div class="max-h-56 overflow-y-auto space-y-3 pr-1 text-xs">
+                {% for item in items %}
+                    <div class="flex items-center justify-between gap-3 py-1">
+                        <div class="flex items-center gap-2 truncate">
+                            <span class="text-slate-400 font-bold">{{ item.quantity }}x</span>
+                            <span class="text-slate-700 truncate">{{ item.product.title }}</span>
+                        </div>
+                        <span class="font-bold text-slate-900 shrink-0">{{ item.formatted_line_total }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="border-t border-slate-100 pt-4 space-y-2.5 text-xs">
+                <div class="flex items-center justify-between text-slate-600">
+                    <span>جمع کل کالاها:</span>
+                    <span class="font-bold text-slate-800">{{ cart.formatted_total_price }} تومان</span>
+                </div>
+
+                {% if cart.total_discount > 0 %}
+                    <div class="flex items-center justify-between text-rose-600 bg-rose-50 p-2 rounded-xl">
+                        <span>تخفیف زیترو:</span>
+                        <span class="font-bold">{{ cart.formatted_total_discount }} تومان</span>
+                    </div>
+                {% endif %}
+
+                <div class="flex items-center justify-between text-slate-600">
+                    <span>هزینه ارسال:</span>
+                    <span class="text-emerald-600 font-bold">رایگان</span>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span class="font-bold text-sm text-slate-900">مبلغ نهایی:</span>
+                    <div class="text-left">
+                        <span class="text-xl font-black text-blue-600">{{ cart.formatted_total_price }}</span>
+                        <span class="text-xs text-slate-500 mr-1">تومان</span>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-lg shadow-blue-500/25 transition flex items-center justify-center gap-2"
+            >
+                <span>ادامه و اتصال به درگاه پرداخت</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}نمای کلی | پنل مدیریت زیترو{% endblock %}
+{% block header_title %}گزارش و آمار وضعیت فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-7xl">
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- Sales -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-xs text-slate-400 font-semibold block mb-2">فروش کل موفق:</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-black text-slate-900">{{ total_sales }}</span>
+                <span class="text-xs text-slate-500">تومان</span>
+            </div>
+            <span class="text-[11px] text-emerald-600 font-bold block mt-2">تراکنش‌های تسویه شده</span>
+        </div>
+
+        <!-- Orders -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-xs text-slate-400 font-semibold block mb-2">تعداد کل سفارش‌ها:</span>
+            <span class="text-2xl font-black text-slate-900">{{ orders_count }}</span>
+            <span class="text-[11px] text-blue-600 font-bold block mt-2">ثبت شده در سیستم</span>
+        </div>
+
+        <!-- Products -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-xs text-slate-400 font-semibold block mb-2">تنوع کالاها:</span>
+            <span class="text-2xl font-black text-slate-900">{{ products_count }}</span>
+            <span class="text-[11px] text-purple-600 font-bold block mt-2">محصول فعال در انبار</span>
+        </div>
+
+        <!-- Customers -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-xs text-slate-400 font-semibold block mb-2">مشتریان ثبت‌نامی:</span>
+            <span class="text-2xl font-black text-slate-900">{{ customers_count }}</span>
+            <span class="text-[11px] text-amber-600 font-bold block mt-2">کاربران احراز هویت شده</span>
+        </div>
+    </div>
+
+    <!-- Recent Orders & Low Stock (2 cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Recent Orders (8 cols) -->
+        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                <h3 class="font-bold text-sm text-slate-900">آخرین سفارشات مشتریان</h3>
+                <a href="{% url 'dashboard:orders' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                    مشاهده همه سفارش‌ها &larr;
+                </a>
+            </div>
+
+            {% if recent_orders %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="text-slate-400 border-b border-slate-100 pb-2">
+                            <tr>
+                                <th class="pb-3 font-semibold">شماره سفارش</th>
+                                <th class="pb-3 font-semibold">خریدار</th>
+                                <th class="pb-3 font-semibold">مبلغ</th>
+                                <th class="pb-3 font-semibold">وضعیت</th>
+                                <th class="pb-3 font-semibold">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            {% for order in recent_orders %}
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="py-3 font-mono font-bold text-slate-800">{{ order.order_number }}</td>
+                                    <td class="py-3 text-slate-700">{{ order.recipient_name }}</td>
+                                    <td class="py-3 font-black text-slate-900">{{ order.formatted_final_amount }} تومان</td>
+                                    <td class="py-3">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if order.status == 'paid' %}bg-emerald-50 text-emerald-700{% elif order.status == 'pending' %}bg-amber-50 text-amber-700{% else %}bg-blue-50 text-blue-700{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-slate-400 text-[11px]">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-xs text-slate-400 py-6 text-center">هنوز سفارشی ثبت نشده است.</p>
+            {% endif %}
+        </div>
+
+        <!-- Low Stock Alerts (4 cols) -->
+        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100 flex items-center justify-between">
+                <span>هشدار کسری موجودی انبار</span>
+                <span class="text-rose-500 text-xs">⚠️</span>
+            </h3>
+
+            {% if low_stock_products %}
+                <div class="divide-y divide-slate-100 text-xs">
+                    {% for p in low_stock_products %}
+                        <div class="py-3 flex items-center justify-between gap-3">
+                            <span class="font-semibold text-slate-800 truncate">{{ p.title }}</span>
+                            <span class="px-2 py-0.5 rounded-full font-black text-rose-600 bg-rose-50 text-[11px] shrink-0">
+                                {{ p.stock_qty }} عدد باقی‌مانده
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-xs text-slate-400 py-6 text-center">تمامی کالاها موجودی کافی دارند.</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

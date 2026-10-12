@@ -1,0 +1,86 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}تنظیمات فروشگاه | پنل زیترو{% endblock %}
+{% block header_title %}تنظیمات عمومی، راه‌های ارتباطی و اطلاعات فروشگاه{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نام رسمی فروشگاه *</label>
+                <input
+                    type="text"
+                    name="store_name"
+                    value="{{ settings.store_name }}"
+                    required
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">شعار تبلیغاتی</label>
+                <input
+                    type="text"
+                    name="slogan"
+                    value="{{ settings.slogan }}"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">شماره تلفن پشتیبانی *</label>
+                <input
+                    type="text"
+                    name="phone"
+                    value="{{ settings.phone }}"
+                    required
+                    dir="ltr"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-right focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">ایمیل پشتیبانی *</label>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ settings.email }}"
+                    required
+                    dir="ltr"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-left focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">ساعات کاری و پاسخگویی:</label>
+                <input
+                    type="text"
+                    name="working_hours"
+                    value="{{ settings.working_hours }}"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">نشانی پستی فروشگاه / دفتر مرکزی:</label>
+                <textarea
+                    name="address"
+                    rows="3"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                >{{ settings.address }}</textarea>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">
+                ذخیره تنظیمات
+            </button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

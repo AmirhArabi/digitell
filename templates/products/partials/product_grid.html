@@ -1,0 +1,56 @@
+<div id="product-grid" class="flex flex-col gap-4">
+    <!-- Active Filters & Count Header -->
+    <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-600">
+        <div class="flex items-center gap-2">
+            <span>تعداد کالاها:</span>
+            <span class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg">{{ total_count }} کالا</span>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-slate-400 hidden sm:inline">مرتب‌سازی:</span>
+            <div class="flex items-center gap-1.5 font-medium">
+                <button
+                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=newest"
+                    hx-target="#product-grid"
+                    hx-swap="outerHTML"
+                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'newest' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
+                >جدیدترین</button>
+                <button
+                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=cheapest"
+                    hx-target="#product-grid"
+                    hx-swap="outerHTML"
+                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'cheapest' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
+                >ارزان‌ترین</button>
+                <button
+                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=expensive"
+                    hx-target="#product-grid"
+                    hx-swap="outerHTML"
+                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'expensive' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
+                >گران‌ترین</button>
+                <button
+                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=discount"
+                    hx-target="#product-grid"
+                    hx-swap="outerHTML"
+                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'discount' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
+                >بیشترین تخفیف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid of Products -->
+    {% if products %}
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {% for product in products %}
+                {% include 'products/partials/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-12 text-center flex flex-col items-center justify-center">
+            <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mb-3">🔍</div>
+            <h4 class="font-bold text-slate-800 text-base mb-1">کالایی یافت نشد!</h4>
+            <p class="text-xs text-slate-500 mb-4">با فیلترهای انتخابی شما محصولی موجود نیست. لطفاً فیلترها را تغییر دهید.</p>
+            <a href="{% url 'products:shop' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">
+                مشاهده همه کالاها
+            </a>
+        </div>
+    {% endif %}
+</div>

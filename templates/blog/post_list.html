@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}وبلاگ و اخبار تکنولوژی | فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">مجله تکنولوژی و راهنمای خرید زیترو</h1>
+            <p class="text-xs text-slate-500">آخرین اخبار گوشی‌های موبایل، مقایسه تبلت‌ها و راهنمای خرید اقساطی</p>
+        </div>
+
+        <!-- Categories bar -->
+        <div class="flex items-center gap-2 overflow-x-auto text-xs font-bold">
+            <a href="{% url 'blog:post_list' %}" class="px-3 py-1.5 rounded-xl {% if not selected_category %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
+                همه مقالات
+            </a>
+            {% for c in categories %}
+                <a href="{% url 'blog:post_category' category_slug=c.slug %}" class="px-3 py-1.5 rounded-xl {% if selected_category.slug == c.slug %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
+                    {{ c.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for post in posts %}
+            <article class="bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between hover:shadow-lg hover:border-blue-200 transition duration-200 group">
+                <div>
+                    <div class="aspect-video bg-gradient-to-tr from-slate-100 to-blue-50 rounded-2xl flex items-center justify-center text-4xl mb-4 text-blue-600">
+                        📰
+                    </div>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md inline-block mb-2">
+                        {{ post.category.name|default:"تکنولوژی" }}
+                    </span>
+                    <h2 class="font-bold text-base text-slate-900 group-hover:text-blue-600 transition mb-2 leading-snug">
+                        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                    </h2>
+                    <p class="text-xs text-slate-500 leading-relaxed line-clamp-3">
+                        {{ post.excerpt }}
+                    </p>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+                    <span>تحریریه زیترو</span>
+                    <a href="{{ post.get_absolute_url }}" class="text-blue-600 font-bold hover:underline">
+                        مطالعه کامل &larr;
+                    </a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="col-span-full py-16 text-center text-xs text-slate-400">
+                مقاله‌ای در این دسته‌بندی یافت نشد.
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

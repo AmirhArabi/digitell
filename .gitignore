@@ -1,0 +1,70 @@
+# ============================
+# Python / Django
+# ============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual Environment
+venv/
+.venv/
+env/
+.env/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+
+# Django secret key / env files
+.env
+.env.local
+.env.production
+*.env
+
+# Migrations (uncomment if you want to ignore migrations)
+# */migrations/
+
+# ============================
+# Node.js / TailwindCSS
+# ============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/
+
+# ============================
+# IDE / Editor
+# ============================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ============================
+# OS Files
+# ============================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ============================
+# Antigravity / Gemini
+# ============================
+.agents/
+.gemini/

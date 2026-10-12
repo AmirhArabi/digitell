@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}راهنمای خرید اقساطی بدون ضامن | فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="bg-gradient-to-r from-orange-500 to-amber-600 rounded-3xl text-white p-8 sm:p-12 mb-10 shadow-lg">
+        <span class="bg-black/20 text-xs font-bold px-3 py-1 rounded-full inline-block mb-3">سرویس اعتباری زیترو</span>
+        <h1 class="text-2xl sm:text-3xl font-black mb-3">خرید اقساطی کالای دیجیتال بدون نیاز به چک و ضامن</h1>
+        <p class="text-xs sm:text-sm text-orange-100 max-w-xl leading-relaxed">
+            گوشی موبایل، لپ تاپ یا کنسول بازی مورد علاقه خود را امروز بخرید و هزینه آن را طی ۴ قسط ماهانه با اسنپ‌پی پرداخت کنید.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 text-center space-y-2">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center font-bold text-xl mx-auto">۱</div>
+            <h3 class="font-bold text-sm text-slate-800">انتخاب کالا</h3>
+            <p class="text-xs text-slate-500">کالای دلخواه خود را به سبد خرید اضافه کنید.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 text-center space-y-2">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center font-bold text-xl mx-auto">۲</div>
+            <h3 class="font-bold text-sm text-slate-800">انتخاب پرداخت اقساطی</h3>
+            <p class="text-xs text-slate-500">در صفحه تسویه، درگاه اعتباری اسنپ‌پی را انتخاب کنید.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 text-center space-y-2">
+            <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center font-bold text-xl mx-auto">۳</div>
+            <h3 class="font-bold text-sm text-slate-800">پرداخت قسط اول و تحویل فوری</h3>
+            <p class="text-xs text-slate-500">فقط با پرداخت ۲۵٪ مبلغ، سفارش شما همان روز ارسال می‌شود.</p>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="{% url 'products:shop' %}" class="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition">
+            <span>مشاهده محصولات واجد شرایط اقساط</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+    </div>
+</div>
+{% endblock %}

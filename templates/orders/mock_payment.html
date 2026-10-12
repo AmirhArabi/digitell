@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>درگاه پرداخت آزمایشی زیترو | شاپرک</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/output.css">
+    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+        <!-- Gateway Header (Shaparak style) -->
+        <div class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white p-6 text-center relative">
+            <div class="flex items-center justify-between mb-3 text-xs opacity-90">
+                <span class="flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    اتصال امن شاپرک (SSL 256bit)
+                </span>
+                <span class="font-mono">IPG-TEST-MODE</span>
+            </div>
+            <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-2 text-2xl backdrop-blur-xs">
+                💳
+            </div>
+            <h1 class="text-base font-bold">شبیه‌ساز پرداخت الکترونیک زیترو</h1>
+            <p class="text-xs opacity-75 mt-0.5">پذیرنده: فروشگاه اینترنتی زیترو (zitro.ir)</p>
+        </div>
+
+        <!-- Order Information Box -->
+        <div class="p-6 bg-slate-50 border-b border-slate-200 space-y-2 text-xs">
+            <div class="flex items-center justify-between text-slate-600">
+                <span>شماره سفارش:</span>
+                <span class="font-mono font-bold text-slate-800">{{ order.order_number }}</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-600">
+                <span>مشتری:</span>
+                <span class="font-bold text-slate-800">{{ order.recipient_name }}</span>
+            </div>
+            <div class="flex items-center justify-between text-slate-600">
+                <span>مبلغ قابل پرداخت:</span>
+                <div class="text-left">
+                    <span class="text-base font-black text-blue-700">{{ order.formatted_final_amount }}</span>
+                    <span class="text-slate-500 mr-1">تومان</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Card Input (Mock) -->
+        <div class="p-6 space-y-4">
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-800 leading-relaxed flex items-start gap-2">
+                <span class="text-base">ℹ️</span>
+                <span>این یک محیط آزمایشی (Sandbox) است. نیازی به ورود اطلاعات واقعی کارت بانکی نیست. روی دکمه «پرداخت موفق» کلیک کنید.</span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">شماره کارت مجازی:</label>
+                    <input type="text" readonly value="۶۰۳۷ - ۹۹۱۸ - ۱۲۳۴ - ۵۶۷۸" class="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 font-mono text-center tracking-widest text-slate-700 font-bold" dir="ltr">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">کد CVV2:</label>
+                        <input type="text" readonly value="***" class="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 font-mono text-center tracking-widest text-slate-700 font-bold" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">رمز پویا:</label>
+                        <input type="text" readonly value="******" class="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 font-mono text-center tracking-widest text-slate-700 font-bold" dir="ltr">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <form method="post" class="space-y-3 pt-3">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    name="action"
+                    value="success"
+                    class="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm shadow-md shadow-emerald-600/30 transition flex items-center justify-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    پرداخت موفق (شبیه‌سازی)
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="cancel"
+                    class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 font-bold text-xs transition"
+                >
+                    انصراف از پرداخت و بازگشت به فروشگاه
+                </button>
+            </form>
+        </div>
+
+        <div class="p-3 bg-slate-50 border-t border-slate-100 text-center text-[10px] text-slate-400">
+            امنیت پرداخت توسط شاپرک تضمین شده است
+        </div>
+    </div>
+
+</body>
+</html>

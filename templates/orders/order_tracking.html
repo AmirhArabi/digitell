@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}پیگیری سفارش | فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-12">
+
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+        <h1 class="text-base sm:text-lg font-black text-slate-900 mb-2 flex items-center gap-2">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+            پیگیری سفارشات
+        </h1>
+        <p class="text-xs text-slate-500 mb-6">
+            شماره سفارش خود (مانند ZT-XXXXXX) را وارد نمایید تا آخرین وضعیت ارسال را مشاهده کنید.
+        </p>
+
+        <form method="post" class="flex flex-col sm:flex-row gap-3 mb-8">
+            {% csrf_token %}
+            <input
+                type="text"
+                name="order_number"
+                placeholder="شماره سفارش (مثلاً: ZT-XXXXXX)"
+                required
+                class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 uppercase"
+                dir="ltr"
+            >
+            <button
+                type="submit"
+                class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition shrink-0"
+            >
+                استعلام وضعیت
+            </button>
+        </form>
+
+        {% if searched %}
+            {% if order %}
+                <div class="border-t border-slate-100 pt-6 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs text-slate-400 block">شماره سفارش:</span>
+                            <span class="font-mono text-sm font-black text-slate-900">{{ order.order_number }}</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 block">وضعیت فعلی:</span>
+                            <span class="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full text-xs">
+                                {{ order.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Timeline -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                        <div class="grid grid-cols-4 gap-2 text-center text-[11px] font-bold">
+                            <div class="text-emerald-600">
+                                <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto mb-2 text-xs">✓</div>
+                                ثبت سفارش
+                            </div>
+                            <div class="{% if order.status != 'pending' %}text-emerald-600{% else %}text-slate-400{% endif %}">
+                                <div class="w-8 h-8 rounded-full {% if order.status != 'pending' %}bg-emerald-500 text-white{% else %}bg-slate-200 text-slate-500{% endif %} flex items-center justify-center mx-auto mb-2 text-xs">✓</div>
+                                پرداخت
+                            </div>
+                            <div class="{% if order.status in 'paid,shipped,delivered' %}text-emerald-600{% else %}text-slate-400{% endif %}">
+                                <div class="w-8 h-8 rounded-full {% if order.status in 'paid,shipped,delivered' %}bg-emerald-500 text-white{% else %}bg-slate-200 text-slate-500{% endif %} flex items-center justify-center mx-auto mb-2 text-xs">📦</div>
+                                بسته‌بندی
+                            </div>
+                            <div class="{% if order.status in 'shipped,delivered' %}text-emerald-600{% else %}text-slate-400{% endif %}">
+                                <div class="w-8 h-8 rounded-full {% if order.status in 'shipped,delivered' %}bg-emerald-500 text-white{% else %}bg-slate-200 text-slate-500{% endif %} flex items-center justify-center mx-auto mb-2 text-xs">🚚</div>
+                                ارسال پستی
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-slate-600 space-y-1">
+                        <p><strong>تحویل‌گیرنده:</strong> {{ order.recipient_name }}</p>
+                        <p><strong>آدرس:</strong> {{ order.province }}، {{ order.city }}، {{ order.shipping_address }}</p>
+                        <p><strong>مبلغ سفارش:</strong> {{ order.formatted_final_amount }} تومان</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="border-t border-slate-100 pt-6 text-center text-xs text-rose-500">
+                    سفارشی با این شماره در سیستم یافت نشد. لطفاً از صحت شماره سفارش اطمینان حاصل فرمایید.
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

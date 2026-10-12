@@ -1,0 +1,89 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}مدیریت محصولات | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت و لیست کاتالوگ محصولات فروشگاه{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- Top Action Bar -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- Search input -->
+        <form method="get" class="w-full sm:w-80">
+            <input
+                type="search"
+                name="q"
+                value="{{ search_query|default:'' }}"
+                placeholder="جستجو در نام محصول..."
+                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            >
+        </form>
+
+        <a href="{% url 'dashboard:product_create' %}" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>افزودن محصول جدید</span>
+        </a>
+    </div>
+
+    <!-- Products Table -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">عنوان محصول</th>
+                        <th class="py-3.5 px-4">کد (SKU)</th>
+                        <th class="py-3.5 px-4">دسته‌بندی</th>
+                        <th class="py-3.5 px-4">برند</th>
+                        <th class="py-3.5 px-4">قیمت فروش</th>
+                        <th class="py-3.5 px-4">موجودی</th>
+                        <th class="py-3.5 px-4 text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for p in products %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900 max-w-sm truncate" title="{{ p.title }}">
+                                    {{ p.title }}
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 font-mono text-slate-500">{{ p.sku }}</td>
+                            <td class="py-3.5 px-4">
+                                <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-semibold">{{ p.category.name }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ p.brand.name|default:"-" }}</td>
+                            <td class="py-3.5 px-4 font-black text-slate-900">{{ p.formatted_price }} تومان</td>
+                            <td class="py-3.5 px-4">
+                                <span class="font-bold {% if p.stock_qty <= 5 %}text-rose-600{% else %}text-emerald-600{% endif %}">
+                                    {{ p.stock_qty }} عدد
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{% url 'dashboard:product_edit' p.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">
+                                        ویرایش
+                                    </a>
+                                    <form method="post" action="{% url 'dashboard:product_delete' p.pk %}" onsubmit="return confirm('آیا از حذف این کالا اطمینان دارید؟');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">
+                                            حذف
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-slate-400">
+                                محصولی یافت نشد.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

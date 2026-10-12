@@ -1,0 +1,108 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}سفارش‌ها و پرداخت‌ها | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت سفارش‌ها و وضعیت مرسوله‌ها{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- Filters Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80">
+        <div class="flex items-center gap-2 overflow-x-auto text-xs font-semibold">
+            <span class="text-slate-400 pl-2">فیلتر وضعیت:</span>
+            <a href="{% url 'dashboard:orders' %}" class="px-3 py-1.5 rounded-xl transition {% if not status_filter %}bg-blue-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                همه سفارش‌ها
+            </a>
+            <a href="{% url 'dashboard:orders' %}?status=paid" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'paid' %}bg-emerald-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                پرداخت‌شده
+            </a>
+            <a href="{% url 'dashboard:orders' %}?status=pending" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'pending' %}bg-amber-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                در انتظار پرداخت
+            </a>
+            <a href="{% url 'dashboard:orders' %}?status=shipped" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'shipped' %}bg-blue-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                ارسال‌شده
+            </a>
+            <a href="{% url 'dashboard:orders' %}?status=delivered" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'delivered' %}bg-purple-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                تحویل داده شده
+            </a>
+            <a href="{% url 'dashboard:orders' %}?status=cancelled" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'cancelled' %}bg-rose-600 text-white font-bold{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                لغو شده
+            </a>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">شماره سفارش</th>
+                        <th class="py-3.5 px-4">گیرنده و تماس</th>
+                        <th class="py-3.5 px-4">شهر / استان</th>
+                        <th class="py-3.5 px-4">مبلغ کل</th>
+                        <th class="py-3.5 px-4">وضعیت کنونی</th>
+                        <th class="py-3.5 px-4">تغییر وضعیت</th>
+                        <th class="py-3.5 px-4">تاریخ ثبت</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for order in orders %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4">
+                                <span class="font-mono font-bold text-slate-900 block">{{ order.order_number }}</span>
+                                <span class="text-[10px] text-slate-400 font-mono">{{ order.tracking_code|default:"بدون کد رهگیری" }}</span>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900">{{ order.recipient_name }}</div>
+                                <div class="text-slate-500 font-mono text-[11px]">{{ order.phone_number }}</div>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="text-slate-700">{{ order.province }} - {{ order.city }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 font-black text-slate-900">
+                                {{ order.formatted_final_amount }} تومان
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold
+                                    {% if order.status == 'paid' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+                                    {% elif order.status == 'pending' %}bg-amber-50 text-amber-700 border border-amber-200
+                                    {% elif order.status == 'shipped' %}bg-blue-50 text-blue-700 border border-blue-200
+                                    {% elif order.status == 'delivered' %}bg-purple-50 text-purple-700 border border-purple-200
+                                    {% else %}bg-rose-50 text-rose-700 border border-rose-200{% endif %}">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <form method="post" action="{% url 'dashboard:order_status' order.pk %}" class="flex items-center gap-1.5">
+                                    {% csrf_token %}
+                                    <select name="status" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>در انتظار پرداخت</option>
+                                        <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>پرداخت‌شده</option>
+                                        <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>ارسال‌شده</option>
+                                        <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>تحویل داده شده</option>
+                                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>لغو شده</option>
+                                    </select>
+                                    <button type="submit" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition">
+                                        ثبت
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-400 text-[11px]">
+                                {{ order.created_at|date:"Y/m/d H:i" }}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-slate-400">
+                                هیچ سفارشی یافت نشد.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

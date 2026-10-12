@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }} | وبلاگ زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 flex-wrap">
+        <a href="{% url 'home:index' %}" class="hover:text-blue-600 transition">خانه</a>
+        <span>/</span>
+        <a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition">وبلاگ</a>
+        {% if post.category %}
+            <span>/</span>
+            <a href="{% url 'blog:post_category' category_slug=post.category.slug %}" class="hover:text-blue-600 transition">{{ post.category.name }}</a>
+        {% endif %}
+        <span>/</span>
+        <span class="text-slate-800 font-bold truncate max-w-xs">{{ post.title }}</span>
+    </nav>
+
+    <!-- Post Article Card -->
+    <article class="bg-white rounded-3xl border border-slate-200/80 p-8 sm:p-12 shadow-xs mb-12">
+        <div class="space-y-4 mb-8 pb-6 border-b border-slate-100">
+            {% if post.category %}
+                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md inline-block">
+                    {{ post.category.name }}
+                </span>
+            {% endif %}
+
+            <h1 class="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
+                {{ post.title }}
+            </h1>
+
+            <div class="flex items-center gap-4 text-xs text-slate-400">
+                <span>نویسنده: تحریریه زیترو</span>
+                <span>•</span>
+                <span>زمان مطالعه: ۴ دقیقه</span>
+                <span>•</span>
+                <span>بازدید: {{ post.views_count }}</span>
+            </div>
+        </div>
+
+        {% if post.excerpt %}
+            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed mb-8">
+                {{ post.excerpt }}
+            </div>
+        {% endif %}
+
+        <!-- Content -->
+        <div class="prose max-w-none text-slate-700 text-sm leading-loose space-y-4">
+            <p>{{ post.content|linebreaks }}</p>
+        </div>
+
+        <!-- Share / Store CTA -->
+        <div class="mt-12 p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <h4 class="font-bold text-sm text-slate-800">قصد خرید جدیدترین کالاهای دیجیتال را دارید؟</h4>
+                <p class="text-xs text-slate-500 mt-1">مشاهده قیمت روز و خرید اقساطی در فروشگاه زیترو</p>
+            </div>
+            <a href="{% url 'products:shop' %}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition shrink-0">
+                ورود به فروشگاه &larr;
+            </a>
+        </div>
+    </article>
+
+</div>
+{% endblock %}

@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-12">
+
+    <!-- Hero Banner Slider Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+        <!-- Main Hero Banner (8 cols) -->
+        <div class="lg:col-span-8 rounded-3xl bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 text-white p-8 sm:p-12 relative overflow-hidden shadow-lg flex flex-col justify-between min-h-[340px]">
+            <div class="absolute -left-10 -bottom-10 w-72 h-72 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+            <div class="absolute right-0 top-0 w-80 h-80 rounded-full bg-blue-400/10 blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 max-w-lg space-y-4">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-white/20 backdrop-blur-md text-white border border-white/20">
+                    <span class="w-2 h-2 rounded-full bg-orange-400 animate-ping"></span>
+                    فروش ویژه نوروز و پاییز کالای دیجیتال
+                </span>
+                <h1 class="text-2xl sm:text-4xl font-black leading-tight">
+                    خرید اقساطی آسان انواع گوشی و لپ‌تاپ بدون ضامن
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                    با ضمانت اصالت ۱۰۰٪، رجیستری معتبر و تحویل اکسپرس به سراسر کشور در فروشگاه اینترنتی زیترو
+                </p>
+            </div>
+
+            <div class="relative z-10 flex flex-wrap items-center gap-4 pt-6">
+                <a href="{% url 'products:shop' %}" class="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-blue-700 font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                    <span>مشاهده محصولات و خرید</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+                <a href="{% url 'home:installment' %}" class="px-5 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm backdrop-blur-md border border-white/20 transition">
+                    شرایط خرید اقساطی
+                </a>
+            </div>
+        </div>
+
+        <!-- Side Promo Banners (4 cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-4">
+            <!-- Promo 1: SnappPay -->
+            <div class="flex-1 rounded-3xl bg-gradient-to-tr from-amber-500 to-orange-500 text-white p-6 shadow-md flex flex-col justify-between">
+                <div>
+                    <span class="text-[11px] font-bold bg-black/20 px-2 py-0.5 rounded-md">همکاری با اسنپ‌پی</span>
+                    <h3 class="text-lg font-black mt-2">خرید در ۴ قسط بدون سود</h3>
+                    <p class="text-xs text-amber-100 mt-1">تا سقف ۲۰ میلیون تومان اعتبار فوری بدون چک</p>
+                </div>
+                <div class="pt-4 text-left">
+                    <a href="{% url 'home:installment' %}" class="inline-flex items-center gap-1 text-xs font-bold bg-white text-orange-600 px-3.5 py-2 rounded-xl shadow-xs hover:bg-amber-50 transition">
+                        اطلاعات بیشتر &larr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Promo 2: PS5 & Gaming -->
+            <div class="flex-1 rounded-3xl bg-slate-900 text-white p-6 shadow-md flex flex-col justify-between border border-slate-800">
+                <div>
+                    <span class="text-[11px] font-bold bg-blue-600 px-2 py-0.5 rounded-md">تجهیزات گیمینگ</span>
+                    <h3 class="text-lg font-black mt-2">کنسول PS5 Slim و لوازم جانبی</h3>
+                    <p class="text-xs text-slate-400 mt-1">با گارانتی اصالت فیزیکی و ارسال فوری</p>
+                </div>
+                <div class="pt-4 text-left">
+                    <a href="{% url 'products:category_detail' slug='gaming' %}" class="inline-flex items-center gap-1 text-xs font-bold text-blue-400 hover:text-white transition">
+                        مشاهده کنسول‌ها &larr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Grid (Identical to zitro.ir 8 main categories) -->
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                دسته‌بندی‌های منتخب
+            </h2>
+            <a href="{% url 'products:shop' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                مشاهده همه &larr;
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+            {% for cat in categories %}
+                <a href="{% url 'products:category_detail' slug=cat.slug %}" class="bg-white rounded-2xl border border-slate-200/80 p-4 flex flex-col items-center text-center hover:border-blue-500 hover:shadow-md transition duration-200 group">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition duration-200">
+                        {% if cat.icon_svg %}
+                            {{ cat.icon_svg|safe }}
+                        {% else %}
+                            <span class="text-xl">📦</span>
+                        {% endif %}
+                    </div>
+                    <span class="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition">{{ cat.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Special Offers Box (پیشنهاد شگفت‌انگیز زیترو) -->
+    {% if special_offers %}
+        <section class="rounded-3xl bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 p-6 sm:p-8 text-white shadow-xl shadow-rose-600/20">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl">
+                        🔥
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-black">پیشنهاد شگفت‌انگیز زیترو</h2>
+                        <p class="text-xs text-rose-100">تخفیف‌های ویژه با تعداد و زمان محدود</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-rose-100">فرصت باقی‌مانده:</span>
+                    <div class="flex items-center gap-1 font-mono text-xs font-bold">
+                        <span class="bg-black/30 px-2 py-1 rounded-md">12</span>:
+                        <span class="bg-black/30 px-2 py-1 rounded-md">45</span>:
+                        <span class="bg-black/30 px-2 py-1 rounded-md">30</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products row in special offer -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {% for product in special_offers %}
+                    <a href="{{ product.get_absolute_url }}" class="bg-white rounded-2xl p-3 text-slate-800 flex flex-col justify-between hover:scale-102 transition shadow-sm group">
+                        <div class="aspect-square bg-slate-50 rounded-xl p-2 mb-2 flex items-center justify-center relative">
+                            {% if product.discount_pct > 0 %}
+                                <span class="absolute top-1 right-1 bg-rose-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                                    {{ product.discount_pct }}٪
+                                </span>
+                            {% endif %}
+                            {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}" alt="{{ product.title }}" class="max-h-full max-w-full object-contain">
+                            {% else %}
+                                <span class="text-2xl">📱</span>
+                            {% endif %}
+                        </div>
+
+                        <h4 class="text-xs font-semibold text-slate-800 line-clamp-2 mb-2 group-hover:text-blue-600 transition leading-snug">
+                            {{ product.title }}
+                        </h4>
+
+                        <div>
+                            {% if product.formatted_compare_price %}
+                                <span class="text-[11px] text-slate-400 line-through block">{{ product.formatted_compare_price }}</span>
+                            {% endif %}
+                            <div class="flex items-baseline justify-between">
+                                <span class="text-xs sm:text-sm font-black text-rose-600">{{ product.formatted_price }}</span>
+                                <span class="text-[10px] text-slate-400">تومان</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Featured Products Section -->
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                محصولات برگزیده و محبوب
+            </h2>
+            <a href="{% url 'products:shop' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                مشاهده همه محصولات &larr;
+            </a>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+            {% for product in featured_products %}
+                {% include 'products/partials/product_card.html' with product=product %}
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Mid Banners -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="{% url 'products:category_detail' slug='smartphones' %}" class="rounded-3xl bg-gradient-to-r from-blue-900 to-slate-900 text-white p-8 flex items-center justify-between hover:scale-[1.01] transition shadow-md">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-blue-400">نسل جدید پرچمداران</span>
+                <h3 class="text-xl font-black">گوشی‌های هوشمند ۲۰۲۶</h3>
+                <p class="text-xs text-slate-300">آیفون، سامسونگ و شیائومی با تحویل فوری</p>
+                <span class="inline-block text-xs font-bold text-blue-300 pt-2">خرید آنلاین &larr;</span>
+            </div>
+            <div class="text-5xl">📱</div>
+        </a>
+
+        <a href="{% url 'products:category_detail' slug='accessories' %}" class="rounded-3xl bg-gradient-to-r from-amber-800 to-orange-950 text-white p-8 flex items-center justify-between hover:scale-[1.01] transition shadow-md">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-amber-400">لوازم جانبی اورجینال</span>
+                <h3 class="text-xl font-black">شارژر، پاوربانک و کابل</h3>
+                <p class="text-xs text-slate-300">برندهای انکر، پرودو و گرین‌لاین با ۱۸ ماه گارانتی</p>
+                <span class="inline-block text-xs font-bold text-amber-300 pt-2">مشاهده تنوع &larr;</span>
+            </div>
+            <div class="text-5xl">⚡</div>
+        </a>
+    </div>
+
+    <!-- Smartphones Category Row -->
+    {% if smartphone_products %}
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                    <h2 class="font-black text-lg text-slate-900">گوشی‌های موبایل پرفروش</h2>
+                </div>
+                <a href="{% url 'products:category_detail' slug='smartphones' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                    مشاهده بیشتر &larr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {% for product in smartphone_products %}
+                    {% include 'products/partials/product_card.html' with product=product %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Popular Brands -->
+    <section class="bg-white rounded-3xl border border-slate-200/80 p-8">
+        <h3 class="text-center font-bold text-sm text-slate-600 mb-6">
+            محبوب‌ترین برندهای موجود در فروشگاه زیترو
+        </h3>
+        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-4 items-center">
+            {% for b in brands %}
+                <a href="{% url 'products:shop' %}?brand={{ b.slug }}" class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50 text-center font-bold text-xs text-slate-700 hover:text-blue-600 transition border border-slate-100 flex flex-col items-center justify-center h-16">
+                    <span>{{ b.name }}</span>
+                    <span class="text-[10px] text-slate-400 font-mono">{{ b.name_en }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Latest Blog Posts -->
+    {% if latest_posts %}
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
+                    <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                    جدیدترین مقالات مجله زیترو
+                </h2>
+                <a href="{% url 'blog:post_list' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                    مشاهده وبلاگ &larr;
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for post in latest_posts %}
+                    <a href="{{ post.get_absolute_url }}" class="bg-white rounded-2xl border border-slate-200/80 p-5 hover:border-blue-300 hover:shadow-md transition duration-200 flex flex-col justify-between group">
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+                                {{ post.category.name|default:"تکنولوژی" }}
+                            </span>
+                            <h3 class="font-bold text-sm text-slate-800 group-hover:text-blue-600 transition line-clamp-2">
+                                {{ post.title }}
+                            </h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                {{ post.excerpt }}
+                            </p>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 mt-4">
+                            <span>نویسنده: تحریریه زیترو</span>
+                            <span class="text-blue-600 font-bold">ادامه مطلب &larr;</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+</div>
+{% endblock %}

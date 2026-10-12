@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}پروفایل کاربری | فروشگاه زیترو{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- User Sidebar (4 cols) -->
+        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-6">
+            <div class="flex items-center gap-4 pb-6 border-b border-slate-100">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-xl shadow-md">
+                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h2 class="font-bold text-sm text-slate-900">{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="text-xs text-slate-500 font-mono mt-0.5">{{ user.phone_number|default:user.email }}</p>
+                </div>
+            </div>
+
+            <div class="space-y-1 text-xs font-semibold">
+                <a href="{% url 'accounts:profile' %}" class="flex items-center gap-2.5 p-3 rounded-xl bg-blue-50 text-blue-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    سفارش‌های من
+                </a>
+                <a href="{% url 'orders:order_tracking' %}" class="flex items-center gap-2.5 p-3 rounded-xl text-slate-600 hover:bg-slate-50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    پیگیری آنلاین مرسوله
+                </a>
+                {% if user.is_staff %}
+                    <a href="{% url 'dashboard:overview' %}" class="flex items-center gap-2.5 p-3 rounded-xl text-purple-600 hover:bg-purple-50">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                        داشبورد مدیریت فروشگاه
+                    </a>
+                {% endif %}
+                <a href="{% url 'accounts:logout' %}" class="flex items-center gap-2.5 p-3 rounded-xl text-rose-600 hover:bg-rose-50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    خروج از حساب
+                </a>
+            </div>
+        </div>
+
+        <!-- Orders History (8 cols) -->
+        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
+            <h2 class="font-black text-sm text-slate-900 pb-4 mb-6 border-b border-slate-100 flex items-center justify-between">
+                <span>تاریخچه سفارشات شما</span>
+                <span class="text-xs text-slate-400 font-normal">{{ orders.count }} سفارش</span>
+            </h2>
+
+            {% if orders %}
+                <div class="space-y-4">
+                    {% for order in orders %}
+                        <div class="border border-slate-200/80 rounded-2xl p-5 hover:border-blue-300 transition space-y-4">
+                            <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+                                <div class="flex items-center gap-3">
+                                    <span class="font-mono font-black text-slate-900 text-sm">{{ order.order_number }}</span>
+                                    <span class="bg-blue-50 text-blue-700 font-bold px-2.5 py-0.5 rounded-full text-[11px]">{{ order.get_status_display }}</span>
+                                </div>
+                                <span class="text-slate-400">{{ order.created_at|date:"Y/m/d H:i" }}</span>
+                            </div>
+
+                            <!-- Purchased items row -->
+                            <div class="py-2 border-y border-slate-100 text-xs divide-y divide-slate-50">
+                                {% for item in order.items.all %}
+                                    <div class="py-1.5 flex items-center justify-between">
+                                        <span class="text-slate-700">{{ item.quantity }}x {{ item.product_title }}</span>
+                                        <span class="font-bold text-slate-800">{{ item.formatted_total_price }} تومان</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs pt-1">
+                                <div>
+                                    <span class="text-slate-500">مبلغ کل:</span>
+                                    <strong class="text-slate-900 font-black mr-1">{{ order.formatted_final_amount }} تومان</strong>
+                                </div>
+                                <a href="{% url 'orders:order_success' order_number=order.order_number %}" class="text-blue-600 font-bold hover:underline">
+                                    مشاهده فاکتور &larr;
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-16">
+                    <span class="text-4xl block mb-3">🛍️</span>
+                    <h3 class="font-bold text-slate-800 text-sm mb-1">هنوز سفارشی ثبت نکرده‌اید!</h3>
+                    <p class="text-xs text-slate-400 mb-4">می‌توانید همین حالا محصولات مورد علاقه خود را سفارش دهید.</p>
+                    <a href="{% url 'products:shop' %}" class="inline-flex px-5 py-2.5 bg-blue-600 text-white rounded-xl text-xs font-bold shadow-md">
+                        رفتن به فروشگاه
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
