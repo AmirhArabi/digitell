@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_DEBUG: '0'
+      DJANGO_SECURE: '0'
+      DJANGO_SECRET_KEY: 'ci-only-secret-key-0123456789abcdefghijklmnopqrstuvwxyz'
+      DJANGO_ALLOWED_HOSTS: 'localhost,127.0.0.1'
+    steps:
+      - name: دریافت کد
+        uses: actions/checkout@v4
+
+      - name: نصب Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: نصب وابستگی‌های فرانت‌اند
+        run: npm ci
+
+      - name: ساخت CSS
+        run: npm run build:css
+
+      - name: نصب Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+
+      - name: نصب وابستگی‌های پایتون
+        run: pip install -r requirements.txt
+
+      - name: بررسی تنظیمات
+        run: python manage.py check
+
+      - name: بررسی مهاجرت‌ها
+        run: python manage.py makemigrations --check --dry-run
+
+      - name: بررسی تنظیمات امنیتی تولید
+        env:
+          DJANGO_SECURE: '1'
+        run: python manage.py check --deploy
+
+      - name: اجرای تست‌ها
+        run: python manage.py test
