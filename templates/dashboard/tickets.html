@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}تیکت‌های پشتیبانی | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت تیکت‌های پشتیبانی و گفتگوها{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-[1600px]">
+
+    <!-- خلاصه وضعیت‌ها -->
+    <section class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <article class="bg-gradient-to-tl from-slate-900 to-slate-700 text-white rounded-2xl p-4 shadow-sm">
+            <span class="text-[11px] font-semibold text-slate-300 block">کل تیکت‌ها</span>
+            <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-2xl font-black">{{ total_count }}</span>
+                <span class="text-[10px] text-rose-300">{{ unread_count }} خوانده‌نشده</span>
+            </div>
+        </article>
+        {% for value, label, count in status_summary %}
+            <a href="?status={{ value }}" class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs hover:border-blue-300 transition block {% if status_filter == value %}ring-2 ring-blue-500/30 border-blue-300{% endif %}">
+                <span class="text-[11px] font-semibold text-slate-500 block">{{ label }}</span>
+                <div class="text-2xl font-black text-slate-900 mt-1">{{ count }}</div>
+            </a>
+        {% endfor %}
+    </section>
+
+    <!-- فیلترها -->
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-end gap-3 text-xs">
+        <div class="min-w-[16rem] flex-1">
+            <label class="block font-semibold text-slate-600 mb-1.5">جستجو (موضوع، شماره تیکت، مشتری، متن پیام)</label>
+            <input type="search" name="q" value="{{ search_query }}" placeholder="TK-…، نام مشتری یا کلمه کلیدی"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">وضعیت</label>
+            <select name="status" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                <option value="">همه</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition">اعمال فیلتر</button>
+        <a href="{% url 'dashboard:tickets' %}" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition">حذف فیلترها</a>
+    </form>
+
+    <!-- جدول تیکت‌ها -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-sm font-black text-slate-800">فهرست تیکت‌ها</h2>
+            <span class="text-[11px] text-slate-400">{{ tickets|length }} ردیف</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr class="text-right">
+                        <th class="px-4 py-3 font-semibold">شماره</th>
+                        <th class="px-4 py-3 font-semibold">موضوع</th>
+                        <th class="px-4 py-3 font-semibold">مشتری</th>
+                        <th class="px-4 py-3 font-semibold">دسته</th>
+                        <th class="px-4 py-3 font-semibold">وضعیت</th>
+                        <th class="px-4 py-3 font-semibold">اولویت</th>
+                        <th class="px-4 py-3 font-semibold">آخرین پیام</th>
+                        <th class="px-4 py-3 font-semibold">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for t in tickets %}
+                        <tr class="hover:bg-slate-50/70 transition {% if t.staff_unread %}bg-blue-50/40{% endif %}">
+                            <td class="px-4 py-3 font-mono text-[11px] text-slate-500 whitespace-nowrap">
+                                {% if t.staff_unread %}<span class="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block ml-1.5"></span>{% endif %}
+                                {{ t.ticket_number }}
+                            </td>
+                            <td class="px-4 py-3 font-bold text-slate-800 max-w-[18rem] truncate">{{ t.subject }}</td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
+                                {% firstof t.user.get_full_name t.user.username t.user.phone_number "—" %}
+                                {% if t.user.phone_number %}<span class="block text-[10px] text-slate-400" dir="ltr">{{ t.user.phone_number }}</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ t.get_category_display }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {% if t.status == 'new' %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">جدید</span>
+                                {% elif t.status == 'in_progress' %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">در حال بررسی</span>
+                                {% elif t.status == 'answered' %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">پاسخ داده شده</span>
+                                {% else %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">بسته شده</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {% if t.priority == 'high' %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200">مهم</span>
+                                {% elif t.priority == 'low' %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-50 text-slate-500 border border-slate-200">کم</span>
+                                {% else %}
+                                    <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-50 text-slate-600 border border-slate-200">معمولی</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-slate-500 whitespace-nowrap">{{ t.last_message_at|date:"Y/m/d H:i" }}</td>
+                            <td class="px-4 py-3">
+                                <a href="{% url 'dashboard:ticket_detail' pk=t.pk %}" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-700 text-white font-bold text-[11px] transition inline-block">گفتگو</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="8" class="px-4 py-10 text-center text-slate-400">تیکتی یافت نشد.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+{% endblock %}

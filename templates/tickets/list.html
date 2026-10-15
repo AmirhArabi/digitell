@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}تیکت‌های پشتیبانی | {{ site_settings.store_name|default:"فروشگاه زیترو" }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+
+    <!-- سربرگ -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-2xl font-black text-slate-900 flex items-center gap-2">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                تیکت‌های پشتیبانی
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">گفتگو با پشتیبانی زیترو؛ {{ open_count }} تیکت در حال پیگیری</p>
+        </div>
+        <a href="{% url 'tickets:create_form' %}" class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition shadow-xs">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            ثبت تیکت جدید
+        </a>
+    </div>
+
+    <!-- فیلتر وضعیت -->
+    <div class="flex flex-wrap items-center gap-2 mb-6 text-xs font-semibold">
+        <a href="{% url 'tickets:list' %}" class="px-3.5 py-1.5 rounded-full border transition {% if not status_filter %}bg-slate-900 text-white border-slate-900{% else %}bg-white text-slate-600 border-slate-200 hover:border-slate-300{% endif %}">همه</a>
+        {% for value, label in status_choices %}
+            <a href="{% url 'tickets:list' %}?status={{ value }}" class="px-3.5 py-1.5 rounded-full border transition {% if status_filter == value %}bg-slate-900 text-white border-slate-900{% else %}bg-white text-slate-600 border-slate-200 hover:border-slate-300{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    {% if tickets %}
+        <div class="space-y-3">
+            {% for t in tickets %}
+                <a href="{% url 'tickets:detail' pk=t.pk %}" class="block bg-white border border-slate-200 rounded-2xl p-5 hover:border-blue-300 hover:shadow-sm transition group">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-mono text-[11px] text-slate-400">{{ t.ticket_number }}</span>
+                                {% if t.customer_unread %}
+                                    <span class="w-2 h-2 rounded-full bg-blue-500 inline-block" title="پیام جدید"></span>
+                                {% endif %}
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900 mt-1 group-hover:text-blue-700 transition truncate">{{ t.subject }}</h3>
+                            <p class="text-xs text-slate-500 mt-1.5 line-clamp-1">{{ t.messages.last.body|default:"—" }}</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-2 shrink-0">
+                            {% if t.status == 'new' %}
+                                <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">جدید</span>
+                            {% elif t.status == 'in_progress' %}
+                                <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">در حال بررسی</span>
+                            {% elif t.status == 'answered' %}
+                                <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">پاسخ داده شده</span>
+                            {% else %}
+                                <span class="text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200">بسته شده</span>
+                            {% endif %}
+                            <span class="text-[10px] text-slate-400">{{ t.last_message_at|date:"Y/m/d H:i" }}</span>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white border border-dashed border-slate-300 rounded-2xl p-12 text-center">
+            <svg class="w-12 h-12 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <p class="text-sm text-slate-500 mb-4">هنوز تیکتی ثبت نکرده‌اید.</p>
+            <a href="{% url 'tickets:create_form' %}" class="inline-flex px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition">ثبت اولین تیکت</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

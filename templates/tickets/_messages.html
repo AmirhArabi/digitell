@@ -1,0 +1,19 @@
+{# بخش پیام‌های تیکت — برای به‌روزرسانی خودکار با HTMX استفاده می‌شود #}
+<div class="space-y-4" id="ticket-messages">
+    {% for m in messages_list %}
+        <div class="flex {% if m.is_staff_message %}justify-start{% else %}justify-end{% endif %}">
+            <div class="max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm leading-relaxed
+                        {% if m.is_staff_message %}bg-white border border-slate-200 text-slate-800 rounded-tr-sm{% else %}bg-blue-600 text-white rounded-tl-sm{% endif %}">
+                <div class="flex items-center gap-2 mb-1 text-[10px] font-bold
+                            {% if m.is_staff_message %}text-slate-400{% else %}text-blue-200{% endif %}">
+                    <span>{{ m.sender_name|default:"پشتیبانی زیترو" }}</span>
+                    <span>•</span>
+                    <span>{{ m.created_at|date:"Y/m/d H:i" }}</span>
+                </div>
+                <p class="whitespace-pre-line">{{ m.body|linebreaksbr }}</p>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-center text-xs text-slate-400 py-6">هنوز پیامی در این تیکت ثبت نشده است.</p>
+    {% endfor %}
+</div>

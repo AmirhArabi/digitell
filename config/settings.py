@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'blog',
     'home',
     'dashboard',
+    'tickets',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -60,6 +61,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'cart.context_processors.cart_processor',
                 'home.context_processors.site_settings_processor',
+                'tickets.context_processors.ticket_badge_processor',
             ],
         },
     },
