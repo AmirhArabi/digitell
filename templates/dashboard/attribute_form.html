@@ -1,0 +1,70 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}ویرایش ویژگی | پنل زیترو{% endblock %}
+{% block header_title %}ویرایش ویژگی: {{ attribute.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نام ویژگی *</label>
+                <input type="text" name="name" value="{{ attribute.name }}" required
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">دسته‌بندی مربوطه</label>
+                <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    <option value="">عمومی (همه دسته‌ها)</option>
+                    {% for option in categories %}
+                        <option value="{{ option.id }}" {% if attribute.category_id == option.id %}selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">واحد</label>
+                <input type="text" name="unit" value="{{ attribute.unit }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نوع مقدار</label>
+                <select name="type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    {% for value, label in type_choices %}
+                        <option value="{{ value }}" {% if attribute.type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">گزینه‌ها (برای نوع انتخابی، هر گزینه در یک خط)</label>
+                <textarea name="options" rows="5" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">{{ attribute.options }}</textarea>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">ترتیب نمایش</label>
+                <input type="number" name="order" value="{{ attribute.order }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
+                    <input type="checkbox" name="is_active" {% if attribute.is_active %}checked{% endif %} class="w-4 h-4 rounded text-emerald-600">
+                    فعال و قابل استفاده در فرم محصولات
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <a href="{% url 'dashboard:attributes' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">انصراف</a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره ویژگی</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

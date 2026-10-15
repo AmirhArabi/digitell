@@ -1,0 +1,72 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{% if category %}ویرایش دسته‌بندی{% else %}افزودن دسته‌بندی{% endif %} | پنل زیترو{% endblock %}
+{% block header_title %}{% if category %}ویرایش دسته‌بندی: {{ category.name }}{% else %}ایجاد دسته‌بندی جدید{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نام دسته‌بندی *</label>
+                <input type="text" name="name" value="{{ category.name|default:'' }}" required placeholder="مثال: گوشی موبایل"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نام لاتین (برای فیلتر و آدرس)</label>
+                <input type="text" name="name_en" value="{{ category.name_en|default:'' }}" dir="ltr" placeholder="Smartphones"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">دسته‌بندی والد (برای ساخت ساختار درختی)</label>
+                <select name="parent" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                    <option value="">بدون والد (دسته اصلی)</option>
+                    {% for option in category_options %}
+                        <option value="{{ option.id }}" {% if category.parent_id == option.id %}selected{% endif %}>{{ option.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">ترتیب نمایش</label>
+                <input type="number" name="order" value="{{ category.order|default:0 }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">تصویر دسته‌بندی</label>
+                <input type="file" name="image" accept="image/*"
+                       class="w-full bg-slate-50 border border-dashed border-slate-300 rounded-xl p-2.5 focus:outline-none">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}" class="w-16 h-16 rounded-xl object-cover border border-slate-200 mt-2">
+                {% endif %}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">کد SVG آیکون (اختیاری)</label>
+                <textarea name="icon_svg" rows="3" dir="ltr" placeholder="<svg ...></svg>"
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-[11px] focus:bg-white focus:outline-none focus:border-blue-500">{{ category.icon_svg|default:'' }}</textarea>
+                <p class="text-[11px] text-slate-400 mt-1.5">برای دسته‌های صفحه اول فروشگاه استفاده می‌شود.</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
+                    <input type="checkbox" name="is_active" {% if category.is_active or not category %}checked{% endif %} class="w-4 h-4 rounded text-emerald-600">
+                    نمایش این دسته‌بندی در فروشگاه
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <a href="{% url 'dashboard:categories' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">انصراف</a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره دسته‌بندی</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

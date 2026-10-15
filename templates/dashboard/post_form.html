@@ -1,0 +1,60 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{% if post %}ویرایش مقاله{% else %}مقاله جدید{% endif %} | پنل زیترو{% endblock %}
+{% block header_title %}{% if post %}ویرایش مقاله: {{ post.title }}{% else %}نگارش مقاله جدید{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">عنوان مقاله *</label>
+                <input type="text" name="title" value="{{ post.title|default:'' }}" required placeholder="مثال: راهنمای خرید گوشی تا ۲۰ میلیون تومان"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">دسته‌بندی مقاله</label>
+                <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    <option value="">بدون دسته</option>
+                    {% for c in categories %}<option value="{{ c.id }}" {% if post.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">تصویر شاخص</label>
+                <input type="file" name="cover_image" accept="image/*"
+                       class="w-full bg-slate-50 border border-dashed border-slate-300 rounded-xl p-2.5 focus:outline-none">
+                {% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="mt-2 w-40 h-24 object-cover rounded-xl border border-slate-200">{% endif %}
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">چکیده مقاله</label>
+                <textarea name="excerpt" rows="2" placeholder="خلاصه‌ای که در لیست مقالات نمایش داده می‌شود."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">{{ post.excerpt|default:'' }}</textarea>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">متن کامل مقاله *</label>
+                <textarea name="content" rows="14" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 leading-relaxed focus:bg-white focus:outline-none focus:border-blue-500">{{ post.content|default:'' }}</textarea>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
+                    <input type="checkbox" name="is_published" {% if post.is_published or not post %}checked{% endif %} class="w-4 h-4 rounded text-emerald-600">
+                    انتشار مقاله در سایت
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <a href="{% url 'dashboard:posts' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">انصراف</a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره مقاله</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

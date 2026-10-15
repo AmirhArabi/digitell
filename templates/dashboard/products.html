@@ -1,89 +1,194 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block title %}مدیریت محصولات | پنل زیترو{% endblock %}
-{% block header_title %}مدیریت و لیست کاتالوگ محصولات فروشگاه{% endblock %}
+{% block header_title %}مدیریت کاتالوگ محصولات فروشگاه ({{ total_count }} کالا){% endblock %}
 
 {% block content %}
 <div class="space-y-6 max-w-7xl">
 
-    <!-- Top Action Bar -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <!-- Search input -->
-        <form method="get" class="w-full sm:w-80">
-            <input
-                type="search"
-                name="q"
-                value="{{ search_query|default:'' }}"
-                placeholder="جستجو در نام محصول..."
-                class="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-            >
-        </form>
-
-        <a href="{% url 'dashboard:product_create' %}" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition flex items-center justify-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            <span>افزودن محصول جدید</span>
-        </a>
-    </div>
-
-    <!-- Products Table -->
-    <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
-        <div class="overflow-x-auto">
-            <table class="w-full text-xs text-right">
-                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
-                    <tr>
-                        <th class="py-3.5 px-4">عنوان محصول</th>
-                        <th class="py-3.5 px-4">کد (SKU)</th>
-                        <th class="py-3.5 px-4">دسته‌بندی</th>
-                        <th class="py-3.5 px-4">برند</th>
-                        <th class="py-3.5 px-4">قیمت فروش</th>
-                        <th class="py-3.5 px-4">موجودی</th>
-                        <th class="py-3.5 px-4 text-center">عملیات</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    {% for p in products %}
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3.5 px-4">
-                                <div class="font-bold text-slate-900 max-w-sm truncate" title="{{ p.title }}">
-                                    {{ p.title }}
-                                </div>
-                            </td>
-                            <td class="py-3.5 px-4 font-mono text-slate-500">{{ p.sku }}</td>
-                            <td class="py-3.5 px-4">
-                                <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-semibold">{{ p.category.name }}</span>
-                            </td>
-                            <td class="py-3.5 px-4 text-slate-600">{{ p.brand.name|default:"-" }}</td>
-                            <td class="py-3.5 px-4 font-black text-slate-900">{{ p.formatted_price }} تومان</td>
-                            <td class="py-3.5 px-4">
-                                <span class="font-bold {% if p.stock_qty <= 5 %}text-rose-600{% else %}text-emerald-600{% endif %}">
-                                    {{ p.stock_qty }} عدد
-                                </span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <a href="{% url 'dashboard:product_edit' p.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">
-                                        ویرایش
-                                    </a>
-                                    <form method="post" action="{% url 'dashboard:product_delete' p.pk %}" onsubmit="return confirm('آیا از حذف این کالا اطمینان دارید؟');">
-                                        {% csrf_token %}
-                                        <button type="submit" class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">
-                                            حذف
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7" class="py-12 text-center text-slate-400">
-                                محصولی یافت نشد.
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Filters -->
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 text-xs">
+        <div class="lg:col-span-2">
+            <label class="block font-semibold text-slate-600 mb-1.5">جستجو (نام / نام لاتین / SKU)</label>
+            <input type="search" name="q" value="{{ search_query|default:'' }}" placeholder="مثال: گلکسی A55"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
         </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">دسته‌بندی</label>
+            <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <option value="">همه دسته‌ها</option>
+                {% for c in categories %}
+                    <option value="{{ c.id }}" {% if filters.category == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">برند</label>
+            <select name="brand" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <option value="">همه برندها</option>
+                {% for b in brands %}
+                    <option value="{{ b.id }}" {% if filters.brand == b.id|stringformat:'s' %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">وضعیت</label>
+            <select name="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <option value="">همه</option>
+                <option value="active" {% if filters.status == 'active' %}selected{% endif %}>فعال</option>
+                <option value="inactive" {% if filters.status == 'inactive' %}selected{% endif %}>غیرفعال</option>
+                <option value="featured" {% if filters.status == 'featured' %}selected{% endif %}>برگزیده صفحه اصلی</option>
+                <option value="special" {% if filters.status == 'special' %}selected{% endif %}>پیشنهاد شگفت‌انگیز</option>
+            </select>
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">موجودی</label>
+            <select name="stock" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <option value="">همه</option>
+                <option value="in" {% if filters.stock == 'in' %}selected{% endif %}>موجود</option>
+                <option value="low" {% if filters.stock == 'low' %}selected{% endif %}>کسری موجودی</option>
+                <option value="out" {% if filters.stock == 'out' %}selected{% endif %}>ناموجود</option>
+            </select>
+        </div>
+        <div class="lg:col-span-6 flex flex-wrap items-center gap-2 pt-1">
+            <select name="sort" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>جدیدترین</option>
+                <option value="oldest" {% if filters.sort == 'oldest' %}selected{% endif %}>قدیمی‌ترین</option>
+                <option value="cheapest" {% if filters.sort == 'cheapest' %}selected{% endif %}>ارزان‌ترین</option>
+                <option value="expensive" {% if filters.sort == 'expensive' %}selected{% endif %}>گران‌ترین</option>
+   		    <option value="stock" {% if filters.sort == 'stock' %}selected{% endif %}>کم‌موجودترین</option>
+                <option value="title" {% if filters.sort == 'title' %}selected{% endif %}>ترتیب الفبا</option>
+            </select>
+            <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال فیلتر</button>
+            <a href="{% url 'dashboard:products' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">حذف فیلترها</a>
+
+            <a href="{% url 'dashboard:product_create' %}" class="mr-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md shadow-emerald-500/20 transition flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span>افزودن محصول جدید</span>
+            </a>
+        </div>
+    </form>
+
+    <!-- Bulk actions + Table -->
+    <form method="post" action="{% url 'dashboard:product_bulk' %}" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+        <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+            <div class="flex flex-wrap items-center gap-2 p-3 bg-slate-50 border-b border-slate-200/80 text-xs">
+                <span class="font-bold text-slate-600 px-1">عملیات گروهی:</span>
+                <select name="action" class="bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold focus:outline-none">
+                    <option value="activate">فعال‌سازی</option>
+                    <option value="deactivate">غیرفعال‌سازی</option>
+                    <option value="feature">افزودن به برگزیده‌ها</option>
+                    <option value="unfeature">حذف از برگزیده‌ها</option>
+                    <option value="special">افزودن به پیشنهاد شگفت‌انگیز</option>
+                    <option value="unspecial">حذف از پیشنهاد شگفت‌انگیز</option>
+                    <option value="delete">حذف کالاها</option>
+                </select>
+                <button type="submit" class="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg font-bold transition"
+                        onclick="return confirm('آیا از اجرای این عملیات روی کالاهای انتخاب‌شده اطمینان دارید؟');">
+                    اجرا روی موارد انتخاب‌شده
+                </button>
+                <span class="text-slate-400">برای انتخاب همه، تیک سرستون را بزنید.</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-right">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                        <tr>
+                            <th class="py-3.5 px-3 w-8"><input type="checkbox" onclick="document.querySelectorAll('.row-check').forEach(c => c.checked = this.checked)" class="w-4 h-4 rounded"></th>
+                            <th class="py-3.5 px-3">تصویر</th>
+                            <th class="py-3.5 px-3">عنوان محصول</th>
+                            <th class="py-3.5 px-3">SKU</th>
+                            <th class="py-3.5 px-3">دسته / برند</th>
+                            <th class="py-3.5 px-3">قیمت</th>
+                            <th class="py-3.5 px-3">موجودی</th>
+                            <th class="py-3.5 px-3">وضعیت</th>
+                            <th class="py-3.5 px-3 text-center">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for p in products %}
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3 px-3"><input type="checkbox" name="ids" value="{{ p.pk }}" class="row-check w-4 h-4 rounded"></td>
+                                <td class="py-3 px-3">
+                                    {% with img=p.primary_image %}
+                                        {% if img %}
+                                            <img src="{{ img.image.url }}" alt="{{ p.title }}" class="w-10 h-10 rounded-lg object-cover border border-slate-200">
+                                        {% else %}
+                                            <div class="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-[9px] text-slate-400">بدون<br>تصویر</div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td class="py-3 px-3">
+                                    <a href="{% url 'dashboard:product_edit' p.pk %}" class="font-bold text-slate-900 max-w-xs truncate block hover:text-blue-600" title="{{ p.title }}">{{ p.title }}</a>
+                                    <span class="text-[10px] text-slate-400 font-mono">{{ p.updated_at|date:"Y/m/d" }}</span>
+                                </td>
+                                <td class="py-3 px-3 font-mono text-slate-500">{{ p.sku }}</td>
+                                <td class="py-3 px-3">
+                                    <span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md font-semibold">{{ p.category.name }}</span>
+                                    <span class="text-slate-500 block mt-1">{{ p.brand.name|default:"-" }}</span>
+                                </td>
+                                <td class="py-3 px-3">
+                                    <span class="font-black text-slate-900 block">{{ p.formatted_price }} تومان</span>
+                                    {% if p.discount_pct %}<span class="text-[10px] text-rose-600 font-bold">{{ p.discount_pct }}٪ تخفیف</span>{% endif %}
+                                </td>
+                                <td class="py-3 px-3">
+                                    <span class="font-bold {% if p.stock_qty == 0 %}text-rose-600{% elif p.is_low_stock %}text-amber-600{% else %}text-emerald-600{% endif %}">
+                                        {{ p.stock_qty }} عدد
+                                    </span>
+                                </td>
+                                <td class="py-3 px-3 space-y-1">
+                                    <button type="submit" form="toggle-active-{{ p.pk }}"
+                                            class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if p.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                                        {% if p.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                    </button>
+                                    <div class="flex flex-wrap gap-1">
+                                        {% if p.is_featured %}<span class="px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-[9px] font-bold">برگزیده</span>{% endif %}
+                                        {% if p.is_special_offer %}<span class="px-1.5 py-0.5 rounded bg-orange-50 text-orange-700 text-[9px] font-bold">شگفت‌انگیز</span>{% endif %}
+                                    </div>
+                                </td>
+                                <td class="py-3 px-3">
+                                    <div class="flex items-center justify-center gap-1.5">
+                                        <a href="{% url 'dashboard:product_edit' p.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ویرایش</a>
+                                        <a href="{{ p.get_absolute_url }}" target="_blank" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold transition">مشاهده</a>
+                                        <button type="submit" form="delete-product-{{ p.pk }}" onclick="return confirm('حذف «{{ p.title|escapejs }}» قطعی است. مطمئن هستید؟');"
+                                                class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="9" class="py-12 text-center text-slate-400">محصولی با این فیلترها یافت نشد.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </form>
+
+    <!-- فرم‌های کمکی (خارج از فرم عملیات گروهی) -->
+    <div class="hidden">
+        {% for p in products %}
+            <form method="post" id="delete-product-{{ p.pk }}" action="{% url 'dashboard:product_delete' p.pk %}">{% csrf_token %}</form>
+            <form method="post" id="toggle-active-{{ p.pk }}" action="{% url 'dashboard:product_toggle' p.pk 'active' %}">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+            </form>
+        {% endfor %}
     </div>
+
+    <!-- Pagination -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="flex items-center justify-center gap-2 text-xs font-bold">
+            {% if page_obj.has_previous %}
+                <a href="?{{ querystring }}{% if querystring %}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white rounded-xl border border-slate-200 hover:bg-slate-50">قبلی</a>
+            {% endif %}
+            <span class="px-4 py-2 text-slate-500">صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?{{ querystring }}{% if querystring %}&{% endif %}page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white rounded-xl border border-slate-200 hover:bg-slate-50">بعدی</a>
+            {% endif %}
+        </div>
+    {% endif %}
 
 </div>
 {% endblock %}

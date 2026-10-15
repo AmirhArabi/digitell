@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -7,88 +8,164 @@
     <title>{% block title %}پنل مدیریت فروشگاه زیترو{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <script src="https://unpkg.com/htmx.org@2.0.3"></script>
-    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
 </head>
-<body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden">
+<body class="bg-slate-100 text-slate-800 flex h-screen overflow-hidden" data-sidebar="full" data-drawer="closed">
+{% comment %}
+    وضعیت جمع/باز بودن سایدبار پیش از رندر شدن پنل اعمال می‌شود تا هنگام بارگذاری
+    پرش عرض (فلش) دیده نشود.
+{% endcomment %}
+<script>
+    (function () {
+        try {
+            var saved = localStorage.getItem('zitro_dash_sidebar');
+            if (saved === 'collapsed' || saved === 'full') {
+                document.body.setAttribute('data-sidebar', saved);
+            }
+        } catch (e) { }
+    })();
+</script>
 
-    <!-- Dashboard Sidebar -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between p-4 shrink-0 border-l border-slate-800">
-        <div class="space-y-6">
-            <!-- Brand -->
-            <div class="flex items-center gap-3 px-2 py-3 border-b border-slate-800">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-black text-lg">
-                    Z
-                </div>
-                <div>
-                    <h1 class="font-black text-sm text-white">مدیریت زیترو</h1>
-                    <span class="text-[10px] text-emerald-400 font-mono">پنل فروشندگان</span>
-                </div>
+{% with url_name=request.resolver_match.url_name %}
+
+    <!-- سایدبار دسکتاپ: پنل کامل + ریل آیکونی -->
+    <aside id="dash-sidebar"
+           class="relative hidden lg:flex shrink-0 flex-col overflow-hidden bg-white border-e border-slate-200">
+
+        <!-- برند -->
+        <div class="side-brand flex items-center gap-3 px-4 py-4 border-b border-slate-100">
+            <div class="side-avatar shrink-0 w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-black text-sm">Z</div>
+            <div class="side-brand-text min-w-0">
+                <p class="font-black text-xs text-slate-900 truncate">مدیریت زیترو</p>
+                <p class="text-[10px] text-emerald-600 font-bold">پنل فروشندگان</p>
             </div>
-
-            <!-- Nav Links -->
-            <nav class="space-y-1.5 text-xs font-semibold">
-                <a href="{% url 'dashboard:overview' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white transition {% if request.resolver_match.url_name == 'overview' %}bg-blue-600 text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                    <span>نمای کلی و آمار</span>
-                </a>
-
-                <a href="{% url 'dashboard:products' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white transition {% if 'product' in request.resolver_match.url_name %}bg-blue-600 text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
-                    <span>مدیریت محصولات</span>
-                </a>
-
-                <a href="{% url 'dashboard:orders' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white transition {% if 'order' in request.resolver_match.url_name %}bg-blue-600 text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                    <span>سفارش‌ها و پرداخت‌ها</span>
-                </a>
-
-                <a href="{% url 'dashboard:settings' %}" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 hover:text-white transition {% if 'settings' in request.resolver_match.url_name %}bg-blue-600 text-white{% endif %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span>تنظیمات فروشگاه</span>
-                </a>
-            </nav>
         </div>
 
-        <!-- Return to store button -->
-        <div class="pt-4 border-t border-slate-800 space-y-2">
-            <a href="{% url 'home:index' %}" class="flex items-center gap-2 p-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-300 transition text-center justify-center">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span>مشاهده سایت فروشگاه</span>
+        <!-- فهرست منو (تعریف یکتا برای دسکتاپ و موبایل) -->
+        <div class="side-scroll no-scrollbar flex-1 overflow-y-auto px-2 py-3">
+            {% include 'dashboard/partials/_sidebar_nav.html' with scope='dash' %}
+        </div>
+
+        <!-- کارت کاربر + لینک فروشگاه -->
+        <div class="side-footer shrink-0 border-t border-slate-100 px-2 py-3 space-y-1">
+            <div class="side-user flex items-center gap-3 rounded-xl px-2 py-2">
+                <span class="side-avatar w-8 h-8 shrink-0 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-black text-xs">{{ user.username|slice:":1"|upper }}</span>
+                <span class="side-user-meta min-w-0">
+                    <span class="block truncate text-xs font-bold text-slate-800">{{ user.get_full_name|default:user.username }}</span>
+                    <span class="block truncate text-[10px] text-slate-400">مدیر فروشگاه</span>
+                </span>
+            </div>
+            <a href="{% url 'home:index' %}" class="side-item side-footer-note" title="مشاهده سایت فروشگاه">
+                <span class="side-icon" aria-hidden="true">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                </span>
+                <span class="side-label">مشاهده سایت فروشگاه</span>
             </a>
+        </div>
+
+        <!-- دستگیره لبه پنل برای جمع/باز کردن -->
+        <button id="dash-rail"
+                type="button"
+                tabindex="-1"
+                aria-label="جمع‌کردن یا بازکردن منو"
+                title="جمع‌کردن یا بازکردن منو (Ctrl+B)"
+                class="hidden lg:block absolute inset-y-0 end-0 w-4 -translate-x-1/2 cursor-pointer">
+            <span class="side-rail-line"></span>
+        </button>
+    </aside>
+
+    <!-- پوشش تیره و کشوی موبایل -->
+    <div id="dash-backdrop" class="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm lg:hidden" aria-hidden="true"></div>
+
+    <aside id="dash-drawer"
+           class="fixed inset-y-0 start-0 z-50 flex w-72 max-w-[88vw] flex-col bg-white shadow-2xl lg:hidden"
+           role="dialog"
+           aria-modal="true"
+           aria-label="منوی پنل مدیریت"
+           aria-hidden="true"
+           tabindex="-1"
+           inert>
+        <div class="flex items-center justify-between gap-3 px-4 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-black text-sm">Z</div>
+                <div>
+                    <p class="font-black text-xs text-slate-900">مدیریت زیترو</p>
+                    <p class="text-[10px] text-emerald-600 font-bold">پنل فروشندگان</p>
+                </div>
+            </div>
+            <button id="drawer-close" type="button"
+                    class="inline-flex size-9 items-center justify-center rounded-xl text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500/40"
+                    aria-label="بستن منو">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="side-scroll no-scrollbar flex-1 overflow-y-auto px-2 py-3">
+            {% include 'dashboard/partials/_sidebar_nav.html' with scope='drawer' %}
+        </div>
+
+        <div class="shrink-0 border-t border-slate-100 px-2 py-3">
+            <div class="flex items-center gap-3 rounded-xl px-2 py-2">
+                <span class="w-8 h-8 shrink-0 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 text-white flex items-center justify-center font-black text-xs">{{ user.username|slice:":1"|upper }}</span>
+                <span class="min-w-0">
+                    <span class="block truncate text-xs font-bold text-slate-800">{{ user.get_full_name|default:user.username }}</span>
+                    <span class="block truncate text-[10px] text-slate-400">مدیر فروشگاه</span>
+                </span>
+            </div>
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top Nav -->
-        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-            <h2 class="font-bold text-sm text-slate-800">
-                {% block header_title %}پنل مدیریت فروشگاه زیترو{% endblock %}
-            </h2>
+    <!-- ناحیه محتوا -->
+    <div id="dash-main" class="flex-1 flex flex-col overflow-hidden">
+        <!-- نوار بالا -->
+        <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
+                <button id="dash-trigger"
+                        type="button"
+                        aria-controls="dash-sidebar"
+                        aria-expanded="true"
+                        aria-label="جمع‌کردن یا بازکردن منو"
+                        title="جمع‌کردن یا بازکردن منو (Ctrl+B)"
+                        class="inline-flex size-10 shrink-0 items-center justify-center rounded-xl text-slate-500 outline-none transition hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-blue-500/40">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <span class="hidden xl:inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-400" aria-hidden="true">
+                    Ctrl<span dir="ltr">+</span>B
+                </span>
+                <h2 class="font-bold text-sm text-slate-800 truncate">
+                    {% block header_title %}پنل مدیریت فروشگاه زیترو{% endblock %}
+                </h2>
+            </div>
 
-            <div class="flex items-center gap-4 text-xs">
-                <span class="text-slate-500">کاربر وارد شده: <strong class="text-slate-800">{{ user.username }}</strong></span>
-                <a href="{% url 'accounts:logout' %}" class="text-rose-600 hover:underline">خروج</a>
+            <div class="flex items-center gap-3 text-xs">
+                <form method="get" action="{% url 'dashboard:products' %}" class="hidden sm:block">
+                    <input type="search" name="q" placeholder="جستجوی محصول، SKU..."
+                           class="w-52 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+                </form>
+                <span class="text-slate-500 hidden md:inline">کاربر وارد شده: <strong class="text-slate-800">{{ user.username }}</strong></span>
+                <a href="{% url 'home:index' %}" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg font-bold text-slate-700 transition">فروشگاه</a>
+                <a href="{% url 'accounts:logout' %}" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 rounded-lg font-bold text-rose-600 transition">خروج</a>
             </div>
         </header>
 
-        <!-- Messages -->
+        <!-- پیام‌های سیستم -->
         {% if messages %}
-            <div class="p-4 bg-white border-b border-slate-200">
+            <div class="px-6 pt-4 space-y-2">
                 {% for message in messages %}
-                    <div class="p-3 rounded-xl text-xs {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% else %}bg-rose-50 text-rose-800 border border-rose-200{% endif %}">
+                    <div class="p-3 rounded-xl text-xs {% if message.tags == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% elif message.tags == 'warning' %}bg-amber-50 text-amber-800 border border-amber-200{% else %}bg-rose-50 text-rose-800 border border-rose-200{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
             </div>
         {% endif %}
 
-        <!-- Content Area -->
+        <!-- محتوای هر صفحه -->
         <main class="flex-1 overflow-y-auto p-6 sm:p-8">
             {% block content %}{% endblock %}
         </main>
     </div>
+{% endwith %}
 
+<script src="{% static 'js/dashboard-sidebar.js' %}"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

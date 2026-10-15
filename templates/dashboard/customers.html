@@ -1,0 +1,209 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}مشتریان | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت مشتریان و کاربران فروشگاه{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-[1600px]">
+
+    <!-- نوار شاخص‌های مشتریان -->
+    <section class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <article class="bg-gradient-to-tl from-slate-900 to-slate-700 text-white rounded-2xl p-5 shadow-sm">
+            <span class="text-[11px] font-semibold text-slate-300 block">کل کاربران ثبت‌شده</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-2xl font-black">{{ segment_counts.all }}</span>
+                <span class="text-[11px] text-slate-400">نفر</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">{{ segment_counts.staff }} کاربر پنل مدیریت</p>
+        </article>
+
+        <article class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-[11px] font-semibold text-slate-500 block">مشتریان دارای خرید</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-2xl font-black text-emerald-600">{{ segment_counts.buyers }}</span>
+                <span class="text-[11px] text-slate-400">نفر</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">{{ repeat_rate }}٪ خرید تکرارشده</p>
+        </article>
+
+        <article class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-[11px] font-semibold text-slate-500 block">میانگین ارزش هر مشتری</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-xl font-black text-slate-900">{{ avg_ltv }}</span>
+                <span class="text-[11px] text-slate-400">تومان</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">مجموع خرید ÷ خریداران فعال</p>
+        </article>
+
+        <article class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-[11px] font-semibold text-slate-500 block">ثبت‌نام ۳۰ روز اخیر</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-2xl font-black text-sky-600">{{ new_last_month }}</span>
+                <span class="text-[11px] text-slate-400">نفر</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">کاربران جدید فروشگاه</p>
+        </article>
+
+        <article class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+            <span class="text-[11px] font-semibold text-slate-500 block">بدون هیچ سفارشی</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+                <span class="text-2xl font-black text-rose-500">{{ segment_counts.no_order }}</span>
+                <span class="text-[11px] text-slate-400">کاربر</span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-2">فرصت بازاریابی مجدد</p>
+        </article>
+    </section>
+
+    <!-- فیلترها -->
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-4 text-xs">
+        <div class="flex flex-wrap items-end gap-3">
+            <div class="min-w-[15rem] flex-1">
+                <label class="block font-semibold text-slate-600 mb-1.5">جستجو (نام، موبایل، نام کاربری، ایمیل)</label>
+                <input type="search" name="q" value="{{ search_query }}" placeholder="۰۹۱۲…، نام و نام خانوادگی یا ایمیل"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">نوع کاربر</label>
+                <select name="role" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه</option>
+                    <option value="customers" {% if role_filter == 'customers' %}selected{% endif %}>مشتریان فروشگاه</option>
+                    <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>کاربران پنل مدیریت</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">سگمنت</label>
+                <select name="segment" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه سگمنت‌ها</option>
+                    <option value="vip" {% if segment_filter == 'vip' %}selected{% endif %}>مشتری ویژه</option>
+                    <option value="loyal" {% if segment_filter == 'loyal' %}selected{% endif %}>وفادار</option>
+                    <option value="active" {% if segment_filter == 'active' %}selected{% endif %}>خریدار فعال</option>
+                    <option value="new" {% if segment_filter == 'new' %}selected{% endif %}>تازه‌وارد</option>
+                    <option value="dormant" {% if segment_filter == 'dormant' %}selected{% endif %}>راکد</option>
+                    <option value="lead" {% if segment_filter == 'lead' %}selected{% endif %}>بدون خرید</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">ترتیب</label>
+                <select name="sort" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="spent" {% if sort == 'spent' %}selected{% endif %}>بیشترین خرید</option>
+                    <option value="orders" {% if sort == 'orders' %}selected{% endif %}>بیشترین تعداد سفارش</option>
+                    <option value="recent" {% if sort == 'recent' %}selected{% endif %}>آخرین خرید</option>
+                    <option value="newest" {% if sort == 'newest' %}selected{% endif %}>جدیدترین عضویت</option>
+                    <option value="name" {% if sort == 'name' %}selected{% endif %}>نام کاربری</option>
+                </select>
+            </div>
+            <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال فیلتر</button>
+            <a href="{% url 'dashboard:customers' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">حذف فیلترها</a>
+        </div>
+        <p class="text-[10px] text-slate-400">آستانه مشتری ویژه در حال حاضر <strong class="text-slate-600">{{ vip_threshold }}</strong> تومان خرید موفق و حداقل دو سفارش است.</p>
+    </form>
+
+    <!-- لیست مشتریان -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">
+            <div>
+                <h3 class="font-bold text-sm text-slate-900">فهرست مشتریان</h3>
+                <p class="text-[10px] text-slate-400 mt-0.5">نمایش {{ page_obj.start_index }} تا {{ page_obj.end_index }} از {{ page_obj.total }} کاربر</p>
+            </div>
+            <span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg">{{ segment_counts.customers }} مشتری فروشگاه</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50/80 text-slate-500 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">مشتری</th>
+                        <th class="py-3.5 px-4">سگمنت</th>
+                        <th class="py-3.5 px-4">تماس</th>
+                        <th class="py-3.5 px-4 text-center">سفارش موفق</th>
+                        <th class="py-3.5 px-4">میانگین سفارش</th>
+                        <th class="py-3.5 px-4">مجموع خرید</th>
+                        <th class="py-3.5 px-4">سهم از سبد صفحه</th>
+                        <th class="py-3.5 px-4">آخرین خرید</th>
+                        <th class="py-3.5 px-4 text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for c in customers %}
+                        <tr class="hover:bg-slate-50/70 transition {% if c.is_vip %}bg-amber-50/30{% endif %}">
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center gap-3">
+                                    {% if c.avatar %}
+                                        <img src="{{ c.avatar.url }}" alt="{{ c.username }}" class="w-10 h-10 rounded-xl object-cover border border-slate-200">
+                                    {% else %}
+                                        <span class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-sm
+                                            {% if c.is_vip %}bg-gradient-to-tl from-amber-500 to-yellow-400{% else %}bg-gradient-to-tl from-slate-700 to-slate-500{% endif %}">
+                                            {{ c.get_full_name|default:c.username|slice:":1"|upper }}
+                                        </span>
+                                    {% endif %}
+                                    <div class="min-w-0">
+                                        <a href="{% url 'dashboard:customer_detail' c.pk %}" class="font-bold text-slate-900 hover:text-blue-600 block truncate max-w-[12rem]">
+                                            {{ c.get_full_name|default:c.username }}
+                                        </a>
+                                        <span class="text-[10px] text-slate-400 font-mono" dir="ltr">{{ c.username }}{% if c.is_verified %} ✓{% endif %}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="px-2 py-1 rounded-lg text-[10px] font-bold {{ c.segment_tone }}">{{ c.segment_label }}</span>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="block font-mono text-slate-700" dir="ltr">{{ c.phone_number|default:"—" }}</span>
+                                <span class="block text-[10px] text-slate-400 truncate max-w-[10rem]" dir="ltr">{{ c.email|default:"—" }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="font-black text-slate-900">{{ c.paid_orders }}</span>
+                                <span class="block text-[10px] text-slate-400">از {{ c.orders_count }} سفارش</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-700 font-semibold">
+                                {% if c.avg_order_value %}{{ c.avg_order_value }} <span class="text-[10px] text-slate-400">تومان</span>{% else %}—{% endif %}
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="font-black {% if c.total_spent %}text-slate-900{% else %}text-slate-300{% endif %}">{{ c.total_spent|default:0 }}</span>
+                                <span class="text-[10px] text-slate-400 mr-1">تومان</span>
+                            </td>
+                            <td class="py-3.5 px-4 w-40">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                        <div class="h-full rounded-full {% if c.is_vip %}bg-gradient-to-l from-amber-500 to-yellow-300{% else %}bg-gradient-to-l from-blue-600 to-sky-400{% endif %}"
+                                             style="width: {{ c.spend_share }}%"></div>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500">{{ c.spend_share }}٪</span>
+                                </div>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500">
+                                {% if c.last_order_at %}{{ c.last_order_at|date:"Y/m/d" }}{% else %}<span class="text-slate-300">بدون خرید</span>{% endif %}
+                                <span class="block text-[10px] text-slate-400">عضویت {{ c.date_joined|date:"Y/m/d" }}</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                <a href="{% url 'dashboard:customer_detail' c.pk %}" class="px-3 py-1.5 bg-slate-900 hover:bg-blue-600 text-white rounded-lg font-bold transition">پرونده خرید</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9" class="py-16 text-center text-slate-400">
+                                <span class="block text-3xl mb-2">🗂️</span>
+                                کاربری با این فیلترها یافت نشد.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if page_obj.num_pages > 1 %}
+            <div class="flex items-center justify-center gap-2 text-xs font-bold px-5 py-4 border-t border-slate-100 bg-slate-50/60">
+                {% if page_obj.has_previous %}
+                    <a href="?{{ querystring }}{% if querystring %}&{% endif %}page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white rounded-xl border border-slate-200 hover:bg-slate-100 transition">قبلی</a>
+                {% endif %}
+                <span class="px-4 py-2 text-slate-500">صفحه {{ page_obj.number }} از {{ page_obj.num_pages }}</span>
+                {% if page_obj.has_next %}
+                    <a href="?{{ querystring }}{% if querystring %}&{% endif %}page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white rounded-xl border border-slate-200 hover:bg-slate-100 transition">بعدی</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,570 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}گزارشات | پنل زیترو{% endblock %}
+{% block header_title %}گزارشات فروش، محصولات و انبار{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-[1600px]">
+
+    <!-- فیلتر بازه زمانی -->
+    <section class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+        <div class="flex flex-wrap items-end gap-3 text-xs">
+            <form method="get" class="flex flex-wrap items-end gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1.5">از تاریخ</label>
+                    <input type="date" name="from" value="{{ start|date:'Y-m-d' }}"
+                           class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-1.5">تا تاریخ</label>
+                    <input type="date" name="to" value="{{ end|date:'Y-m-d' }}"
+                           class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال بازه</button>
+            </form>
+
+            <div class="flex flex-wrap items-center gap-2 mr-auto">
+                <span class="text-slate-400">بازه فعال: <strong class="text-slate-700">{{ start|date:'Y/m/d' }}</strong> تا <strong class="text-slate-700">{{ end|date:'Y/m/d' }}</strong> ({{ period_days }} روز)</span>
+                <span class="text-slate-300">|</span>
+                <span class="text-slate-400">مقایسه با {{ prev_start|date:'Y/m/d' }} تا {{ prev_end|date:'Y/m/d' }}</span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-100 text-xs">
+            <span class="font-semibold text-slate-500">بازه‌های آماده:</span>
+            <a href="?from={{ preset_seven }}&to={{ end|date:'Y-m-d' }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-700 font-bold text-slate-600 transition">۷ روز</a>
+            <a href="?from={{ preset_thirty }}&to={{ end|date:'Y-m-d' }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-700 font-bold text-slate-600 transition">۳۰ روز</a>
+            <a href="?from={{ preset_ninety }}&to={{ end|date:'Y-m-d' }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-700 font-bold text-slate-600 transition">۹۰ روز</a>
+            <a href="?from={{ preset_year }}&to={{ end|date:'Y-m-d' }}" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-blue-50 hover:text-blue-700 font-bold text-slate-600 transition">یک سال</a>
+
+            <div class="flex flex-wrap items-center gap-2 mr-auto">
+                <a href="{% url 'dashboard:reports_export' %}?from={{ start|date:'Y-m-d' }}&to={{ end|date:'Y-m-d' }}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">CSV سفارش‌ها</a>
+                <a href="{% url 'dashboard:reports_products_export' %}?from={{ start|date:'Y-m-d' }}&to={{ end|date:'Y-m-d' }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition">CSV فروش محصولات</a>
+                <a href="{% url 'dashboard:reports_inventory_export' %}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition">CSV وضعیت انبار</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- شاخص‌های کلیدی (KPI) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {% for kpi in kpis %}
+            <article class="relative overflow-hidden bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition group">
+                <span class="absolute inset-x-0 top-0 h-1
+                    {% if kpi.tone == 'blue' %}bg-gradient-to-l from-blue-600 to-sky-400
+                    {% elif kpi.tone == 'indigo' %}bg-gradient-to-l from-indigo-600 to-blue-400
+                    {% elif kpi.tone == 'violet' %}bg-gradient-to-l from-violet-600 to-fuchsia-400
+                    {% elif kpi.tone == 'emerald' %}bg-gradient-to-l from-emerald-600 to-teal-400
+                    {% elif kpi.tone == 'teal' %}bg-gradient-to-l from-teal-600 to-cyan-400
+                    {% elif kpi.tone == 'amber' %}bg-gradient-to-l from-amber-500 to-yellow-300
+                    {% elif kpi.tone == 'rose' %}bg-gradient-to-l from-rose-600 to-orange-400
+                    {% else %}bg-gradient-to-l from-slate-600 to-slate-400{% endif %}"></span>
+
+                <div class="flex items-start justify-between gap-2">
+                    <span class="text-[11px] font-semibold text-slate-500">{{ kpi.label }}</span>
+                    {% if kpi.growth is not None %}
+                        <span class="shrink-0 px-1.5 py-0.5 rounded-lg text-[10px] font-black
+                            {% if kpi.invert %}
+                                {% if kpi.growth > 0 %}bg-rose-50 text-rose-600{% elif kpi.growth < 0 %}bg-emerald-50 text-emerald-600{% else %}bg-slate-100 text-slate-500{% endif %}
+                            {% else %}
+                                {% if kpi.growth > 0 %}bg-emerald-50 text-emerald-600{% elif kpi.growth < 0 %}bg-rose-50 text-rose-600{% else %}bg-slate-100 text-slate-500{% endif %}
+                            {% endif %}">
+                            {% if kpi.growth > 0 %}▲{% elif kpi.growth < 0 %}▼{% else %}◀{% endif %} {{ kpi.growth }}%
+                        </span>
+                    {% else %}
+                        <span class="shrink-0 px-1.5 py-0.5 rounded-lg text-[10px] font-black bg-slate-100 text-slate-400">—</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-baseline gap-1.5 mt-3">
+                    <span class="text-2xl font-black text-slate-900 tracking-tight">{{ kpi.value }}</span>
+                    <span class="text-[11px] text-slate-400 font-semibold">{{ kpi.unit }}</span>
+                </div>
+
+                <p class="text-[10px] text-slate-400 mt-2">{{ kpi.compare }}</p>
+            </article>
+        {% endfor %}
+    </section>
+
+    <!-- نمودارهای فروش -->
+    <section class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+        <div class="xl:col-span-8 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <div class="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+                <div>
+                    <h3 class="font-bold text-sm text-slate-900">روند فروش روزانه</h3>
+                    <p class="text-[10px] text-slate-400 mt-0.5">مبلغ فروش موفق و تعداد سفارش در هر روز بازه</p>
+                </div>
+                <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>فروش</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>تعداد سفارش</span>
+                </div>
+            </div>
+            <div data-chart-frame class="h-72">
+                <canvas id="chart-daily"></canvas>
+            </div>
+        </div>
+
+        <div class="xl:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">وضعیت سفارش‌ها در بازه</h3>
+            <div data-chart-frame class="h-48">
+                <canvas id="chart-status"></canvas>
+            </div>
+            <div class="mt-4 space-y-2.5 text-xs">
+                {% for row in status_breakdown %}
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="font-semibold text-slate-700">{{ row.label }}</span>
+                        <span class="font-black text-slate-900">{{ row.count }}</span>
+                    </div>
+                    <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                        <div class="h-full bg-blue-500 rounded-full" style="width: {% widthratio row.count orders_total 100 %}%"></div>
+                    </div>
+                {% empty %}
+                    <p class="text-slate-400 py-4 text-center">داده‌ای موجود نیست.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="xl:col-span-6 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">درآمد ۱۰ محصول پرفروش</h3>
+            <div data-chart-frame class="h-80">
+                <canvas id="chart-top-products"></canvas>
+            </div>
+        </div>
+
+        <div class="xl:col-span-6 space-y-5">
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">سهم دسته‌بندی‌ها از فروش</h3>
+                <div data-chart-frame class="h-56">
+                    <canvas id="chart-categories"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">الگوی فروش در روزهای هفته</h3>
+                <div data-chart-frame class="h-52">
+                    <canvas id="chart-weekday"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- انبار -->
+    <section class="space-y-4">
+        <div class="flex items-center gap-3">
+            <h2 class="font-black text-sm text-slate-900">وضعیت انبار و ارزش موجودی</h2>
+            <span class="text-[10px] text-slate-400">تصویر لحظه‌ای (مستقل از بازه زمانی)</span>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+                <span class="text-[11px] text-slate-400 font-semibold block mb-1">ارزش ریالی انبار</span>
+                <span class="text-lg font-black text-slate-900">{{ inventory_value }}</span>
+                <span class="text-[10px] text-slate-400 mr-1">تومان</span>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+                <span class="text-[11px] text-slate-400 font-semibold block mb-1">تعداد کل اقلام موجود</span>
+                <span class="text-lg font-black text-slate-900">{{ inventory_units }}</span>
+                <span class="text-[10px] text-slate-400 mr-1">عدد</span>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+                <span class="text-[11px] text-slate-400 font-semibold block mb-1">تنوع محصولات</span>
+                <span class="text-lg font-black text-slate-900">{{ inventory.products_count }}</span>
+                <span class="text-[10px] text-slate-400 mr-1">کالا</span>
+            </div>
+            <div class="bg-amber-50/70 rounded-2xl border border-amber-200/70 p-4">
+                <span class="text-[11px] text-amber-700 font-semibold block mb-1">کم‌موجود (هشدار)</span>
+                <span class="text-lg font-black text-amber-800">{{ inventory.low_stock }}</span>
+                <span class="text-[10px] text-amber-600 mr-1">کالا</span>
+            </div>
+            <div class="bg-rose-50/70 rounded-2xl border border-rose-200/70 p-4">
+                <span class="text-[11px] text-rose-700 font-semibold block mb-1">ناموجود</span>
+                <span class="text-lg font-black text-rose-800">{{ inventory.out_of_stock }}</span>
+                <span class="text-[10px] text-rose-600 mr-1">کالا</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+            <div class="xl:col-span-5 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">سلامت موجودی</h3>
+                <div data-chart-frame class="h-60">
+                    <canvas id="chart-stock-health"></canvas>
+                </div>
+            </div>
+            <div class="xl:col-span-7 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">ارزش انبار به تفکیک دسته‌بندی</h3>
+                <div data-chart-frame class="h-60">
+                    <canvas id="chart-stock-categories"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- جدول پرفروش‌ترین محصولات -->
+    <section class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="flex items-center justify-between gap-3 p-5 border-b border-slate-100">
+            <div>
+                <h3 class="font-bold text-sm text-slate-900">پرفروش‌ترین محصولات بازه</h3>
+                <p class="text-[10px] text-slate-400 mt-0.5">مرتب‌شده بر اساس درآمد؛ سهم هر کالا از کل فروش محاسبه شده است.</p>
+            </div>
+            <a href="{% url 'dashboard:reports_products_export' %}?from={{ start|date:'Y-m-d' }}&to={{ end|date:'Y-m-d' }}" class="text-[11px] font-bold text-blue-600 hover:text-blue-700">دانلود CSV</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 font-bold">
+                    <tr>
+                        <th class="py-3 px-4">#</th>
+                        <th class="py-3 px-4">محصول</th>
+                        <th class="py-3 px-4">دسته‌بندی</th>
+                        <th class="py-3 px-4">موجودی فعلی</th>
+                        <th class="py-3 px-4">تعداد فروش</th>
+                        <th class="py-3 px-4">درآمد</th>
+                        <th class="py-3 px-4 w-40">سهم از فروش</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for row in top_products %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3 px-4 font-black text-slate-400">{{ forloop.counter }}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-3">
+                                    {% if row.product and row.product.primary_image %}
+                                        <img src="{{ row.product.primary_image.image.url }}" alt="" class="w-9 h-9 rounded-xl object-cover border border-slate-200">
+                                    {% else %}
+                                        <span class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black text-[10px]">Z</span>
+                                    {% endif %}
+                                    <div>
+                                        <span class="font-bold text-slate-800 block max-w-[18rem] truncate">{{ row.product_title }}</span>
+                                        <span class="text-[10px] text-slate-400 font-mono">{{ row.product_sku|default:"-" }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-slate-500">{{ row.product.category.name|default:"—" }}</td>
+                            <td class="py-3 px-4">
+                                {% if row.product %}
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if row.product.stock_qty == 0 %}bg-rose-50 text-rose-600{% elif row.product.is_low_stock %}bg-amber-50 text-amber-700{% else %}bg-emerald-50 text-emerald-700{% endif %}">
+                                        {{ row.product.stock_qty }} عدد
+                                    </span>
+                                {% else %}
+                                    <span class="text-slate-400">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3 px-4 font-bold text-slate-800">{{ row.qty }}</td>
+                            <td class="py-3 px-4 font-black text-slate-900">{{ row.revenue }} تومان</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                        <div class="h-full rounded-full bg-gradient-to-l from-blue-600 to-sky-400" style="width: {{ row.share }}%"></div>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-slate-500">{{ row.share }}%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="py-12 text-center text-slate-400">در این بازه فروش موفقی ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- مشتریان، تخفیف‌ها، ارسال و پرداخت -->
+    <section class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+        <div class="xl:col-span-6 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <div class="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+                <h3 class="font-bold text-sm text-slate-900">مشتریان برتر بازه</h3>
+                <span class="text-[10px] text-slate-400">{{ repeat_buyers }} خریدار تکرارشده</span>
+            </div>
+            <table class="w-full text-xs text-right">
+                <tbody class="divide-y divide-slate-100">
+                    {% for row in top_customers %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-2.5">
+                                <a href="{% url 'dashboard:customer_detail' row.user_id %}" class="font-bold text-slate-800 hover:text-blue-600">
+                                    {{ row.user__first_name }} {{ row.user__last_name }}
+                                </a>
+                                <span class="block text-[10px] text-slate-400 font-mono" dir="ltr">{{ row.user__phone_number|default:row.user__username }}</span>
+                            </td>
+                            <td class="py-2.5 text-slate-500 text-center">{{ row.orders }} سفارش</td>
+                            <td class="py-2.5 font-black text-slate-900 text-left">{{ row.revenue }} تومان</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="py-10 text-center text-slate-400">خریداری در این بازه ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="xl:col-span-3 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">وضعیت پرداخت‌ها</h3>
+            <div data-chart-frame class="h-40">
+                <canvas id="chart-payment"></canvas>
+            </div>
+            <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs">
+                {% for row in payment_breakdown %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-600 font-semibold">{{ row.label }}</span>
+                        <span class="font-black text-slate-900">{{ row.count }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="xl:col-span-3 bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-5">
+            <div>
+                <h3 class="font-bold text-sm text-slate-900 pb-3 mb-3 border-b border-slate-100">روش‌های ارسال</h3>
+                <div class="space-y-2 text-xs">
+                    {% for row in shipping_breakdown %}
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-slate-600 font-semibold">{{ row.label }}</span>
+                            <span class="font-black text-slate-900">{{ row.count }}</span>
+                        </div>
+                        <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                            <div class="h-full bg-indigo-500 rounded-full" style="width: {% widthratio row.count orders_total 100 %}%"></div>
+                        </div>
+                    {% empty %}
+                        <p class="text-slate-400 py-3 text-center">داده‌ای موجود نیست.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-100">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 mb-3">عملکرد کدهای تخفیف</h3>
+                {% for coupon in coupons %}
+                    <div class="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 text-xs">
+                        <div>
+                            <span class="font-mono font-bold text-slate-800 block" dir="ltr">{{ coupon.coupon_code }}</span>
+                            <span class="text-[10px] text-slate-400">{{ coupon.orders }} سفارش</span>
+                        </div>
+                        <span class="font-black text-amber-700">{{ coupon.discount }} تومان</span>
+                    </div>
+                {% empty %}
+                    <p class="text-xs text-slate-400 py-3 text-center">کد تخفیفی در این بازه استفاده نشده است.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- هشدارهای انبار -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <div class="flex items-center gap-2 pb-4 mb-3 border-b border-slate-100">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                <h3 class="font-bold text-sm text-slate-900">کالاهای کم‌موجود</h3>
+                <span class="mr-auto text-[10px] font-black text-amber-700 bg-amber-50 px-2 py-0.5 rounded-lg">{{ inventory.low_stock }}</span>
+            </div>
+            {% for product in low_stock_products %}
+                <div class="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}" alt="" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                    {% endif %}
+                    <div class="min-w-0 flex-1">
+                        <a href="{% url 'dashboard:product_edit' product.pk %}" class="text-xs font-bold text-slate-800 hover:text-blue-600 block truncate">{{ product.title }}</a>
+                        <span class="text-[10px] text-slate-400">{{ product.category.name|default:"—" }} · حد هشدار {{ product.low_stock_threshold }}</span>
+                    </div>
+                    <span class="shrink-0 text-xs font-black {% if product.stock_qty == 0 %}text-rose-600{% else %}text-amber-700{% endif %}">{{ product.stock_qty }}</span>
+                </div>
+            {% empty %}
+                <p class="text-xs text-slate-400 py-8 text-center">همه کالاها موجودی کافی دارند.</p>
+            {% endfor %}
+            <a href="{% url 'dashboard:inventory' %}" class="block mt-3 text-[11px] font-bold text-blue-600 hover:text-blue-700">مدیریت انبار →</a>
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <div class="flex items-center gap-2 pb-4 mb-3 border-b border-slate-100">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+                <h3 class="font-bold text-sm text-slate-900">کالاهای راکد (بدون فروش در بازه)</h3>
+            </div>
+            {% for row in dead_stock %}
+                <div class="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
+                    {% if row.product.primary_image %}
+                        <img src="{{ row.product.primary_image.image.url }}" alt="" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                    {% endif %}
+                    <div class="min-w-0 flex-1">
+                        <a href="{% url 'dashboard:product_edit' row.product.pk %}" class="text-xs font-bold text-slate-800 hover:text-blue-600 block truncate">{{ row.product.title }}</a>
+                        <span class="text-[10px] text-slate-400">موجودی {{ row.product.stock_qty }} عدد · ارزش {{ row.stock_value }} تومان</span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-xs text-slate-400 py-8 text-center">همه کالاهای فعال در این بازه فروش داشته‌اند.</p>
+            {% endfor %}
+        </div>
+
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+            <div class="flex items-center gap-2 pb-4 mb-3 border-b border-slate-100">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <h3 class="font-bold text-sm text-slate-900">سرمایه‌برترین کالاهای انبار</h3>
+            </div>
+            {% for product in top_value_products %}
+                <div class="flex items-center gap-3 py-2 border-b border-slate-50 last:border-0">
+                    {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}" alt="" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                    {% endif %}
+                    <div class="min-w-0 flex-1">
+                        <a href="{% url 'dashboard:product_edit' product.pk %}" class="text-xs font-bold text-slate-800 hover:text-blue-600 block truncate">{{ product.title }}</a>
+                        <span class="text-[10px] text-slate-400">موجودی {{ product.stock_qty }} عدد</span>
+                    </div>
+                    <span class="shrink-0 text-[11px] font-black text-emerald-700">{{ product.inventory_value }} تومان</span>
+                </div>
+            {% empty %}
+                <p class="text-xs text-slate-400 py-8 text-center">داده‌ای موجود نیست.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- جدول روزانه -->
+    <section class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="p-5 border-b border-slate-100">
+            <h3 class="font-bold text-sm text-slate-900">جزئیات روزانه فروش</h3>
+            <p class="text-[10px] text-slate-400 mt-0.5">فقط روزهایی که فروش موفق داشته‌اند نمایش داده می‌شوند.</p>
+        </div>
+        <div class="overflow-x-auto max-h-96">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 font-bold sticky top-0">
+                    <tr>
+                        <th class="py-3 px-4">تاریخ</th>
+                        <th class="py-3 px-4">تعداد سفارش</th>
+                        <th class="py-3 px-4">مبلغ فروش</th>
+                        <th class="py-3 px-4 w-64">نمودار</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for row in daily %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-2.5 px-4 font-mono text-slate-600">{{ row.label }}</td>
+                            <td class="py-2.5 px-4 font-bold text-slate-800">{{ row.orders }}</td>
+                            <td class="py-2.5 px-4 font-black text-slate-900">{{ row.revenue }} تومان</td>
+                            <td class="py-2.5 px-4">
+                                <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                                    <div class="h-full rounded-full bg-gradient-to-l from-blue-600 to-sky-400" style="width: {% widthratio row.revenue max_revenue 100 %}%"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4" class="py-10 text-center text-slate-400">فروشی در این بازه ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ charts|json_script:"reports-charts" }}
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/dashboard-charts.js' %}"></script>
+<script>
+    const reportData = JSON.parse(document.getElementById('reports-charts').textContent);
+
+    ZitroCharts.boot(function () {
+        ZitroCharts.render('chart-daily', {
+            type: 'line',
+            labels: reportData.daily.labels,
+            format: 'money',
+            axisFormat: 'compact',
+            datasets: [
+                { label: 'فروش (تومان)', data: reportData.daily.revenue, format: 'money' },
+                {
+                    label: 'تعداد سفارش',
+                    data: reportData.daily.orders,
+                    format: 'number',
+                    color: '#f59e0b',
+                    yAxisID: 'orders',
+                    fill: false,
+                    borderDash: [6, 4]
+                }
+            ],
+            options: {
+                scales: {
+                    y: { position: 'right' },
+                    orders: {
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: { display: false, drawBorder: false },
+                        border: { display: false },
+                        ticks: { font: { family: "Vazirmatn, sans-serif", size: 10 }, color: '#f59e0b', precision: 0 }
+                    }
+                }
+            }
+        });
+
+        ZitroCharts.render('chart-status', {
+            type: 'doughnut',
+            labels: reportData.status.labels,
+            datasets: [{ data: reportData.status.counts, label: 'سفارش' }],
+            cutout: '62%',
+            legendPosition: 'bottom',
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function (ctx) {
+                                const total = ctx.dataset.data.reduce(function (a, b) { return a + b; }, 0) || 1;
+                                const pct = Math.round((ctx.parsed / total) * 100);
+                                return ctx.label + ': ' + ZitroCharts.num(ctx.parsed) + ' سفارش (' + ZitroCharts.num(pct) + '٪)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        ZitroCharts.render('chart-top-products', {
+            type: 'bar',
+            horizontal: true,
+            labels: reportData.top_products.labels,
+            format: 'money',
+            axisFormat: 'compact',
+            legend: false,
+            datasets: [
+                { label: 'درآمد (تومان)', data: reportData.top_products.revenue, format: 'money' }
+            ],
+            options: {
+                scales: {
+                    x: { position: 'top' }
+                }
+            }
+        });
+
+        ZitroCharts.render('chart-categories', {
+            type: 'doughnut',
+            labels: reportData.categories.labels,
+            datasets: [{ data: reportData.categories.revenue, label: 'فروش' }],
+            cutout: '58%',
+            legendPosition: 'bottom'
+        });
+
+        ZitroCharts.render('chart-weekday', {
+            type: 'bar',
+            labels: reportData.weekday.labels,
+            format: 'money',
+            axisFormat: 'compact',
+            legend: false,
+            datasets: [{ label: 'فروش (تومان)', data: reportData.weekday.revenue, format: 'money' }]
+        });
+
+        ZitroCharts.render('chart-stock-health', {
+            type: 'doughnut',
+            labels: reportData.stock_health.labels,
+            datasets: [{ data: reportData.stock_health.counts, label: 'کالا' }],
+            cutout: '60%',
+            legendPosition: 'bottom'
+        });
+
+        ZitroCharts.render('chart-stock-categories', {
+            type: 'bar',
+            labels: reportData.stock_categories.labels,
+            format: 'money',
+            axisFormat: 'compact',
+            legend: false,
+            datasets: [{ label: 'ارزش انبار (تومان)', data: reportData.stock_categories.value, format: 'money' }]
+        });
+
+        ZitroCharts.render('chart-payment', {
+            type: 'pie',
+            labels: reportData.payment.labels,
+            datasets: [{ data: reportData.payment.counts, label: 'سفارش' }],
+            legendPosition: 'bottom'
+        });
+    });
+</script>
+{% endblock %}

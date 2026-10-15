@@ -7,43 +7,72 @@
 <div class="space-y-8 max-w-7xl">
 
     <!-- KPI Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <!-- Sales -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-            <span class="text-xs text-slate-400 font-semibold block mb-2">فروش کل موفق:</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">فروش کل موفق:</span>
             <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-slate-900">{{ total_sales }}</span>
-                <span class="text-xs text-slate-500">تومان</span>
+                <span class="text-xl font-black text-slate-900">{{ total_sales }}</span>
+                <span class="text-[10px] text-slate-500">تومان</span>
             </div>
-            <span class="text-[11px] text-emerald-600 font-bold block mt-2">تراکنش‌های تسویه شده</span>
+            <span class="text-[10px] text-emerald-600 font-bold block mt-2">تراکنش‌های تسویه‌شده</span>
         </div>
 
-        <!-- Orders -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-            <span class="text-xs text-slate-400 font-semibold block mb-2">تعداد کل سفارش‌ها:</span>
-            <span class="text-2xl font-black text-slate-900">{{ orders_count }}</span>
-            <span class="text-[11px] text-blue-600 font-bold block mt-2">ثبت شده در سیستم</span>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">فروش امروز:</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-xl font-black text-slate-900">{{ sales_today }}</span>
+                <span class="text-[10px] text-slate-500">تومان</span>
+            </div>
+            <span class="text-[10px] text-slate-400 font-bold block mt-2">۷ روز اخیر: {{ sales_week }} تومان</span>
         </div>
 
-        <!-- Products -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-            <span class="text-xs text-slate-400 font-semibold block mb-2">تنوع کالاها:</span>
-            <span class="text-2xl font-black text-slate-900">{{ products_count }}</span>
-            <span class="text-[11px] text-purple-600 font-bold block mt-2">محصول فعال در انبار</span>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">سفارش‌ها:</span>
+            <span class="text-xl font-black text-slate-900">{{ orders_count }}</span>
+            <div class="flex items-center gap-2 mt-2 text-[10px] font-bold">
+                <span class="text-amber-600">{{ pending_orders_count }} در انتظار پرداخت</span>
+                <span class="text-emerald-600">{{ processing_orders_count }} آماده‌سازی</span>
+            </div>
         </div>
 
-        <!-- Customers -->
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
-            <span class="text-xs text-slate-400 font-semibold block mb-2">مشتریان ثبت‌نامی:</span>
-            <span class="text-2xl font-black text-slate-900">{{ customers_count }}</span>
-            <span class="text-[11px] text-amber-600 font-bold block mt-2">کاربران احراز هویت شده</span>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">کالاها:</span>
+            <span class="text-xl font-black text-slate-900">{{ products_count }}</span>
+            <div class="flex items-center gap-2 mt-2 text-[10px] font-bold">
+                <span class="text-emerald-600">{{ active_products_count }} فعال</span>
+                <span class="text-slate-400">{{ inactive_products_count }} غیرفعال</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">مشتریان ثبت‌نامی:</span>
+            <span class="text-xl font-black text-slate-900">{{ customers_count }}</span>
+            <span class="text-[10px] text-amber-600 font-bold block mt-2">کاربران احراز هویت‌شده</span>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block mb-2">هشدار انبار:</span>
+            <span class="text-xl font-black {% if low_stock_count %}text-rose-600{% else %}text-emerald-600{% endif %}">{{ low_stock_count }}</span>
+            <span class="text-[10px] text-slate-400 font-bold block mt-2">{{ out_of_stock_count }} کالای ناموجود</span>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+        <h3 class="font-bold text-sm text-slate-900 mb-4">دسترسی سریع</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs font-bold">
+            <a href="{% url 'dashboard:product_create' %}" class="p-3 rounded-2xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition text-center">➕ محصول جدید</a>
+            <a href="{% url 'dashboard:category_create' %}" class="p-3 rounded-2xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition text-center">🗂 دسته‌بندی جدید</a>
+            <a href="{% url 'dashboard:brand_create' %}" class="p-3 rounded-2xl bg-purple-50 text-purple-700 hover:bg-purple-100 transition text-center">🏷 برند جدید</a>
+            <a href="{% url 'dashboard:banner_create' %}" class="p-3 rounded-2xl bg-orange-50 text-orange-700 hover:bg-orange-100 transition text-center">🖼 بنر جدید</a>
+            <a href="{% url 'dashboard:coupon_create' %}" class="p-3 rounded-2xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition text-center">🎟 کد تخفیف</a>
+            <a href="{% url 'dashboard:reports' %}" class="p-3 rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 transition text-center">📈 گزارشات</a>
         </div>
     </div>
 
     <!-- Recent Orders & Low Stock (2 cols) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Recent Orders (8 cols) -->
         <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
                 <h3 class="font-bold text-sm text-slate-900">آخرین سفارشات مشتریان</h3>
@@ -55,7 +84,7 @@
             {% if recent_orders %}
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-right">
-                        <thead class="text-slate-400 border-b border-slate-100 pb-2">
+                        <thead class="text-slate-400 border-b border-slate-100">
                             <tr>
                                 <th class="pb-3 font-semibold">شماره سفارش</th>
                                 <th class="pb-3 font-semibold">خریدار</th>
@@ -67,7 +96,9 @@
                         <tbody class="divide-y divide-slate-50">
                             {% for order in recent_orders %}
                                 <tr class="hover:bg-slate-50 transition">
-                                    <td class="py-3 font-mono font-bold text-slate-800">{{ order.order_number }}</td>
+                                    <td class="py-3 font-mono font-bold text-slate-800">
+                                        <a href="{% url 'dashboard:order_detail' order.pk %}" class="hover:text-blue-600">{{ order.order_number }}</a>
+                                    </td>
                                     <td class="py-3 text-slate-700">{{ order.recipient_name }}</td>
                                     <td class="py-3 font-black text-slate-900">{{ order.formatted_final_amount }} تومان</td>
                                     <td class="py-3">
@@ -86,29 +117,66 @@
             {% endif %}
         </div>
 
-        <!-- Low Stock Alerts (4 cols) -->
-        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
-            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100 flex items-center justify-between">
-                <span>هشدار کسری موجودی انبار</span>
-                <span class="text-rose-500 text-xs">⚠️</span>
-            </h3>
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100 flex items-center justify-between">
+                    <span>هشدار کسری موجودی انبار</span>
+                    <span class="text-rose-500 text-xs">⚠️</span>
+                </h3>
 
-            {% if low_stock_products %}
-                <div class="divide-y divide-slate-100 text-xs">
-                    {% for p in low_stock_products %}
-                        <div class="py-3 flex items-center justify-between gap-3">
-                            <span class="font-semibold text-slate-800 truncate">{{ p.title }}</span>
-                            <span class="px-2 py-0.5 rounded-full font-black text-rose-600 bg-rose-50 text-[11px] shrink-0">
-                                {{ p.stock_qty }} عدد باقی‌مانده
-                            </span>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-xs text-slate-400 py-6 text-center">تمامی کالاها موجودی کافی دارند.</p>
-            {% endif %}
+                {% if low_stock_products %}
+                    <div class="divide-y divide-slate-100 text-xs">
+                        {% for p in low_stock_products %}
+                            <div class="py-3 flex items-center justify-between gap-3">
+                                <a href="{% url 'dashboard:product_edit' p.pk %}" class="font-semibold text-slate-800 truncate hover:text-blue-600">{{ p.title }}</a>
+                                <span class="px-2 py-0.5 rounded-full font-black {% if p.stock_qty == 0 %}text-rose-700 bg-rose-50{% else %}text-amber-700 bg-amber-50{% endif %} text-[11px] shrink-0">
+                                    {{ p.stock_qty }} عدد
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a href="{% url 'dashboard:inventory' %}?stock=low" class="block text-center text-[11px] font-bold text-blue-600 hover:underline">مدیریت انبار &larr;</a>
+                {% else %}
+                    <p class="text-xs text-slate-400 py-6 text-center">تمامی کالاها موجودی کافی دارند.</p>
+                {% endif %}
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">پرفروش‌ترین کالاها</h3>
+                {% if top_products %}
+                    <div class="divide-y divide-slate-100 text-xs">
+                        {% for item in top_products %}
+                            <div class="py-3 flex items-center justify-between gap-3">
+                                <span class="font-semibold text-slate-800 truncate">{{ item.product_title }}</span>
+                                <span class="text-[11px] font-bold text-slate-500 shrink-0">{{ item.qty }} فروش</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-xs text-slate-400 py-6 text-center">داده‌ای برای نمایش وجود ندارد.</p>
+                {% endif %}
+            </div>
         </div>
+    </div>
 
+    <!-- Content summary -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">دسته‌بندی فعال</span>
+            <span class="text-lg font-black text-slate-900">{{ active_categories_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">ویژگی تعریف‌شده</span>
+            <span class="text-lg font-black text-slate-900">{{ attributes_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">بنر فعال</span>
+            <span class="text-lg font-black text-slate-900">{{ banners_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">مقاله ثبت‌شده</span>
+            <span class="text-lg font-black text-slate-900">{{ posts_count }}</span>
+        </div>
     </div>
 
 </div>

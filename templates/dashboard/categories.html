@@ -1,0 +1,94 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}دسته‌بندی‌ها | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت دسته‌بندی‌های کالا ({{ categories|length }} دسته){% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-3 text-xs">
+        <form method="get" class="flex items-center gap-2">
+            <input type="search" name="q" value="{{ search_query }}" placeholder="جستجوی نام دسته..."
+                   class="w-64 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">جستجو</button>
+        </form>
+        <a href="{% url 'dashboard:category_create' %}" class="mr-auto px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">+ افزودن دسته‌بندی</a>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">نام دسته‌بندی</th>
+                        <th class="py-3.5 px-4">نام لاتین</th>
+                        <th class="py-3.5 px-4">اسلاگ</th>
+                        <th class="py-3.5 px-4">تعداد کالا</th>
+                        <th class="py-3.5 px-4">ترتیب</th>
+                        <th class="py-3.5 px-4">وضعیت</th>
+                        <th class="py-3.5 px-4 text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for c in categories %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3 px-4">
+                                <div class="flex items-center gap-2" style="padding-right: {{ c.depth }}rem;">
+                                    {% if c.depth %}<span class="text-slate-300">└</span>{% endif %}
+                                    {% if c.image %}
+                                        <img src="{{ c.image.url }}" alt="{{ c.name }}" class="w-8 h-8 rounded-lg object-cover border border-slate-200">
+                                    {% endif %}
+                                    <span class="font-bold text-slate-900">{{ c.name }}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4 text-slate-500" dir="ltr">{{ c.name_en|default:"-" }}</td>
+                            <td class="py-3 px-4 font-mono text-slate-400 text-[11px]">{{ c.slug }}</td>
+                            <td class="py-3 px-4 font-bold text-slate-700">{{ c.products.count }} کالا</td>
+                            <td class="py-3 px-4 font-mono text-slate-500">{{ c.order }}</td>
+                            <td class="py-3 px-4">
+                                <button type="submit" form="cat-toggle-{{ c.pk }}"
+                                        class="px-2.5 py-0.5 rounded-full text-[10px] font-bold {% if c.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                                    {% if c.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                </button>
+                            </td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <a href="{% url 'dashboard:category_edit' c.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ویرایش</a>
+                                    <a href="{{ c.get_absolute_url }}" target="_blank" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold transition">مشاهده</a>
+                                    <button type="submit" form="cat-delete-{{ c.pk }}" onclick="return confirm('حذف دسته «{{ c.name|escapejs }}»؟');"
+                                            class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="py-12 text-center text-slate-400">دسته‌بندی‌ای ثبت نشده است. با دکمه «افزودن دسته‌بندی» شروع کنید.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="hidden">
+        {% for c in categories %}
+            <form method="post" id="cat-delete-{{ c.pk }}" action="{% url 'dashboard:category_delete' c.pk %}">{% csrf_token %}</form>
+            <form method="post" id="cat-toggle-{{ c.pk }}" action="{% url 'dashboard:category_toggle' c.pk %}">{% csrf_token %}</form>
+        {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">کل دسته‌بندی‌ها</span>
+            <span class="text-lg font-black text-slate-900">{{ categories|length }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">کل کالاهای سیستم</span>
+            <span class="text-lg font-black text-slate-900">{{ products_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4">
+            <span class="text-slate-400 font-semibold block mb-1">دسته‌های بدون کالا</span>
+            <span class="text-lg font-black text-slate-900">{{ without_product_count }}</span>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

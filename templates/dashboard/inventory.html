@@ -1,0 +1,105 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}مدیریت انبار | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت موجودی انبار و هشدارهای کسری کالا{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- Summary -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">کالاهای فهرست‌شده:</span>
+            <span class="text-2xl font-black text-slate-900">{{ total_items }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">مجموع موجودی (عدد):</span>
+            <span class="text-2xl font-black text-slate-900">{{ stock_units }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">ارزش ریالی موجودی:</span>
+            <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-black text-slate-900">{{ inventory_value }}</span>
+                <span class="text-[11px] text-slate-500">تومان</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-end gap-3 text-xs">
+        <div class="min-w-[12rem]">
+            <label class="block font-semibold text-slate-600 mb-1.5">جستجو</label>
+            <input type="search" name="q" value="{{ search_query }}" placeholder="نام کالا یا SKU"
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">دسته‌بندی</label>
+            <select name="category" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                <option value="">همه دسته‌ها</option>
+                {% for c in categories %}<option value="{{ c.id }}" {% if category_filter == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">وضعیت موجودی</label>
+            <select name="stock" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                <option value="">همه</option>
+                <option value="low" {% if stock_filter == 'low' %}selected{% endif %}>کسری موجودی</option>
+                <option value="out" {% if stock_filter == 'out' %}selected{% endif %}>ناموجود</option>
+            </select>
+        </div>
+        <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال</button>
+        <a href="{% url 'dashboard:inventory' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">حذف فیلتر</a>
+    </form>
+
+    <form method="post" class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+        {% csrf_token %}
+        <div class="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-50 border-b border-slate-200/80 text-xs">
+            <span class="font-bold text-slate-600">مقادیر جدید را وارد کنید و سپس ذخیره نمایید.</span>
+            <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition">ذخیره تغییرات موجودی</button>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">کالا</th>
+                        <th class="py-3.5 px-4">SKU</th>
+                        <th class="py-3.5 px-4">دسته</th>
+                        <th class="py-3.5 px-4">قیمت واحد</th>
+                        <th class="py-3.5 px-4 w-32">موجودی (عدد)</th>
+                        <th class="py-3.5 px-4 w-36">حد هشدار</th>
+                        <th class="py-3.5 px-4">وضعیت</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for p in products %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3 px-4 font-bold text-slate-800 max-w-xs truncate">
+                                <a href="{% url 'dashboard:product_edit' p.pk %}" class="hover:text-blue-600">{{ p.title }}</a>
+                            </td>
+                            <td class="py-3 px-4 font-mono text-slate-500">{{ p.sku }}</td>
+                            <td class="py-3 px-4 text-slate-600">{{ p.category.name }}</td>
+                            <td class="py-3 px-4 font-black text-slate-900">{{ p.formatted_price }} تومان</td>
+                            <td class="py-3 px-4">
+                                <input type="number" min="0" name="stock_{{ p.pk }}" value="{{ p.stock_qty }}"
+                                       class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold focus:bg-white focus:outline-none focus:border-blue-500">
+                            </td>
+                            <td class="py-3 px-4">
+                                <input type="number" min="0" name="threshold_{{ p.pk }}" value="{{ p.low_stock_threshold }}"
+                                       class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if p.stock_qty == 0 %}bg-rose-50 text-rose-700{% elif p.is_low_stock %}bg-amber-50 text-amber-700{% else %}bg-emerald-50 text-emerald-700{% endif %}">
+                                    {% if p.stock_qty == 0 %}ناموجود{% elif p.is_low_stock %}کسری موجودی{% else %}موجود{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="7" class="py-12 text-center text-slate-400">کالایی با این فیلترها یافت نشد.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

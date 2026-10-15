@@ -1,0 +1,89 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}کدهای تخفیف | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت کدهای تخفیف و کمپین‌های فروش{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">کدهای فعال:</span>
+            <span class="text-2xl font-black text-emerald-600">{{ active_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">کل کدهای ثبت‌شده:</span>
+            <span class="text-2xl font-black text-slate-900">{{ coupons|length }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">مجموع استفاده‌ها:</span>
+            <span class="text-2xl font-black text-slate-900">{{ used_total }}</span>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between">
+        <a href="{% url 'dashboard:coupons' %}" class="text-xs font-bold text-slate-500 hover:text-slate-700">به‌روزرسانی لیست</a>
+        <a href="{% url 'dashboard:coupon_create' %}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition">+ ایجاد کد تخفیف</a>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs text-right">
+                <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                    <tr>
+                        <th class="py-3.5 px-4">کد تخفیف</th>
+                        <th class="py-3.5 px-4">عنوان کمپین</th>
+                        <th class="py-3.5 px-4">مقدار تخفیف</th>
+                        <th class="py-3.5 px-4">حداقل سفارش</th>
+                        <th class="py-3.5 px-4">استفاده</th>
+                        <th class="py-3.5 px-4">اعتبار تا</th>
+                        <th class="py-3.5 px-4">وضعیت</th>
+                        <th class="py-3.5 px-4 text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for c in coupons %}
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="py-3.5 px-4 font-mono font-black text-slate-900" dir="ltr">{{ c.code }}</td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ c.title|default:"-" }}</td>
+                            <td class="py-3.5 px-4 font-bold text-slate-800">
+                                {% if c.discount_type == 'percent' %}{{ c.value }}٪{% else %}{{ c.value }} تومان{% endif %}
+                                {% if c.max_discount_amount %}<span class="block text-[10px] text-slate-400">سقف {{ c.max_discount_amount }} تومان</span>{% endif %}
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ c.min_order_amount }} تومان</td>
+                            <td class="py-3.5 px-4">
+                                <span class="font-bold text-slate-800">{{ c.used_count }}</span>
+                                <span class="text-slate-400">/ {% if c.max_uses %}{{ c.max_uses }}{% else %}بی‌نهایت{% endif %}</span>
+                            </td>
+                            <td class="py-3.5 px-4 text-slate-500">{{ c.valid_until|date:"Y/m/d H:i"|default:"بدون انقضا" }}</td>
+                            <td class="py-3.5 px-4">
+                                <button type="submit" form="coupon-toggle-{{ c.pk }}"
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if c.is_active and not c.is_expired %}bg-emerald-50 text-emerald-700{% elif c.is_expired %}bg-rose-50 text-rose-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                                    {% if c.is_expired %}منقضی{% elif c.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                </button>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <a href="{% url 'dashboard:coupon_edit' c.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ویرایش</a>
+                                    <button type="submit" form="coupon-delete-{{ c.pk }}" onclick="return confirm('حذف کد «{{ c.code|escapejs }}»؟');"
+                                            class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="8" class="py-12 text-center text-slate-400">کد تخفیفی ثبت نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="hidden">
+        {% for c in coupons %}
+            <form method="post" id="coupon-delete-{{ c.pk }}" action="{% url 'dashboard:coupon_delete' c.pk %}">{% csrf_token %}</form>
+            <form method="post" id="coupon-toggle-{{ c.pk }}" action="{% url 'dashboard:coupon_toggle' c.pk %}">{% csrf_token %}</form>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

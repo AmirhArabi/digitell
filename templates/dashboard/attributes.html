@@ -1,0 +1,125 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}ویژگی‌ها و مشخصات | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت ویژگی‌ها و مشخصات فنی قابل استفاده برای محصولات{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- افزودن سریع -->
+        <form method="post" class="lg:col-span-4 bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4 text-xs h-fit">
+            {% csrf_token %}
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">افزودن ویژگی جدید</h3>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نام ویژگی *</label>
+                <input type="text" name="name" required placeholder="مثال: حافظه داخلی"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">دسته‌بندی مربوطه</label>
+                <select name="category" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    <option value="">عمومی (همه دسته‌ها)</option>
+                    {% for option in categories %}<option value="{{ option.id }}">{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">واحد</label>
+                    <input type="text" name="unit" placeholder="گیگابایت / اینچ"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">نوع مقدار</label>
+                    <select name="type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                        {% for value, label in type_choices %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">گزینه‌ها (برای نوع انتخابی)</label>
+                <textarea name="options" rows="4" placeholder="هر گزینه در یک خط:&#10;۱۲۸ گیگابایت&#10;۲۵۶ گیگابایت"
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">ترتیب نمایش</label>
+                <input type="number" name="order" value="0"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <button type="submit" class="w-full px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">افزودن ویژگی</button>
+        </form>
+
+        <!-- لیست -->
+        <div class="lg:col-span-8 space-y-4">
+            <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-3 text-xs">
+                <label class="font-semibold text-slate-600">فیلتر بر اساس دسته:</label>
+                <select name="category" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه ویژگی‌ها</option>
+                    <option value="general" {% if category_filter == 'general' %}selected{% endif %}>فقط ویژگی‌های عمومی</option>
+                    {% for option in categories %}<option value="{{ option.id }}" {% if category_filter == option.id|stringformat:'s' %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+                <span class="text-slate-400 mr-auto">{{ attributes|length }} ویژگی</span>
+            </form>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                            <tr>
+                                <th class="py-3.5 px-4">نام ویژگی</th>
+                                <th class="py-3.5 px-4">دسته‌بندی</th>
+                                <th class="py-3.5 px-4">واحد</th>
+                                <th class="py-3.5 px-4">نوع</th>
+                                <th class="py-3.5 px-4">گزینه‌ها</th>
+                                <th class="py-3.5 px-4">وضعیت</th>
+                                <th class="py-3.5 px-4 text-center">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for attr in attributes %}
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3 px-4 font-bold text-slate-900">{{ attr.name }}</td>
+                                    <td class="py-3 px-4 text-slate-600">{{ attr.category.name|default:"عمومی" }}</td>
+                                    <td class="py-3 px-4 text-slate-500">{{ attr.unit|default:"-" }}</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-semibold">{{ attr.get_type_display }}</span>
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-500 max-w-[14rem] truncate">{{ attr.options|default:"-" }}</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if attr.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                                            {% if attr.is_active %}فعال{% else %}غیرفعال{% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            <a href="{% url 'dashboard:attribute_edit' attr.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ویرایش</a>
+                                            <button type="submit" form="attr-delete-{{ attr.pk }}" onclick="return confirm('حذف ویژگی «{{ attr.name|escapejs }}»؟');"
+                                                    class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="7" class="py-12 text-center text-slate-400">ویژگی‌ای ثبت نشده است. از فرم سمت راست شروع کنید.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="hidden">
+                {% for attr in attributes %}
+                    <form method="post" id="attr-delete-{{ attr.pk }}" action="{% url 'dashboard:attribute_delete' attr.pk %}">{% csrf_token %}</form>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

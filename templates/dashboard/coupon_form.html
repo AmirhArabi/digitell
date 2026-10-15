@@ -1,0 +1,86 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{% if coupon %}ویرایش کد تخفیف{% else %}کد تخفیف جدید{% endif %} | پنل زیترو{% endblock %}
+{% block header_title %}{% if coupon %}ویرایش کد تخفیف: {{ coupon.code }}{% else %}ایجاد کد تخفیف جدید{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">کد تخفیف *</label>
+                <input type="text" name="code" value="{{ coupon.code|default:'' }}" required dir="ltr" placeholder="ZITRO10"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono uppercase focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">عنوان کمپین (برای گزارش‌ها)</label>
+                <input type="text" name="title" value="{{ coupon.title|default:'' }}" placeholder="مثال: کمپین بازگشت به مدرسه"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">نوع تخفیف *</label>
+                <select name="discount_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    {% for value, label in type_choices %}
+                        <option value="{{ value }}" {% if coupon.discount_type == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">مقدار تخفیف *</label>
+                <input type="number" name="value" value="{{ coupon.value|default:'' }}" required placeholder="۱۰ برای ۱۰٪ یا ۵۰۰۰۰ برای مبلغ"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">حداقل مبلغ سفارش (تومان)</label>
+                <input type="number" name="min_order_amount" value="{{ coupon.min_order_amount|default:0 }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">سقف تخفیف درصدی (تومان)</label>
+                <input type="number" name="max_discount_amount" value="{{ coupon.max_discount_amount|default:'' }}" placeholder="خالی = بدون سقف"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">سقف تعداد استفاده</label>
+                <input type="number" name="max_uses" value="{{ coupon.max_uses|default:0 }}" placeholder="۰ = بدون محدودیت"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                {% if coupon %}<p class="text-[11px] text-slate-400 mt-1.5">تا کنون {{ coupon.used_count }} بار استفاده شده است.</p>{% endif %}
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">شروع اعتبار</label>
+                <input type="datetime-local" name="valid_from" value="{{ coupon.valid_from|date:'Y-m-d' }}T{{ coupon.valid_from|date:'H:i' }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">پایان اعتبار</label>
+                <input type="datetime-local" name="valid_until" value="{{ coupon.valid_until|date:'Y-m-d' }}T{{ coupon.valid_until|date:'H:i' }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
+                    <input type="checkbox" name="is_active" {% if coupon.is_active or not coupon %}checked{% endif %} class="w-4 h-4 rounded text-emerald-600">
+                    فعال و قابل استفاده در فرآیند خرید
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <a href="{% url 'dashboard:coupons' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">انصراف</a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره کد تخفیف</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

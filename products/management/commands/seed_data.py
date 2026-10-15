@@ -292,4 +292,102 @@ class Command(BaseCommand):
             }
         )
 
+        # ۷. مشتریان و سفارشهای نمایشی (برای پر شدن گزارشات و پرونده مشتریان)
+        from orders.models import Order, OrderItem
+        from django.utils import timezone
+        from datetime import timedelta
+
+        demo_customers = [
+            # username, first, last, phone, روزهای قبل از عضویت
+            ("customer.zahra", "زهرا", "محمدی", "09121110001", 210),
+            ("customer.reza", "رضا", "علوی", "09121110002", 150),
+            ("customer.mina", "مینا", "کریمی", "09121110003", 95),
+            ("customer.omid", "امید", "نوری", "09121110004", 20),
+            ("customer.sara", "سارا", "حسینی", "09121110005", 5),
+        ]
+        customers = {}
+        for username, first, last, phone, joined_days_ago in demo_customers:
+            user, created = User.objects.get_or_create(
+                username=username,
+                defaults={
+                    "first_name": first,
+                    "last_name": last,
+                    "phone_number": phone,
+                    "email": f"{username}@example.com",
+                    "is_verified": True,
+                }
+            )
+            if created:
+                user.set_password("zitro12345")
+                user.save(update_fields=["password"])
+                User.objects.filter(pk=user.pk).update(
+                    date_joined=timezone.now() - timedelta(days=joined_days_ago)
+                )
+            customers[username] = user
+
+        # (نام کاربری، [ (روز قبل، تعداد، بخشی از عنوان محصول) …])؛ مبلغ از قیمت خود محصول محاسبه می‌شود
+        demo_orders = [
+            ("customer.zahra", [
+                (75, 1, "iPhone"),
+                (40, 2, "پاوربانک"),
+                (6, 1, "واچ"),
+            ]),
+            ("customer.reza", [
+                (60, 1, "Vivobook"),
+                (12, 1, "پاوربانک"),
+            ]),
+            ("customer.mina", [
+                (45, 1, "ساندبار"),
+            ]),
+            ("customer.omid", [
+                (9, 1, "شارژر"),
+            ]),
+            ("customer.sara", [
+                (2, 1, "پاوربانک"),
+            ]),
+        ]
+        seeded_orders = 0
+        for username, orders_data in demo_orders:
+            user = customers[username]
+            if Order.objects.filter(user=user).exists():
+                continue
+            for days_ago, qty, title_hint in orders_data:
+                product = Product.objects.filter(title__icontains=title_hint).first()
+                if product is None:
+                    continue
+                amount = product.price * qty
+                order = Order.objects.create(
+                    user=user,
+                    recipient_name=f"{user.first_name} {user.last_name}",
+                    recipient_phone=user.phone_number,
+                    province="تهران",
+                    city="تهران",
+                    shipping_address="تهران، خیابان ولیعصر، پلاک ۱۲، واحد ۳",
+                    postal_code="1987654321",
+                    products_total=amount,
+                    shipping_cost=0,
+                    final_amount=amount,
+                    status="delivered",
+                    payment_status="successful",
+                    shipping_method="post",
+                    transaction_id=f"TRX-{user.username}-{days_ago}",
+                )
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    product_title=product.title,
+                    product_sku=product.sku,
+                    unit_price=product.price,
+                    quantity=qty,
+                    total_price=amount,
+                )
+                # سفارش‌های نمایشی باید در روزهای گذشته ثبت شده باشند
+                Order.objects.filter(pk=order.pk).update(
+                    created_at=timezone.now() - timedelta(days=days_ago)
+                )
+                seeded_orders += 1
+        self.stdout.write(self.style.SUCCESS(
+            f"Demo customers ready: {len(customers)} users, {seeded_orders} new orders"
+        ))
+
         self.stdout.write(self.style.SUCCESS("Database seeded successfully with authentic Zitro products and categories!"))

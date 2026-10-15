@@ -1,0 +1,62 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}برندها | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت برندهای سازنده{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-3 text-xs">
+        <form method="get" class="flex items-center gap-2">
+            <input type="search" name="q" value="{{ search_query }}" placeholder="جستجوی نام برند..."
+                   class="w-64 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+            <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">جستجو</button>
+        </form>
+        <a href="{% url 'dashboard:brand_create' %}" class="mr-auto px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">+ افزودن برند</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for b in brands %}
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs space-y-4">
+                <div class="flex items-center gap-3">
+                    {% if b.logo %}
+                        <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="w-14 h-14 rounded-2xl object-contain bg-slate-50 border border-slate-200 p-1">
+                    {% else %}
+                        <div class="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center font-black text-slate-400">{{ b.name|slice:":1" }}</div>
+                    {% endif %}
+                    <div class="min-w-0">
+                        <h3 class="font-bold text-sm text-slate-900 truncate">{{ b.name }}</h3>
+                        <span class="text-[11px] text-slate-400 font-mono" dir="ltr">{{ b.name_en|default:"-" }}</span>
+                        <span class="block text-[11px] text-slate-500 mt-1">{{ b.products_count }} کالا</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px]">
+                    <span class="px-2 py-0.5 rounded-full font-bold {% if b.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                        {% if b.is_active %}فعال{% else %}غیرفعال{% endif %}
+                    </span>
+                    <span class="text-slate-400">ترتیب: {{ b.order }}</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 text-[11px] font-bold pt-3 border-t border-slate-100">
+                    <a href="{% url 'dashboard:brand_edit' b.pk %}" class="flex-1 text-center px-2.5 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg transition">ویرایش</a>
+                    <a href="{% url 'products:shop' %}?brand={{ b.slug }}" target="_blank" class="flex-1 text-center px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition">کالاها</a>
+                    <button type="submit" form="brand-delete-{{ b.pk }}" onclick="return confirm('حذف برند «{{ b.name|escapejs }}»؟ کالاهای آن بدون برند می‌شوند.');"
+                            class="px-2.5 py-1.5 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg transition">حذف</button>
+                </div>
+            </div>
+        {% empty %}
+            <div class="lg:col-span-3 bg-white rounded-3xl border border-slate-200/80 p-12 text-center text-xs text-slate-400">
+                برندی ثبت نشده است.
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="hidden">
+        {% for b in brands %}
+            <form method="post" id="brand-delete-{{ b.pk }}" action="{% url 'dashboard:brand_delete' b.pk %}">{% csrf_token %}</form>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

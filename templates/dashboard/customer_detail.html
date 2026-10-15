@@ -1,0 +1,268 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}پرونده مشتری | پنل زیترو{% endblock %}
+{% block header_title %}پرونده خرید مشتری{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-[1600px]">
+
+    <!-- سربرگ پرونده -->
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-tl from-slate-900 via-slate-800 to-indigo-900 text-white p-6 shadow-lg">
+        <div class="absolute -left-16 -top-16 w-56 h-56 rounded-full bg-indigo-500/20 blur-2xl"></div>
+        <div class="relative flex flex-wrap items-center gap-5">
+            {% if customer.avatar %}
+                <img src="{{ customer.avatar.url }}" alt="{{ customer.username }}" class="w-20 h-20 rounded-2xl object-cover border-2 border-white/20">
+            {% else %}
+                <span class="w-20 h-20 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-2xl">{{ initial }}</span>
+            {% endif %}
+
+            <div class="min-w-0">
+                <h2 class="text-lg font-black">{{ customer.get_full_name|default:customer.username }}</h2>
+                <div class="flex flex-wrap items-center gap-2 mt-2 text-[11px]">
+                    <span class="px-2 py-1 rounded-lg bg-white/10 font-mono" dir="ltr">{{ customer.username }}</span>
+                    <span class="px-2 py-1 rounded-lg font-mono bg-white/10" dir="ltr">{{ customer.phone_number|default:"بدون شماره" }}</span>
+                    {% if customer.is_verified %}
+                        <span class="px-2 py-1 rounded-lg bg-emerald-400/20 text-emerald-200 font-bold">هویت تأییدشده</span>
+                    {% else %}
+                        <span class="px-2 py-1 rounded-lg bg-white/10 text-slate-300 font-bold">هویت تأییدنشده</span>
+                    {% endif %}
+                    {% if customer.is_staff %}
+                        <span class="px-2 py-1 rounded-lg bg-indigo-400/25 text-indigo-100 font-bold">کاربر پنل مدیریت</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mr-auto text-xs">
+                <a href="{% url 'dashboard:customers' %}" class="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition">بازگشت به فهرست</a>
+                <button type="submit" form="toggle-staff-form"
+                        class="px-4 py-2 rounded-xl font-bold transition {% if customer.is_staff %}bg-rose-500/90 hover:bg-rose-500{% else %}bg-emerald-500/90 hover:bg-emerald-500{% endif %}">
+                    {% if customer.is_staff %}سلب دسترسی پنل مدیریت{% else %}دادن دسترسی پنل مدیریت{% endif %}
+                </button>
+                <form method="post" id="toggle-staff-form" action="{% url 'dashboard:customer_toggle_staff' customer.pk %}" class="hidden">{% csrf_token %}</form>
+            </div>
+        </div>
+    </section>
+
+    <!-- شاخص‌های مشتری -->
+    <section class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">مجموع خرید موفق</span>
+            <div class="flex items-baseline gap-1 mt-2">
+                <span class="text-lg font-black text-slate-900">{{ total_spent }}</span>
+                <span class="text-[10px] text-slate-400">تومان</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">میانگین هر سفارش</span>
+            <div class="flex items-baseline gap-1 mt-2">
+                <span class="text-lg font-black text-slate-900">{{ avg_order_value }}</span>
+                <span class="text-[10px] text-slate-400">تومان</span>
+            </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">سفارش موفق</span>
+            <span class="text-lg font-black text-emerald-600 mt-2 block">{{ paid_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">کل سفارش‌ها</span>
+            <span class="text-lg font-black text-slate-900 mt-2 block">{{ orders_count }}</span>
+            <span class="text-[10px] text-slate-400">{{ pending_count }} در انتظار پرداخت</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">اقلام خریداری‌شده</span>
+            <span class="text-lg font-black text-slate-900 mt-2 block">{{ items_bought }}</span>
+            <span class="text-[10px] text-slate-400">عدد کالا</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
+            <span class="text-[11px] text-slate-400 font-semibold block">آخرین خرید</span>
+            {% if last_order %}
+                <span class="text-sm font-black text-slate-900 mt-2 block">{{ last_order.created_at|date:"Y/m/d" }}</span>
+                <span class="text-[10px] {% if days_since_last > 90 %}text-rose-500{% else %}text-slate-400{% endif %}">{{ days_since_last }} روز پیش</span>
+            {% else %}
+                <span class="text-sm font-black text-slate-300 mt-2 block">—</span>
+                <span class="text-[10px] text-slate-400">بدون سابقه خرید</span>
+            {% endif %}
+        </div>
+    </section>
+
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-5">
+
+        <!-- ستون اطلاعات مشتری -->
+        <div class="xl:col-span-4 space-y-5">
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">اطلاعات تماس و حساب</h3>
+                <dl class="space-y-3 text-xs">
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">موبایل</dt>
+                        <dd class="font-mono font-semibold text-slate-800" dir="ltr">{{ customer.phone_number|default:"—" }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">ایمیل</dt>
+                        <dd class="font-mono text-slate-700 truncate" dir="ltr">{{ customer.email|default:"—" }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">تاریخ عضویت</dt>
+                        <dd class="text-slate-700">{{ customer.date_joined|date:"Y/m/d" }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">آخرین ورود</dt>
+                        <dd class="text-slate-700">{{ customer.last_login|date:"Y/m/d H:i"|default:"—" }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">دسته‌بندی محبوب</dt>
+                        <dd class="font-semibold text-slate-800">{{ favourite_category|default:"—" }}</dd>
+                    </div>
+                    <div class="flex items-center justify-between gap-3">
+                        <dt class="text-slate-400">سفارش لغوشده</dt>
+                        <dd class="font-semibold {% if canceled_count %}text-rose-600{% else %}text-slate-700{% endif %}">{{ canceled_count }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">پرتکرارترین کالاهای خریداری‌شده</h3>
+                {% for row in favourite_products %}
+                    <div class="flex items-center justify-between gap-3 py-2 border-b border-slate-50 last:border-0 text-xs">
+                        <span class="text-slate-700 font-semibold truncate max-w-[14rem]">{{ row.product_title }}</span>
+                        <span class="shrink-0 text-[10px] font-bold text-slate-500">{{ row.qty }} عدد</span>
+                    </div>
+                {% empty %}
+                    <p class="text-xs text-slate-400 py-6 text-center">کالایی خریداری نشده است.</p>
+                {% endfor %}
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">آدرس‌های ثبت‌شده</h3>
+                <div class="space-y-3 text-xs">
+                    {% for address in addresses %}
+                        <div class="bg-slate-50 rounded-2xl p-3 leading-relaxed">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold text-slate-700">{{ address.title }}</span>
+                                {% if address.is_default %}
+                                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">پیش‌فرض</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-slate-500">{{ address.province }} - {{ address.city }} — {{ address.postal_address }}</p>
+                            <p class="text-slate-400 font-mono mt-1" dir="ltr">{{ address.recipient_phone }} · {{ address.postal_code }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-slate-400 py-6 text-center">آدرسی ثبت نشده است.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ستون رفتار خرید -->
+        <div class="xl:col-span-8 space-y-5">
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                <div class="flex items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100">
+                    <div>
+                        <h3 class="font-bold text-sm text-slate-900">روند خرید ماهانه مشتری</h3>
+                        <p class="text-[10px] text-slate-400 mt-0.5">بر اساس سفارش‌های پرداخت‌شده؛ برای مشتریان کم‌خرید ممکن است خالی باشد.</p>
+                    </div>
+                </div>
+                <div data-chart-frame class="h-64">
+                    <canvas id="chart-customer"></canvas>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div class="flex items-center justify-between gap-3 p-5 border-b border-slate-100">
+                    <h3 class="font-bold text-sm text-slate-900">تاریخچه سفارش‌ها</h3>
+                    <span class="text-[10px] text-slate-400">۳۰ سفارش آخر</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50/80 text-slate-500 font-bold">
+                            <tr>
+                                <th class="py-3 px-4">شماره سفارش</th>
+                                <th class="py-3 px-4">تاریخ</th>
+                                <th class="py-3 px-4">اقلام</th>
+                                <th class="py-3 px-4">مبلغ نهایی</th>
+                                <th class="py-3 px-4">وضعیت سفارش</th>
+                                <th class="py-3 px-4">پرداخت</th>
+                                <th class="py-3 px-4 text-center">جزئیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for order in orders %}
+                                <tr class="hover:bg-slate-50/70 transition">
+                                    <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ order.order_number }}</td>
+                                    <td class="py-3 px-4 text-slate-500">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                                    <td class="py-3 px-4 text-slate-600">{{ order.items.count }} قلم</td>
+                                    <td class="py-3 px-4 font-black text-slate-900">{{ order.formatted_final_amount }} تومان</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 rounded-lg text-[10px] font-bold
+                                            {% if order.status == 'delivered' %}bg-emerald-50 text-emerald-700
+                                            {% elif order.status == 'shipped' %}bg-sky-50 text-sky-700
+                                            {% elif order.status == 'cancelled' %}bg-rose-50 text-rose-600
+                                            {% elif order.status == 'paid' %}bg-indigo-50 text-indigo-700
+                                            {% else %}bg-slate-100 text-slate-600{% endif %}">
+                                            {{ order.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 rounded-lg text-[10px] font-bold
+                                            {% if order.payment_status == 'successful' %}bg-emerald-50 text-emerald-700
+                                            {% elif order.payment_status == 'failed' %}bg-rose-50 text-rose-600
+                                            {% else %}bg-amber-50 text-amber-700{% endif %}">
+                                            {{ order.get_payment_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <a href="{% url 'dashboard:order_detail' order.pk %}" class="px-3 py-1.5 bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 rounded-lg font-bold transition">مشاهده</a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="py-16 text-center text-slate-400">
+                                        <span class="block text-3xl mb-2">🧾</span>
+                                        این کاربر هنوز سفارشی ثبت نکرده است.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ chart_months|json_script:"customer-chart-data" }}
+<script src="{% static 'js/vendor/chart.umd.min.js' %}"></script>
+<script src="{% static 'js/dashboard-charts.js' %}"></script>
+<script>
+    const customerData = JSON.parse(document.getElementById('customer-chart-data').textContent);
+
+    ZitroCharts.boot(function () {
+        if (!customerData.labels.length) return;
+        ZitroCharts.render('chart-customer', {
+            type: 'bar',
+            labels: customerData.labels,
+            format: 'money',
+            axisFormat: 'compact',
+            datasets: [
+                { label: 'خرید ماهانه (تومان)', data: customerData.revenue, format: 'money' },
+                { label: 'تعداد سفارش', data: customerData.orders, format: 'number', color: '#10b981', yAxisID: 'orders' }
+            ],
+            options: {
+                scales: {
+                    y: { position: 'right' },
+                    orders: {
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: { display: false, drawBorder: false },
+                        border: { display: false },
+                        ticks: { font: { family: "Vazirmatn, sans-serif", size: 10 }, color: '#10b981', precision: 0 }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

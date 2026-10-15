@@ -1,0 +1,75 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{% if banner %}ویرایش بنر{% else %}افزودن بنر{% endif %} | پنل زیترو{% endblock %}
+{% block header_title %}{% if banner %}ویرایش بنر: {{ banner.title }}{% else %}ثبت بنر یا اسلاید جدید{% endif %}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+
+    <form method="post" enctype="multipart/form-data" class="space-y-6 text-xs">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">عنوان بنر *</label>
+                <input type="text" name="title" value="{{ banner.title|default:'' }}" required placeholder="مثال: جشنواره فروش ویژه موبایل"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">زیرعنوان / متن کمکی</label>
+                <textarea name="subtitle" rows="2" placeholder="متن تبلیغاتی که روی اسلایدر نمایش داده می‌شود."
+                          class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">{{ banner.subtitle|default:'' }}</textarea>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">جایگاه نمایش *</label>
+                <select name="position" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                    {% for value, label in position_choices %}
+                        <option value="{{ value }}" {% if banner.position == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">ترتیب نمایش</label>
+                <input type="number" name="order" value="{{ banner.order|default:0 }}"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">لینک هدف (کلیک روی بنر)</label>
+                <input type="text" name="link_url" value="{{ banner.link_url|default:'/' }}" dir="ltr" placeholder="/shop/category/smartphones/"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block font-semibold text-slate-700 mb-1.5">متن دکمه (اختیاری)</label>
+                <input type="text" name="button_text" value="{{ banner.button_text|default:'' }}" placeholder="مثال: مشاهده تخفیف‌ها"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="block font-semibold text-slate-700 mb-1.5">تصویر بنر {% if not banner %}*{% endif %}</label>
+                <input type="file" name="image" accept="image/*" {% if not banner %}required{% endif %}
+                       class="w-full bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 focus:outline-none">
+                {% if banner.image %}<img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="mt-3 w-full max-w-md h-40 object-cover rounded-2xl border border-slate-200">{% endif %}
+                <p class="text-[11px] text-slate-400 mt-1.5">برای اسلایدر بزرگ، تصویر افقی با عرض حداقل ۱۴۰۰ پیکسل مناسب است.</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
+                    <input type="checkbox" name="is_active" {% if banner.is_active or not banner %}checked{% endif %} class="w-4 h-4 rounded text-emerald-600">
+                    نمایش این بنر در سایت فروشگاه
+                </label>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+            <a href="{% url 'dashboard:banners' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">انصراف</a>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره بنر</button>
+        </div>
+    </form>
+
+</div>
+{% endblock %}

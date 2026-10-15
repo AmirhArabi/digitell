@@ -45,6 +45,8 @@
                 <a href="{% url 'blog:post_list' %}" class="hover:text-white transition">وبلاگ زیترو</a>
                 <span>|</span>
                 <a href="{% url 'home:faq' %}" class="hover:text-white transition">سؤالات متداول</a>
+                <span>|</span>
+                <a href="{% url 'tickets:list' %}" class="hover:text-white transition">تیکت پشتیبانی</a>
             </div>
         </div>
     </div>
@@ -115,6 +117,13 @@
                         <a href="{% url 'accounts:login' %}" class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition border border-slate-200">
                             <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                             <span>ورود / عضویت</span>
+                        </a>
+                    {% endif %}
+
+                    <!-- Support Tickets Button -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'tickets:list' %}" title="تیکت‌های پشتیبانی" class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition border border-emerald-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                         </a>
                     {% endif %}
 
@@ -268,6 +277,7 @@
                         <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition">شرایط خرید اقساطی</a></li>
                         <li><a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition">وبلاگ و اخبار تکنولوژی</a></li>
                         <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition">سوالات متداول (FAQ)</a></li>
+                        <li><a href="{% url 'tickets:list' %}" class="hover:text-blue-600 transition">تیکت‌های پشتیبانی</a></li>
                         <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition">تماس با ما</a></li>
                     </ul>
                 </div>

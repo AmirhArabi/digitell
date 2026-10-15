@@ -29,7 +29,324 @@ body {
   color: #1e293b;
 }
 
-/* Custom scrollbars and RTL helpers */
+/* ---------------------------------------------------------------------------
+   Admin sidebar — animated icon-rail shell.
+
+   وضعیت روی <body> نگه داشته می‌شود و همه انیمیشن‌ها از همان دو دادهٔ زیر پیروی می‌کنند:
+     data-sidebar="full" | "collapsed"   → پنل دسکتاپ (۱۶rem ↔ ۴٫۲۵rem)
+     data-drawer="open"  | "closed"      → کشوی موبایل
+   --------------------------------------------------------------------------- */
+body {
+  --side-w: 16rem;
+  --side-w-icon: 4.25rem;
+}
+
+body[data-sidebar="collapsed"] {
+  --side-w: var(--side-w-icon);
+}
+
+#dash-sidebar {
+  width: var(--side-w);
+  transition: width 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* --- قلم‌های آیتم منو ------------------------------------------------------ */
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.side-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  min-height: 2.25rem;
+  padding-inline: 0.75rem;
+  border-radius: 0.75rem;
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.side-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.side-item:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline-offset: 2px;
+}
+
+.side-item.is-active {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+/* نشانگر فعال در ابتدای آیتم (لبهٔ سمت شروع در RTL) */
+.side-item.is-active::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 3px;
+  height: 1.25rem;
+  border-radius: 9999px;
+  background-color: #2563eb;
+  transform: translateY(-50%);
+}
+
+.side-icon {
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.side-chevron {
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  margin-inline-start: auto;
+  color: #94a3b8;
+  transition: transform 0.2s ease, opacity 0.18s ease;
+}
+
+.side-parent[aria-expanded="true"] .side-chevron {
+  transform: rotate(90deg);
+}
+
+.side-badge {
+  flex: none;
+  margin-inline-start: auto;
+  padding: 0.125rem 0.375rem;
+  border-radius: 9999px;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  transition: opacity 0.18s ease;
+}
+
+.side-badge-alert {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.side-group-label {
+  margin: 0.75rem 0.5rem 0.25rem;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  transition: opacity 0.18s ease;
+}
+
+/* --- بخش‌های تاشو (زیرمنو) ------------------------------------------------ */
+.side-sub {
+  position: relative;
+  margin: 0.125rem 0 0.25rem 0;
+  margin-inline-start: 1.25rem;
+  padding-inline-start: 0.75rem;
+  border-inline-start: 1px solid #e2e8f0;
+  list-style: none;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.side-sub[data-open="true"] {
+  max-height: 22rem;
+}
+
+.side-subitem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  padding-inline: 0.5rem;
+  border-radius: 0.625rem;
+  color: #64748b;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  filter: blur(3px);
+  transition: opacity 0.18s ease, transform 0.18s ease, filter 0.18s ease,
+    background-color 0.15s ease, color 0.15s ease;
+}
+
+.side-sub[data-open="true"] .side-subitem {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+
+/* ورود پله‌ای آیتم‌های زیرمنو */
+.side-sub[data-open="true"] .side-subitem:nth-child(1) { transition-delay: 0.02s; }
+.side-sub[data-open="true"] .side-subitem:nth-child(2) { transition-delay: 0.05s; }
+.side-sub[data-open="true"] .side-subitem:nth-child(3) { transition-delay: 0.08s; }
+.side-sub[data-open="true"] .side-subitem:nth-child(4) { transition-delay: 0.11s; }
+.side-sub[data-open="true"] .side-subitem:nth-child(5) { transition-delay: 0.14s; }
+
+.side-subitem:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.side-subitem:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline-offset: 2px;
+}
+
+.side-subitem.is-active {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.side-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  flex: none;
+  border-radius: 9999px;
+  background-color: currentColor;
+  opacity: 0.45;
+}
+
+/* --- حالت ریل آیکونی ------------------------------------------------------ */
+body[data-sidebar="collapsed"] #dash-sidebar .side-label,
+body[data-sidebar="collapsed"] #dash-sidebar .side-chevron,
+body[data-sidebar="collapsed"] #dash-sidebar .side-badge,
+body[data-sidebar="collapsed"] #dash-sidebar .side-group-label,
+body[data-sidebar="collapsed"] #dash-sidebar .side-brand-text,
+body[data-sidebar="collapsed"] #dash-sidebar .side-user-meta,
+body[data-sidebar="collapsed"] #dash-sidebar .side-footer-note .side-label {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body[data-sidebar="collapsed"] #dash-sidebar .side-label {
+  transform: translateX(8px);
+}
+
+body[data-sidebar="collapsed"] #dash-sidebar .side-item,
+body[data-sidebar="collapsed"] #dash-sidebar .side-subitem {
+  justify-content: center;
+  gap: 0;
+  padding-inline: 0;
+}
+
+body[data-sidebar="collapsed"] #dash-sidebar .side-sub,
+body[data-sidebar="collapsed"] #dash-sidebar .side-group-label {
+  max-height: 0;
+  margin-block: 0;
+}
+
+body[data-sidebar="collapsed"] #dash-sidebar .side-user {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.side-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.side-brand,
+.side-user {
+  transition: opacity 0.18s ease;
+}
+
+.side-avatar {
+  line-height: 1;
+}
+
+/* --- دستگیره لبهٔ پنل ----------------------------------------------------- */
+.side-rail-line {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: 1px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+#dash-rail:hover .side-rail-line,
+#dash-rail:focus-visible .side-rail-line {
+  background-color: #cbd5e1;
+}
+
+/* --- کشوی موبایل --------------------------------------------------------- */
+#dash-drawer {
+  transform: translateX(100%);
+  transition: transform 0.36s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform;
+}
+
+body[data-drawer="open"] #dash-drawer {
+  transform: translateX(0);
+}
+
+#dash-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+body[data-drawer="open"] #dash-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* کشو فقط در اندازهٔ موبایل معنا دارد */
+@media (min-width: 1024px) {
+  #dash-drawer,
+  #dash-backdrop {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #dash-sidebar,
+  #dash-drawer,
+  #dash-backdrop,
+  .side-sub,
+  .side-subitem,
+  .side-label,
+  .side-chevron,
+  .side-badge {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

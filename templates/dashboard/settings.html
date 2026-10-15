@@ -1,84 +1,108 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
 {% block title %}تنظیمات فروشگاه | پنل زیترو{% endblock %}
-{% block header_title %}تنظیمات عمومی، راه‌های ارتباطی و اطلاعات فروشگاه{% endblock %}
+{% block header_title %}تنظیمات عمومی، ارسال، ارتباطی و اطلاعات فروشگاه{% endblock %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs">
+<div class="max-w-4xl mx-auto space-y-6">
 
-    <form method="post" class="space-y-6 text-xs">
+    <form method="post" class="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-xs space-y-8 text-xs">
         {% csrf_token %}
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1.5">نام رسمی فروشگاه *</label>
-                <input
-                    type="text"
-                    name="store_name"
-                    value="{{ settings.store_name }}"
-                    required
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
+        <!-- اطلاعات پایه -->
+        <section class="space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۱. اطلاعات پایه فروشگاه</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">نام رسمی فروشگاه *</label>
+                    <input type="text" name="store_name" value="{{ settings.store_name }}" required
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">شعار تبلیغاتی</label>
+                    <input type="text" name="slogan" value="{{ settings.slogan }}"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">شماره تلفن پشتیبانی *</label>
+                    <input type="text" name="phone" value="{{ settings.phone }}" required dir="ltr"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-right focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">ایمیل پشتیبانی *</label>
+                    <input type="email" name="email" value="{{ settings.email }}" required dir="ltr"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-left focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-slate-700 mb-1.5">ساعات کاری و پاسخگویی</label>
+                    <input type="text" name="working_hours" value="{{ settings.working_hours }}"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-slate-700 mb-1.5">نشانی پستی فروشگاه / دفتر مرکزی</label>
+                    <textarea name="address" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">{{ settings.address }}</textarea>
+                </div>
             </div>
+        </section>
 
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1.5">شعار تبلیغاتی</label>
-                <input
-                    type="text"
-                    name="slogan"
-                    value="{{ settings.slogan }}"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
+        <!-- ارسال -->
+        <section class="space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۲. حمل‌ونقل و ارسال</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">هزینه ارسال پیش‌فرض (تومان)</label>
+                    <input type="number" name="shipping_cost" value="{{ settings.shipping_cost }}"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">آستانه ارسال رایگان (تومان)</label>
+                    <input type="number" name="free_shipping_threshold" value="{{ settings.free_shipping_threshold }}"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                    <p class="text-[11px] text-slate-400 mt-1.5">سفارش‌های بالاتر از این مبلغ ارسال رایگان دارند؛ مقدار ۰ یعنی غیرفعال.</p>
+                </div>
             </div>
+        </section>
 
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1.5">شماره تلفن پشتیبانی *</label>
-                <input
-                    type="text"
-                    name="phone"
-                    value="{{ settings.phone }}"
-                    required
-                    dir="ltr"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-right focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
+        <!-- ارتباطات -->
+        <section class="space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۳. شبکه‌های اجتماعی و ارتباط با مشتری</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">تلگرام</label>
+                    <input type="text" name="telegram" value="{{ settings.telegram }}" dir="ltr"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">اینستاگرام</label>
+                    <input type="text" name="instagram" value="{{ settings.instagram }}" dir="ltr"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">واتساپ</label>
+                    <input type="text" name="whatsapp" value="{{ settings.whatsapp }}" dir="ltr"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
             </div>
+        </section>
 
-            <div>
-                <label class="block font-semibold text-slate-700 mb-1.5">ایمیل پشتیبانی *</label>
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ settings.email }}"
-                    required
-                    dir="ltr"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-left focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
+        <!-- محتوا -->
+        <section class="space-y-4">
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۴. محتوای صفحات</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">درباره فروشگاه</label>
+                    <textarea name="about_us" rows="5" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">{{ settings.about_us }}</textarea>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">متن پاورقی سایت</label>
+                    <input type="text" name="footer_note" value="{{ settings.footer_note }}"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                </div>
             </div>
-
-            <div class="sm:col-span-2">
-                <label class="block font-semibold text-slate-700 mb-1.5">ساعات کاری و پاسخگویی:</label>
-                <input
-                    type="text"
-                    name="working_hours"
-                    value="{{ settings.working_hours }}"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >
-            </div>
-
-            <div class="sm:col-span-2">
-                <label class="block font-semibold text-slate-700 mb-1.5">نشانی پستی فروشگاه / دفتر مرکزی:</label>
-                <textarea
-                    name="address"
-                    rows="3"
-                    class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                >{{ settings.address }}</textarea>
-            </div>
-        </div>
+        </section>
 
         <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
-            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">
-                ذخیره تنظیمات
-            </button>
+            <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره تنظیمات</button>
         </div>
     </form>
 

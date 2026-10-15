@@ -1,0 +1,134 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}مقالات و وبلاگ | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت مقالات، اخبار و دسته‌بندی‌های وبلاگ{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">مقالات منتشرشده:</span>
+            <span class="text-2xl font-black text-emerald-600">{{ published_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">پیش‌نویس‌ها:</span>
+            <span class="text-2xl font-black text-amber-600">{{ draft_count }}</span>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-5">
+            <span class="text-slate-400 font-semibold block mb-2">دسته‌های مقاله:</span>
+            <span class="text-2xl font-black text-slate-900">{{ categories|length }}</span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Posts list -->
+        <div class="lg:col-span-8 space-y-4">
+            <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-3 text-xs">
+                <input type="search" name="q" value="{{ search_query }}" placeholder="جستجو در عنوان و متن مقاله..."
+                       class="flex-1 min-w-[12rem] bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+                <select name="status" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه وضعیت‌ها</option>
+                    <option value="published" {% if status_filter == 'published' %}selected{% endif %}>منتشرشده</option>
+                    <option value="draft" {% if status_filter == 'draft' %}selected{% endif %}>پیش‌نویس</option>
+                </select>
+                <button type="submit" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">فیلتر</button>
+                <a href="{% url 'dashboard:post_create' %}" class="mr-auto px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">+ مقاله جدید</a>
+            </form>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                            <tr>
+                                <th class="py-3.5 px-4">عنوان</th>
+                                <th class="py-3.5 px-4">دسته</th>
+                                <th class="py-3.5 px-4">نویسنده</th>
+                                <th class="py-3.5 px-4">بازدید</th>
+                                <th class="py-3.5 px-4">تاریخ</th>
+                                <th class="py-3.5 px-4">وضعیت</th>
+                                <th class="py-3.5 px-4 text-center">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for post in posts %}
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-3.5 px-4 font-bold text-slate-900 max-w-xs truncate">
+                                        <a href="{% url 'dashboard:post_edit' post.pk %}" class="hover:text-blue-600">{{ post.title }}</a>
+                                    </td>
+                                    <td class="py-3.5 px-4 text-slate-600">{{ post.category.name|default:"-" }}</td>
+                                    <td class="py-3.5 px-4 text-slate-500">{{ post.author|default:"-" }}</td>
+                                    <td class="py-3.5 px-4 text-slate-500">{{ post.views_count }}</td>
+                                    <td class="py-3.5 px-4 text-slate-400 text-[11px]">{{ post.created_at|date:"Y/m/d" }}</td>
+                                    <td class="py-3.5 px-4">
+                                        <button type="submit" form="post-toggle-{{ post.pk }}"
+                                                class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if post.is_published %}bg-emerald-50 text-emerald-700{% else %}bg-amber-50 text-amber-700{% endif %}">
+                                            {% if post.is_published %}منتشرشده{% else %}پیش‌نویس{% endif %}
+                                        </button>
+                                    </td>
+                                    <td class="py-3.5 px-4">
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            <a href="{% url 'dashboard:post_edit' post.pk %}" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ویرایش</a>
+                                            <a href="{{ post.get_absolute_url }}" target="_blank" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-bold transition">مشاهده</a>
+                                            <button type="submit" form="post-delete-{{ post.pk }}" onclick="return confirm('حذف مقاله «{{ post.title|escapejs }}»؟');"
+                                                    class="px-2.5 py-1 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td colspan="7" class="py-12 text-center text-slate-400">مقاله‌ای ثبت نشده است.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="hidden">
+                {% for post in posts %}
+                    <form method="post" id="post-delete-{{ post.pk }}" action="{% url 'dashboard:post_delete' post.pk %}">{% csrf_token %}</form>
+                    <form method="post" id="post-toggle-{{ post.pk }}" action="{% url 'dashboard:post_toggle' post.pk %}">{% csrf_token %}</form>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Blog categories -->
+        <div class="lg:col-span-4 space-y-4">
+            <form method="post" action="{% url 'dashboard:blog_category_create' %}" class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4 text-xs">
+                {% csrf_token %}
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">افزودن دسته مقاله</h3>
+                <input type="text" name="name" required placeholder="مثال: اخبار فناوری"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500">
+                <input type="number" name="order" value="0" placeholder="ترتیب"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+                <button type="submit" class="w-full px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">افزودن دسته</button>
+            </form>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-3 text-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">دسته‌های موجود</h3>
+                {% for category in categories %}
+                    <form method="post" action="{% url 'dashboard:blog_category_edit' category.pk %}" class="flex items-center gap-2">
+                        {% csrf_token %}
+                        <input type="text" name="name" value="{{ category.name }}"
+                               class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                        <input type="number" name="order" value="{{ category.order }}" class="w-16 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 font-mono focus:bg-white focus:outline-none">
+                        <button type="submit" class="px-3 py-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg font-bold transition">ذخیره</button>
+                        <button type="submit" form="blog-cat-delete-{{ category.pk }}" onclick="return confirm('حذف دسته «{{ category.name|escapejs }}»؟');"
+                                class="px-3 py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 rounded-lg font-bold transition">حذف</button>
+                        <span class="text-[10px] text-slate-400">{{ category.posts_count }}</span>
+                    </form>
+                {% empty %}
+                    <p class="text-slate-400 py-4 text-center">دسته‌ای ثبت نشده است.</p>
+                {% endfor %}
+
+                <div class="hidden">
+                    {% for category in categories %}
+                        <form method="post" id="blog-cat-delete-{{ category.pk }}" action="{% url 'dashboard:blog_category_delete' category.pk %}">{% csrf_token %}</form>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

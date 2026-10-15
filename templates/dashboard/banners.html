@@ -1,0 +1,64 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}بنرها و اسلایدر | پنل زیترو{% endblock %}
+{% block header_title %}مدیریت بنرها، اسلایدر و تصاویر تبلیغاتی{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- Position tabs -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2 text-xs font-bold">
+        {% for value, label in position_choices %}
+            <a href="?position={{ value }}"
+               class="px-3.5 py-2 rounded-xl transition {% if position == value %}bg-blue-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">
+                {{ label }}
+                <span class="text-[10px] {% if position == value %}text-blue-100{% else %}text-slate-400{% endif %}">({{ position_counts|default_if_none:'' }}{% for key, count in position_counts.items %}{% if key == value %}{{ count }}{% endif %}{% endfor %})</span>
+            </a>
+        {% endfor %}
+        <a href="{% url 'dashboard:banner_create' %}" class="mr-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md shadow-emerald-500/20 transition">+ افزودن بنر</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for banner in banners %}
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="relative bg-slate-100 h-40">
+                    <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-40 object-cover">
+                    <span class="absolute top-3 right-3 px-2 py-0.5 rounded-lg text-[10px] font-bold {% if banner.is_active %}bg-emerald-600 text-white{% else %}bg-slate-800/80 text-white{% endif %}">
+                        {% if banner.is_active %}فعال{% else %}غیرفعال{% endif %}
+                    </span>
+                    <span class="absolute top-3 left-3 px-2 py-0.5 rounded-lg bg-white/90 text-slate-700 text-[10px] font-bold">ترتیب {{ banner.order }}</span>
+                </div>
+
+                <div class="p-4 space-y-3 text-xs">
+                    <h3 class="font-bold text-slate-900 truncate">{{ banner.title }}</h3>
+                    {% if banner.subtitle %}<p class="text-slate-500 text-[11px] line-clamp-2">{{ banner.subtitle }}</p>{% endif %}
+                    <div class="text-[11px] text-slate-400 font-mono truncate" dir="ltr">🔗 {{ banner.link_url }}</div>
+
+                    <div class="flex items-center gap-1.5 pt-3 border-t border-slate-100 font-bold text-[11px]">
+                        <button type="submit" form="banner-move-up-{{ banner.pk }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition" title="انتقال به بالا">↑</button>
+                        <button type="submit" form="banner-move-down-{{ banner.pk }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition" title="انتقال به پایین">↓</button>
+                        <button type="submit" form="banner-toggle-{{ banner.pk }}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-amber-50 hover:text-amber-600 rounded-lg transition">{% if banner.is_active %}غیرفعال کن{% else %}فعال کن{% endif %}</button>
+                        <a href="{% url 'dashboard:banner_edit' banner.pk %}" class="px-2.5 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition">ویرایش</a>
+                        <button type="submit" form="banner-delete-{{ banner.pk }}" onclick="return confirm('حذف بنر «{{ banner.title|escapejs }}»؟');"
+                                class="px-2.5 py-1.5 bg-slate-100 hover:bg-rose-50 hover:text-rose-600 rounded-lg transition">حذف</button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="lg:col-span-3 bg-white rounded-3xl border border-slate-200/80 p-14 text-center text-xs text-slate-400">
+                در این جایگاه بنری ثبت نشده است. با دکمه «افزودن بنر» شروع کنید.
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="hidden">
+        {% for banner in banners %}
+            <form method="post" id="banner-delete-{{ banner.pk }}" action="{% url 'dashboard:banner_delete' banner.pk %}">{% csrf_token %}</form>
+            <form method="post" id="banner-toggle-{{ banner.pk }}" action="{% url 'dashboard:banner_toggle' banner.pk %}">{% csrf_token %}</form>
+            <form method="post" id="banner-move-up-{{ banner.pk }}" action="{% url 'dashboard:banner_move' banner.pk 'up' %}">{% csrf_token %}</form>
+            <form method="post" id="banner-move-down-{{ banner.pk }}" action="{% url 'dashboard:banner_move' banner.pk 'down' %}">{% csrf_token %}</form>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

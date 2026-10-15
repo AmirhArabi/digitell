@@ -1,0 +1,127 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}سفارش {{ order.order_number }} | پنل زیترو{% endblock %}
+{% block header_title %}جزئیات سفارش {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-6xl">
+
+    <div class="flex flex-wrap items-center gap-3 text-xs">
+        <a href="{% url 'dashboard:orders' %}" class="px-4 py-2 bg-white border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition">بازگشت به لیست سفارش‌ها</a>
+        <a href="{% if order.user %}{% url 'dashboard:customer_detail' order.user.pk %}{% else %}{% url 'dashboard:customers' %}{% endif %}"
+           class="px-4 py-2 bg-white border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition">
+            پروفایل خریدار{% if order.user %} ({{ order.user }}){% else %} — خرید مهمان{% endif %}
+        </a>
+        <button type="button" onclick="window.print()" class="mr-auto px-4 py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition">چاپ فاکتور</button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Invoice items -->
+        <div class="lg:col-span-8 space-y-6">
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100">اقلام سفارش ({{ order.items.count }} قلم)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="text-slate-400">
+                            <tr>
+                                <th class="pb-3 font-semibold">کالا</th>
+                                <th class="pb-3 font-semibold">SKU</th>
+                                <th class="pb-3 font-semibold">قیمت واحد</th>
+                                <th class="pb-3 font-semibold">تعداد</th>
+                                <th class="pb-3 font-semibold">جمع</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for item in order.items.all %}
+                                <tr>
+                                    <td class="py-3 font-semibold text-slate-800">
+                                        {% if item.product %}<a href="{% url 'dashboard:product_edit' item.product.pk %}" class="hover:text-blue-600">{{ item.product_title }}</a>{% else %}{{ item.product_title }}{% endif %}
+                                    </td>
+                                    <td class="py-3 font-mono text-slate-500">{{ item.product_sku|default:"-" }}</td>
+                                    <td class="py-3 text-slate-600">{{ item.formatted_unit_price }} تومان</td>
+                                    <td class="py-3 font-bold text-slate-800">{{ item.quantity }}</td>
+                                    <td class="py-3 font-black text-slate-900">{{ item.formatted_total_price }} تومان</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs">
+                    <div class="flex items-center justify-between"><span class="text-slate-500">جمع مبالغ کالاها</span><span class="font-bold text-slate-800">{{ order.formatted_products_total }} تومان</span></div>
+                    <div class="flex items-center justify-between"><span class="text-slate-500">سود و تخفیف مشتری</span><span class="font-bold text-emerald-600">{{ order.discount_amount }} تومان</span></div>
+                    {% if order.coupon_code %}
+                        <div class="flex items-center justify-between"><span class="text-slate-500">کد تخفیف ({{ order.coupon_code }})</span><span class="font-bold text-emerald-600">{{ order.coupon_discount }} تومان</span></div>
+                    {% endif %}
+                    <div class="flex items-center justify-between"><span class="text-slate-500">هزینه ارسال ({{ order.get_shipping_method_display }})</span><span class="font-bold text-slate-800">{{ order.formatted_shipping_cost }} تومان</span></div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-sm"><span class="font-bold text-slate-700">مبلغ نهایی</span><span class="font-black text-slate-900">{{ order.formatted_final_amount }} تومان</span></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs text-xs space-y-3">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">اطلاعات ارسال</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-700">
+                    <div><span class="text-slate-400 block mb-1">نام گیرنده</span>{{ order.recipient_name }}</div>
+                    <div><span class="text-slate-400 block mb-1">شماره تماس</span><span class="font-mono" dir="ltr">{{ order.recipient_phone }}</span></div>
+                    <div><span class="text-slate-400 block mb-1">استان / شهر</span>{{ order.province }} - {{ order.city }}</div>
+                    <div><span class="text-slate-400 block mb-1">کد پستی</span><span class="font-mono" dir="ltr">{{ order.postal_code|default:"-" }}</span></div>
+                    <div class="sm:col-span-2"><span class="text-slate-400 block mb-1">نشانی</span>{{ order.shipping_address }}</div>
+                    {% if order.notes %}<div class="sm:col-span-2"><span class="text-slate-400 block mb-1">یادداشت مشتری</span>{{ order.notes }}</div>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Status controls -->
+        <div class="lg:col-span-4 space-y-6">
+            <form method="post" action="{% url 'dashboard:order_update' order.pk %}" class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4 text-xs">
+                {% csrf_token %}
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">مدیریت وضعیت سفارش</h3>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">وضعیت سفارش</label>
+                    <select name="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                        {% for value, label in status_choices %}<option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">وضعیت پرداخت</label>
+                    <select name="payment_status" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                        {% for value, label in payment_choices %}<option value="{{ value }}" {% if order.payment_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">روش ارسال</label>
+                    <select name="shipping_method" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">
+                        {% for value, label in shipping_choices %}<option value="{{ value }}" {% if order.shipping_method == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">کد رهگیری مرسوله</label>
+                    <input type="text" name="tracking_code" value="{{ order.tracking_code }}" dir="ltr" placeholder="۲۴ رقمی پستی"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">یادداشت داخلی (فقط برای پنل)</label>
+                    <textarea name="admin_note" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none">{{ order.admin_note }}</textarea>
+                </div>
+
+                <button type="submit" class="w-full px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-md shadow-blue-500/20 transition">ذخیره تغییرات</button>
+            </form>
+
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-3 text-xs">
+                <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">اطلاعات پرداخت</h3>
+                <div class="flex items-center justify-between"><span class="text-slate-500">روش پرداخت</span><span class="font-bold text-slate-800">{{ order.get_payment_method_display }}</span></div>
+                <div class="flex items-center justify-between"><span class="text-slate-500">کد پیگیری تراکنش</span><span class="font-mono text-slate-700" dir="ltr">{{ order.transaction_id|default:"-" }}</span></div>
+                <div class="flex items-center justify-between"><span class="text-slate-500">تاریخ ثبت</span><span class="text-slate-700">{{ order.created_at|date:"Y/m/d H:i" }}</span></div>
+                <div class="flex items-center justify-between"><span class="text-slate-500">آخرین بروزرسانی</span><span class="text-slate-700">{{ order.updated_at|date:"Y/m/d H:i" }}</span></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
