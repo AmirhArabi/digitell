@@ -1,13 +1,70 @@
 from pathlib import Path
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-zitro-shop-digitell-super-secret-key-fa'
+# متغیرهای محیطی از فایل .env خوانده می‌شوند (در تولید لازم نیست؛ مستقیم export کنید).
+try:
+    from dotenv import load_dotenv
+except ImportError:  # pragma: no cover - در محیط تولید نصب نبودن آن مشکلی ایجاد نمی‌کند
+    load_dotenv = None
 
-DEBUG = True
+if load_dotenv is not None:
+    load_dotenv(BASE_DIR / '.env')
 
-ALLOWED_HOSTS = ['*']
+
+ENV_TRUE_VALUES = ('1', 'true', 'yes', 'on')
+
+
+def env_bool(name, default=False):
+    """خواندن یک متغیر محیطی بولی؛ مقدار خالی یا نامعتبر به default برمی‌گردد."""
+    value = os.environ.get(name)
+    if value is None or value.strip() == '':
+        return default
+    return value.strip().lower() in ENV_TRUE_VALUES
+
+
+def env_int(name, default=0):
+    value = os.environ.get(name, '').strip()
+    try:
+        return int(value)
+    except ValueError:
+        return default
+
+
+def env_list(name, default=None):
+    """خواندن لیست جداشده با کاما از متغیر محیطی."""
+    items = [item.strip() for item in os.environ.get(name, '').split(',') if item.strip()]
+    return items or list(default or [])
+
+
+DEBUG = env_bool('DJANGO_DEBUG', True)
+
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '').strip()
+if not SECRET_KEY:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            'در حالت DEBUG=False متغیر محیطی DJANGO_SECRET_KEY الزامی است.'
+        )
+    # کلید ناامن فقط برای اجرای محلی؛ در تولید باید DJANGO_SECRET_KEY تنظیم شود.
+    SECRET_KEY = 'django-insecure-zitro-shop-local-development-only'
+
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', ['*'] if DEBUG else [])
+
+CSRF_TRUSTED_ORIGINS = env_list('DJANGO_CSRF_TRUSTED_ORIGINS')
+
+# تنظیمات امنیتی پشت پرچم محیطی؛ پیش‌فرض در DEBUG=False روشن می‌شوند.
+SECURE = env_bool('DJANGO_SECURE', not DEBUG)
+SESSION_COOKIE_SECURE = SECURE
+CSRF_COOKIE_SECURE = SECURE
+SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', SECURE)
+SECURE_HSTS_SECONDS = env_int('DJANGO_SECURE_HSTS_SECONDS', 31536000 if SECURE else 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE
+SECURE_HSTS_PRELOAD = SECURE
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = env_bool('DJANGO_USE_X_FORWARDED_HOST', SECURE)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
