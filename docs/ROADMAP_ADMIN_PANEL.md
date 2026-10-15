@@ -5,25 +5,33 @@
 
 ## فاز 0 --- امنیت و آمادگی انتشار (P0)
 
--   [ ] تنظیم محیطی `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` و تنظیمات
-    ایمیل؛ افزودن dependency manifest نسخه‌دار.
+-   [x] تنظیم محیطی `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` و تنظیمات
+    ایمیل؛ افزودن dependency manifest نسخه‌دار. (`config/settings.py`،
+    `requirements.txt`، `.github/workflows/ci.yml` — کامیت‌های `48a7561` و `6e77c3c`)
 -   [ ] حفاظت از فاکتور و پیگیری سفارش با کنترل مالکیت/توکن امن و
     محدودسازی نرخ.
 -   [ ] محدودکردن اعطای `is_staff` به superuser یا مجوز اختصاصی.
 -   [ ] اجرای password validators در ثبت‌نام؛ محدودسازی login/register.
 -   [ ] پاک‌سازی SVG خام دسته‌بندی که با `safe` نمایش داده می‌شود.
--   [ ] تنظیم HTTPS، secure cookies، HSTS و اجرای `check --deploy`.
+-   [x] تنظیم HTTPS، secure cookies، HSTS و اجرای `check --deploy`. (پرچم‌های
+    `DJANGO_SECURE*` در `config/settings.py`؛ خروجی واقعی در
+    `scripts/verify_step2.sh` بررسی می‌شود)
 -   [ ] افزودن آزمون‌های regression برای کنترل‌های بالا.
 
 ## فاز 1 --- صحت سفارش و موجودی (P0)
 
 -   [ ] تصمیم‌گیری درباره وضعیت COD؛ کد فعلی `status=paid` و
     `payment_status=pending` ثبت می‌کند.
--   [ ] کسر موجودی اتمیک و جلوگیری از overselling.
--   [ ] اعتبارسنجی quantity در تمام مسیرهای سبد و checkout.
+-   [x] کسر موجودی اتمیک و جلوگیری از overselling. (کامیت `c139e41`؛
+    `Product.reserve_stock/release_stock/commit_stock` و `Order.stock_state`)
+-   [x] اعتبارسنجی quantity در تمام مسیرهای سبد و checkout. (سقف
+    `available_qty` در `cart_add_view`/`cart_update_view` + اعتبارسنجی ورودی عددی)
 -   [ ] جلوگیری از مصرف دوباره کوپن در درخواست‌های هم‌زمان.
 -   [ ] هم‌راستاسازی گزارش درآمد با تعریف مالی وضعیت پرداخت/COD.
--   [ ] آزمون رقابت برای آخرین واحد موجودی و آخرین استفاده کوپن.
+-   [~] آزمون رقابت برای آخرین واحد موجودی و آخرین استفاده کوپن. (خرید آخرین واحد
+    با `test_stale_in_memory_reads_cannot_oversell` و
+    `test_checkout_blocks_oversell_when_stock_is_taken_meanwhile` پوشش دارد؛
+    آزمون هم‌زمانی کوپن هنوز باقی است)
 
 ## فاز 2 --- عملیات پنل (P1)
 

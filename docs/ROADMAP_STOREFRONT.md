@@ -7,14 +7,14 @@
 
 -   [ ] حفاظت از فاکتور و tracking با مالکیت/توکن امن و rate limit.
 -   [ ] اعمال password validators و محدودسازی تلاش‌های ورود/ثبت‌نام.
--   [ ] تنظیم production settings، HTTPS و وابستگی‌های pin‌شده.
--   [ ] اعتبارسنجی server-side برای ورودی‌ها و quantity.
+-   [x] تنظیم production settings، HTTPS و وابستگی‌های pin‌شده. (کامیت `48a7561` + `6e77c3c`)
+-   [x] اعتبارسنجی server-side برای ورودی‌ها و quantity. (رزرو/سقف تعداد در `cart/views.py` و `orders/views.py`، کامیت `c139e41`)
 -   [ ] اعتبارسنجی slug محصول و canonical URL.
 -   [ ] پاک‌سازی SVG و انتشار سیاست حریم خصوصی.
 
 ## فاز 1 --- صحت خرید (P0)
 
--   [ ] بررسی موجودی در cart و checkout و کسر اتمیک موجودی.
+-   [x] بررسی موجودی در cart و checkout و کسر اتمیک موجودی. (رزرو اتمیک `Product.reserved_qty` + `Order.stock_state`، کامیت `c139e41`)
 -   [ ] ادغام سبد مهمان با سبد حساب بعد از login/register.
 -   [ ] تعیین وضعیت صحیح COD و گزارش درآمد.
 -   [ ] جداسازی mock gateway از پرداخت واقعی؛ هیچ PSP واقعی متصل نیست.
@@ -51,7 +51,7 @@
 
 ## معیارهای پذیرش
 
--   خرید بیش از موجودی ممکن نباشد.
+-   [x] خرید بیش از موجودی ممکن نباشد. (`orders/tests.py` — کلاس‌های `ProductReservationTests`، `CartStockLimitTests`، `CheckoutReservationTests`)
 -   سفارش دیگران با دانستن شماره سفارش قابل مشاهده نباشد.
 -   تمام فرم‌ها اعتبارسنجی سمت سرور داشته باشند.
 -   mock payment از پرداخت واقعی قابل تشخیص باشد.
