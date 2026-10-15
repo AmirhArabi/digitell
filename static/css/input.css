@@ -19,6 +19,61 @@
   --color-secondary-700: #c2410c;
 
   --font-vazir: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* --- پالت صفحه محصول (الهام‌گرفته از زیترو) --- */
+  --color-zitro-ink: #22292f;
+  --color-zitro-line: #e9ecef;
+  --color-zitro-deal: #f03e3e;
+  --color-zitro-cash: #00c96b;
+  --color-zitro-dark: #343a40;
+}
+
+/* ---------------------------------------------------------------------------
+   صفحه محصول — لنگرها و بخش‌های تاشو («نمایش بیشتر»)
+   --------------------------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+}
+
+.prod-anchor {
+  scroll-margin-top: 11rem;
+}
+
+.collapse-panel {
+  position: relative;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.collapse-panel[data-expanded="true"] {
+  max-height: 240rem;
+}
+
+/* نسخهٔ «پیش‌نمایش»: در حالت جمع‌شده چند خط نشان می‌دهد (برای توضیحات بلند) */
+.collapse-panel--peek[data-expanded="false"] {
+  max-height: 7rem;
+}
+
+/* سایهٔ محوشونده در حالت جمع‌شدهٔ پیش‌نمایش تا ادامهٔ متن معلوم باشد */
+.collapse-panel--peek[data-expanded="false"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3.5rem;
+  background: linear-gradient(to top, #ffffff 12%, rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .collapse-panel {
+    transition: none;
+  }
 }
 
 body {

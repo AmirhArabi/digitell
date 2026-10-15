@@ -87,20 +87,33 @@ def product_detail_view(request, pk, slug):
     # Increment view count
     Product.objects.filter(pk=pk).update(views_count=product.views_count + 1)
 
-    # Related products from same category
-    related_products = Product.objects.filter(
-        category=product.category,
-        is_active=True
-    ).exclude(id=product.id)[:8]
+    # Related products from same category (کارت‌ها به تصویر نیاز دارند)
+    related_products = list(
+        Product.objects.filter(category=product.category, is_active=True)
+        .exclude(id=product.id)
+        .select_related('category', 'brand')
+        .prefetch_related('images')[:10]
+    )
 
     # Calculate 4-installment amount (SnappPay simulation)
     installment_amount = round(product.price / 4)
+
+    specifications = list(product.specifications.all())
+    savings = max((product.compare_at_price or product.price) - product.price, 0)
+    description_text = f"{product.short_description}\n{product.description}".strip()
 
     context = {
         'product': product,
         'related_products': related_products,
         'installment_amount': installment_amount,
         'formatted_installment': f"{installment_amount:,}",
+        'specifications': specifications,
+        'spec_summary': specifications[:6],
+        'spec_rest': specifications[6:],
+        'savings': savings,
+        'formatted_savings': f"{savings:,}",
+        'rating_pct': round(float(product.rating or 0) / 5 * 100),
+        'is_long_description': len(description_text) > 220,
     }
     return render(request, 'products/product_detail.html', context)
 

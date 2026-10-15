@@ -522,7 +522,7 @@ class ProductPageAvailabilityTests(StockReservationBase):
         url = reverse('products:product_detail', kwargs={'pk': self.product.pk, 'slug': self.product.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'عدد آماده ارسال')
+        self.assertContains(response, 'موجود در انبار (3 عدد)')
         self.assertContains(response, 'max="3"')
 
     def test_page_disables_add_to_cart_when_fully_reserved(self):
