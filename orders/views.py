@@ -1,9 +1,10 @@
 import uuid
+from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from cart.models import Cart
 from home.models import SiteSetting
-from .models import Coupon, Order, OrderItem
+from .models import Coupon, InsufficientStockError, Order, OrderItem
 
 
 def _get_cart(request):
@@ -18,6 +19,20 @@ def _get_cart(request):
 def _clear_coupon(request):
     if 'coupon_code' in request.session:
         del request.session['coupon_code']
+
+
+def _stock_error_message(error):
+    """پیام فارسی خوانا از کمبود موجودی یک یا چند قلم سفارش."""
+    parts = []
+    for shortage in error.shortages:
+        if shortage['available']:
+            parts.append(
+                f"«{shortage['title']}» فقط {shortage['available']} عدد موجود است "
+                f"(درخواست شما: {shortage['requested']} عدد)."
+            )
+        else:
+            parts.append(f"«{shortage['title']}» موجود نیست.")
+    return "موجودی انبار کافی نیست؛ " + " ".join(parts)
 
 
 def _payment_summary(request, cart):
@@ -111,46 +126,59 @@ def checkout_view(request):
                 **summary,
             })
 
-        # Create Order
-        order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            recipient_name=recipient_name,
-            recipient_phone=recipient_phone,
-            province=province,
-            city=city,
-            shipping_address=shipping_address,
-            postal_code=postal_code,
-            products_total=cart.total_price,
-            discount_amount=cart.total_discount,
-            coupon=summary['coupon'] if summary['coupon_discount'] else None,
-            coupon_code=summary['coupon_code'] if summary['coupon_discount'] else '',
-            coupon_discount=summary['coupon_discount'],
-            shipping_cost=summary['shipping_cost'],
-            shipping_method=shipping_method,
-            final_amount=summary['final_amount'],
-            payment_method=payment_method,
-            notes=notes,
-        )
+        # Create Order and reserve its stock atomically: nothing is written to the
+        # database unless every line can be reserved (no partial/oversold orders).
+        try:
+            with transaction.atomic():
+                order = Order.objects.create(
+                    user=request.user if request.user.is_authenticated else None,
+                    recipient_name=recipient_name,
+                    recipient_phone=recipient_phone,
+                    province=province,
+                    city=city,
+                    shipping_address=shipping_address,
+                    postal_code=postal_code,
+                    products_total=cart.total_price,
+                    discount_amount=cart.total_discount,
+                    coupon=summary['coupon'] if summary['coupon_discount'] else None,
+                    coupon_code=summary['coupon_code'] if summary['coupon_discount'] else '',
+                    coupon_discount=summary['coupon_discount'],
+                    shipping_cost=summary['shipping_cost'],
+                    shipping_method=shipping_method,
+                    final_amount=summary['final_amount'],
+                    payment_method=payment_method,
+                    notes=notes,
+                )
 
-        # Snapshot order items
-        for item in cart.items.all():
-            OrderItem.objects.create(
-                order=order,
-                product=item.product,
-                product_title=item.product.title,
-                product_sku=item.product.sku,
-                unit_price=item.product.price,
-                quantity=item.quantity,
-                total_price=item.line_total,
-            )
+                # Snapshot order items
+                for item in cart.items.select_related('product'):
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        product_title=item.product.title,
+                        product_sku=item.product.sku,
+                        unit_price=item.product.price,
+                        quantity=item.quantity,
+                        total_price=item.line_total,
+                    )
+
+                order.reserve_stock()
+        except InsufficientStockError as error:
+            messages.error(request, _stock_error_message(error))
+            return render(request, 'orders/checkout.html', {
+                'cart': cart,
+                'items': cart.items.select_related('product').all(),
+                **summary,
+            })
 
         if payment_method == 'mock_gateway':
             return redirect('orders:mock_payment', order_number=order.order_number)
         else:
-            # Cash on delivery
+            # Cash on delivery: the goods leave the warehouse right away.
             cart.items.all().delete()
             order.status = 'paid'
             order.save()
+            order.commit_stock()
             if order.coupon_id:
                 Coupon.objects.filter(pk=order.coupon_id).update(used_count=order.coupon.used_count + 1)
             _clear_coupon(request)
@@ -174,6 +202,9 @@ def mock_payment_view(request, order_number):
             order.transaction_id = f"TRX-{uuid.uuid4().hex[:10].upper()}"
             order.save()
 
+            # رزرو موجودی به خروج قطعی کالا از انبار تبدیل می‌شود.
+            order.commit_stock()
+
             # ثبت آمار استفاده از کد تخفیف
             if order.coupon_id:
                 Coupon.objects.filter(pk=order.coupon_id).update(used_count=order.coupon.used_count + 1)
@@ -188,7 +219,10 @@ def mock_payment_view(request, order_number):
             return redirect('orders:order_success', order_number=order.order_number)
         else:
             order.payment_status = 'failed'
+            order.status = 'cancelled'
             order.save()
+            # موجودی رزروشده آزاد می‌شود و شرط به سبد خرید بازمی‌گردد.
+            order.release_stock()
             messages.error(request, "تراکنش توسط کاربر لغو شد یا با خطا مواجه شد.")
             return redirect('cart:cart_detail')
 

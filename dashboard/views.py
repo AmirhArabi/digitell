@@ -1346,6 +1346,8 @@ def order_update_view(request, pk):
         if 'admin_note' in request.POST:
             order.admin_note = request.POST.get('admin_note', '').strip()
         order.save()
+        if order.status == 'cancelled':
+            order.release_stock()
         messages.success(request, f"سفارش {order.order_number} به‌روزرسانی شد.")
         return redirect('dashboard:order_detail', pk=order.pk)
     return redirect('dashboard:orders')
@@ -1361,6 +1363,9 @@ def order_status_view(request, pk):
         if new_status == 'cancelled' and order.payment_status == 'successful':
             order.payment_status = 'failed'
         order.save()
+        if new_status == 'cancelled':
+            # موجودی رزروشده آزاد یا کالای فروش‌رفته به انبار برگردانده می‌شود.
+            order.release_stock()
         messages.success(request, f"وضعیت سفارش {order.order_number} بروزرسانی شد.")
     else:
         messages.error(request, "وضعیت انتخابی معتبر نیست.")

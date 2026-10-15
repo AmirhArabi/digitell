@@ -1,9 +1,17 @@
 import uuid
 from django.conf import settings
 from django.core.validators import MinValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from products.models import Product
+
+
+class InsufficientStockError(Exception):
+    """موجودی کافی برای رزرو یکی از اقلام سفارش وجود ندارد."""
+
+    def __init__(self, shortages):
+        self.shortages = shortages
+        super().__init__("موجودی انبار برای تکمیل سفارش کافی نیست.")
 
 
 class Coupon(models.Model):
@@ -106,6 +114,13 @@ class Order(models.Model):
         ('pickup', 'تحویل حضوری در فروشگاه'),
     ]
 
+    STOCK_STATE_CHOICES = [
+        ('none', 'بدون رزرو'),
+        ('reserved', 'رزرو شده (در انتظار پرداخت)'),
+        ('committed', 'کسر شده از انبار'),
+        ('released', 'آزاد شده'),
+    ]
+
     order_number = models.CharField(max_length=32, unique=True, editable=False, verbose_name="شماره سفارش")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -164,6 +179,12 @@ class Order(models.Model):
         verbose_name="روش ارسال"
     )
     tracking_code = models.CharField(max_length=50, blank=True, verbose_name="کد رهگیری مرسوله")
+    stock_state = models.CharField(
+        max_length=10,
+        choices=STOCK_STATE_CHOICES,
+        default='none',
+        verbose_name="وضعیت رزرو موجودی"
+    )
 
     notes = models.TextField(blank=True, verbose_name="یادداشت مشتری")
     admin_note = models.TextField(blank=True, verbose_name="یادداشت داخلی پنل")
@@ -196,6 +217,76 @@ class Order(models.Model):
     @property
     def formatted_shipping_cost(self):
         return f"{self.shipping_cost:,}"
+
+    # ------------------------------------------------------------------
+    # چرخهٔ عمر رزرو موجودی
+    #     none   --ثبت سفارش--> reserved --پرداخت--> committed
+    #                              \--لغو/خطا--> released
+    #     committed --لغو سفارش پرداخت‌شده--> released
+    # ------------------------------------------------------------------
+    @property
+    def stock_items(self):
+        return [item for item in self.items.select_related('product') if item.product_id]
+
+    def reserve_stock(self):
+        """رزرو موجودی همهٔ اقلام سفارش به‌صورت یکپارچه (اتمیک).
+
+        اگر حتی یک قلم موجودی کافی نداشته باشد، هیچ رزروی باقی نمی‌ماند و
+        InsufficientStockError با فهرست کمبودها پرتاب می‌شود.
+        """
+        if self.stock_state != 'none':
+            return True
+
+        with transaction.atomic():
+            shortages = []
+            for item in self.stock_items:
+                if not item.product.reserve_stock(item.quantity):
+                    shortages.append({
+                        'title': item.product_title,
+                        'requested': item.quantity,
+                        'available': item.product.available_qty,
+                    })
+            if shortages:
+                # با پرتاب استثنا کل تراکنش (شامل رزروهای انجام‌شده) برمی‌گردد.
+                raise InsufficientStockError(shortages)
+
+            self.stock_state = 'reserved'
+            self.save(update_fields=['stock_state'])
+        return True
+
+    def commit_stock(self):
+        """تبدیل رزرو به خروج قطعی کالا از انبار پس از پرداخت موفق."""
+        if self.stock_state != 'reserved':
+            return False
+        with transaction.atomic():
+            for item in self.stock_items:
+                item.product.commit_stock(item.quantity)
+            self.stock_state = 'committed'
+            self.save(update_fields=['stock_state'])
+        return True
+
+    def release_stock(self):
+        """آزادسازی موجودی هنگام لغو یا ناموفق بودن پرداخت.
+
+        سفارش رزروشده فقط آزاد می‌شود و سفارش پرداخت‌شده به انبار برمی‌گردد.
+        """
+        if self.stock_state == 'reserved':
+            with transaction.atomic():
+                for item in self.stock_items:
+                    item.product.release_stock(item.quantity)
+                self.stock_state = 'released'
+                self.save(update_fields=['stock_state'])
+            return True
+
+        if self.stock_state == 'committed':
+            with transaction.atomic():
+                for item in self.stock_items:
+                    item.product.restock(item.quantity)
+                self.stock_state = 'released'
+                self.save(update_fields=['stock_state'])
+            return True
+
+        return False
 
 
 class OrderItem(models.Model):

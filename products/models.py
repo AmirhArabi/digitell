@@ -1,4 +1,5 @@
-from django.db import models
+from django.db import models, transaction
+from django.db.models import BooleanField, Case, F, Value, When
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -127,6 +128,11 @@ class Product(models.Model):
     discount_pct = models.PositiveIntegerField(default=0, verbose_name="درصد تخفیف")
 
     stock_qty = models.PositiveIntegerField(default=10, verbose_name="موجودی انبار")
+    reserved_qty = models.PositiveIntegerField(
+        default=0,
+        verbose_name="موجودی رزروشده",
+        help_text="تعداد رزروشده برای سفارش‌های در انتظار پرداخت"
+    )
     low_stock_threshold = models.PositiveIntegerField(default=5, verbose_name="حد هشدار کسری موجودی")
     is_available = models.BooleanField(default=True, verbose_name="موجود در انبار")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
@@ -167,8 +173,97 @@ class Product(models.Model):
         else:
             self.discount_pct = 0
 
-        self.is_available = self.stock_qty > 0
+        self.is_available = self.available_qty > 0
         super().save(*args, **kwargs)
+
+    # ------------------------------------------------------------------
+    # رزرو اتمیک موجودی
+    #
+    # همهٔ به‌روزرسانی‌ها با یک شرط روی مقدار فعلی ردیف انجام می‌شود تا دو سفارش
+    # هم‌زمان نتوانند یک واحد آخر را بفروشند (جلوگیری از فروش بیش از موجودی).
+    # ------------------------------------------------------------------
+    def _sync_availability(self):
+        """هم‌گام‌سازی پرچم is_available با موجودی قابل فروش (تک‌عبارتی و بدون شرط مسابقه)."""
+        Product.objects.filter(pk=self.pk).update(
+            is_available=Case(
+                When(stock_qty__gt=F('reserved_qty'), then=Value(True)),
+                default=Value(False),
+                output_field=BooleanField(),
+            )
+        )
+
+    def reserve_stock(self, quantity):
+        """رزرو موجودی برای یک سفارش پرداخت‌نشده؛ اگر موجودی آزاد کافی نباشد False."""
+        quantity = int(quantity)
+        if quantity <= 0:
+            return False
+        with transaction.atomic():
+            updated = Product.objects.filter(
+                pk=self.pk,
+                stock_qty__gte=F('reserved_qty') + quantity,
+            ).update(reserved_qty=F('reserved_qty') + quantity)
+            if not updated:
+                return False
+            self._sync_availability()
+        self.refresh_from_db(fields=['reserved_qty', 'is_available'])
+        return True
+
+    def release_stock(self, quantity):
+        """آزادسازی موجودی رزروشده (لغو یا ناموفق بودن پرداخت)."""
+        quantity = int(quantity)
+        if quantity <= 0:
+            return False
+        with transaction.atomic():
+            updated = Product.objects.filter(
+                pk=self.pk,
+                reserved_qty__gte=quantity,
+            ).update(reserved_qty=F('reserved_qty') - quantity)
+            if not updated:
+                return False
+            self._sync_availability()
+        self.refresh_from_db(fields=['reserved_qty', 'is_available'])
+        return True
+
+    def commit_stock(self, quantity):
+        """تبدیل رزرو به خروج قطعی کالا از انبار (پرداخت موفق یا پرداخت درب منزل)."""
+        quantity = int(quantity)
+        if quantity <= 0:
+            return False
+        with transaction.atomic():
+            updated = Product.objects.filter(
+                pk=self.pk,
+                reserved_qty__gte=quantity,
+            ).update(
+                stock_qty=F('stock_qty') - quantity,
+                reserved_qty=F('reserved_qty') - quantity,
+            )
+            if not updated:
+                return False
+            self._sync_availability()
+        self.refresh_from_db(fields=['stock_qty', 'reserved_qty', 'is_available'])
+        return True
+
+    def restock(self, quantity):
+        """بازگشت کالای فروش‌رفته به انبار (لغو سفارش پرداخت‌شده)."""
+        quantity = int(quantity)
+        if quantity <= 0:
+            return False
+        with transaction.atomic():
+            updated = Product.objects.filter(pk=self.pk).update(stock_qty=F('stock_qty') + quantity)
+            if not updated:
+                return False
+            self._sync_availability()
+        self.refresh_from_db(fields=['stock_qty', 'is_available'])
+        return True
+
+    @property
+    def available_qty(self):
+        """موجودی قابل فروش = موجودی انبار منهای واحدهای رزروشده."""
+        return max(self.stock_qty - self.reserved_qty, 0)
+
+    @property
+    def is_in_stock(self):
+        return self.available_qty > 0
 
     @property
     def primary_image(self):
@@ -179,7 +274,7 @@ class Product(models.Model):
 
     @property
     def is_low_stock(self):
-        return self.stock_qty <= self.low_stock_threshold
+        return self.available_qty <= self.low_stock_threshold
 
     @property
     def formatted_price(self):

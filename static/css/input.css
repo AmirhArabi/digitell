@@ -30,6 +30,30 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
+   Toast — اعلان شناور سبد خرید / موجودی
+   --------------------------------------------------------------------------- */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.toast-item {
+  animation: toast-in 0.24s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast-item {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Admin sidebar — animated icon-rail shell.
 
    وضعیت روی <body> نگه داشته می‌شود و همه انیمیشن‌ها از همان دو دادهٔ زیر پیروی می‌کنند:

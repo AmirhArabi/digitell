@@ -123,10 +123,17 @@
                             <span class="text-2xl font-black text-slate-900">{{ product.formatted_price }}</span>
                             <span class="text-xs font-medium text-slate-500">تومان</span>
                         </div>
-                        <span class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                            موجود در انبار زیترو (آماده ارسال)
-                        </span>
+                        {% if product.available_qty > 0 %}
+                            <span class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                موجود در انبار زیترو ({{ product.available_qty }} عدد آماده ارسال)
+                            </span>
+                        {% else %}
+                            <span class="text-[11px] text-rose-600 font-medium flex items-center gap-1 mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                ناموجود
+                            </span>
+                        {% endif %}
                     </div>
 
                     <!-- HTMX Add to Cart Form -->
@@ -137,15 +144,16 @@
                         class="flex items-center gap-3 w-full sm:w-auto"
                     >
                         {% csrf_token %}
-                        <div class="flex items-center border border-slate-200 rounded-xl bg-white overflow-hidden">
+                        <div class="flex items-center border border-slate-200 rounded-xl bg-white overflow-hidden" data-max="{{ product.available_qty|default:1 }}">
                             <button type="button" onclick="const q = document.getElementById('qty'); q.value = Math.max(1, parseInt(q.value) - 1)" class="px-3 py-2 text-slate-600 hover:bg-slate-100">-</button>
-                            <input type="number" id="qty" name="quantity" value="1" min="1" max="10" class="w-10 text-center text-xs font-bold border-0 focus:ring-0 p-0">
-                            <button type="button" onclick="const q = document.getElementById('qty'); q.value = Math.min(10, parseInt(q.value) + 1)" class="px-3 py-2 text-slate-600 hover:bg-slate-100">+</button>
+                            <input type="number" id="qty" name="quantity" value="1" min="1" max="{{ product.available_qty|default:1 }}" class="w-10 text-center text-xs font-bold border-0 focus:ring-0 p-0">
+                            <button type="button" onclick="const q = document.getElementById('qty'); const m = parseInt(q.closest('[data-max]').dataset.max) || 1; q.value = Math.min(m, parseInt(q.value) + 1)" class="px-3 py-2 text-slate-600 hover:bg-slate-100">+</button>
                         </div>
 
                         <button
                             type="submit"
-                            class="flex-1 sm:flex-initial px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-sm shadow-md shadow-blue-500/30 transition flex items-center justify-center gap-2"
+                            {% if product.available_qty <= 0 %}disabled{% endif %}
+                            class="flex-1 sm:flex-initial px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold text-sm shadow-md shadow-blue-500/30 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                             افزودن به سبد خرید
