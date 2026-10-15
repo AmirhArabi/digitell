@@ -10,8 +10,10 @@ class Banner(models.Model):
     ]
 
     title = models.CharField(max_length=150, verbose_name="عنوان بنر")
+    subtitle = models.CharField(max_length=250, blank=True, verbose_name="زیرعنوان / متن کمکی")
     image = models.ImageField(upload_to="banners/", verbose_name="تصویر بنر")
     link_url = models.CharField(max_length=255, default="/", verbose_name="لینک هدف")
+    button_text = models.CharField(max_length=50, blank=True, verbose_name="متن دکمه (اختیاری)")
     position = models.CharField(max_length=30, choices=POSITION_CHOICES, default='hero', verbose_name="جایگاه")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
@@ -39,6 +41,16 @@ class SiteSetting(models.Model):
 
     telegram = models.CharField(max_length=100, blank=True, default="@zitro_ir", verbose_name="تلگرام")
     instagram = models.CharField(max_length=100, blank=True, default="zitro_ir", verbose_name="اینستاگرام")
+    whatsapp = models.CharField(max_length=100, blank=True, verbose_name="واتساپ")
+
+    shipping_cost = models.BigIntegerField(default=49000, verbose_name="هزینه ارسال پیش‌فرض (تومان)")
+    free_shipping_threshold = models.BigIntegerField(
+        default=0,
+        verbose_name="آستانه ارسال رایگان (تومان)",
+        help_text="سفارش‌های بالاتر از این مبلغ ارسال رایگان دارند؛ ۰ = غیرفعال"
+    )
+    about_us = models.TextField(blank=True, verbose_name="درباره فروشگاه")
+    footer_note = models.CharField(max_length=255, blank=True, verbose_name="متن پاورقی سایت")
 
     class Meta:
         verbose_name = "تنظیمات عمومی سایت"

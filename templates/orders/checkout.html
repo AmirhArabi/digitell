@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
 {% block title %}تکمیل اطلاعات و تسویه حساب | فروشگاه زیترو{% endblock %}
 
@@ -118,6 +119,51 @@
                 </div>
             </div>
 
+            <!-- Shipping method + coupon -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+                <div>
+                    <h2 class="font-black text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100 flex items-center gap-2">
+                        <span>🚚</span>
+                        روش ارسال سفارش
+                    </h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        {% for value, label in shipping_methods %}
+                            <label class="flex items-center gap-3 p-3 rounded-2xl border border-slate-200 hover:border-slate-300 bg-white cursor-pointer">
+                                <input type="radio" name="shipping_method" value="{{ value }}" {% if forloop.first %}checked{% endif %} class="w-4 h-4 text-blue-600 focus:ring-blue-500">
+                                <span class="font-bold text-slate-800">{{ label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100">
+                    <label class="block font-semibold text-slate-700 mb-1.5 text-xs">کد تخفیف دارید؟</label>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input
+                            type="text"
+                            name="coupon_code"
+                            value="{{ coupon_code }}"
+                            dir="ltr"
+                            placeholder="ZITRO10"
+                            class="flex-1 min-w-[10rem] bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-mono uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        >
+                        <button type="submit" formaction="{% url 'orders:apply_coupon' %}" formnovalidate
+                                class="px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition">
+                            اعمال کد تخفیف
+                        </button>
+                        {% if coupon_code %}
+                            <button type="submit" formaction="{% url 'orders:apply_coupon' %}" formnovalidate name="coupon_code" value=""
+                                    class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
+                                حذف کد
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% if coupon_error %}
+                        <p class="text-[11px] text-rose-600 font-bold mt-2">{{ coupon_error }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
             <!-- Payment Method Selection -->
             <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs">
                 <h2 class="font-black text-sm text-slate-900 pb-4 mb-4 border-b border-slate-100 flex items-center gap-2">
@@ -179,15 +225,26 @@
                     </div>
                 {% endif %}
 
+                {% if coupon_discount %}
+                    <div class="flex items-center justify-between text-emerald-700 bg-emerald-50 p-2 rounded-xl">
+                        <span>کد تخفیف ({{ coupon_code }}):</span>
+                        <span class="font-bold">- {{ coupon_discount|intcomma }} تومان</span>
+                    </div>
+                {% endif %}
+
                 <div class="flex items-center justify-between text-slate-600">
                     <span>هزینه ارسال:</span>
-                    <span class="text-emerald-600 font-bold">رایگان</span>
+                    {% if shipping_cost %}
+                        <span class="font-bold text-slate-800">{{ shipping_cost|intcomma }} تومان</span>
+                    {% else %}
+                        <span class="text-emerald-600 font-bold">رایگان</span>
+                    {% endif %}
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                     <span class="font-bold text-sm text-slate-900">مبلغ نهایی:</span>
                     <div class="text-left">
-                        <span class="text-xl font-black text-blue-600">{{ cart.formatted_total_price }}</span>
+                        <span class="text-xl font-black text-blue-600">{{ final_amount|intcomma }}</span>
                         <span class="text-xs text-slate-500 mr-1">تومان</span>
                     </div>
                 </div>

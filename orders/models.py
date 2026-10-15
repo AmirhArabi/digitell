@@ -1,7 +1,82 @@
 import uuid
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.utils import timezone
 from products.models import Product
+
+
+class Coupon(models.Model):
+    """کد تخفیف قابل اعمال در فرآیند خرید."""
+
+    TYPE_CHOICES = [
+        ('percent', 'درصدی'),
+        ('amount', 'مبلغ ثابت (تومان)'),
+    ]
+
+    code = models.CharField(max_length=30, unique=True, verbose_name="کد تخفیف")
+    title = models.CharField(max_length=120, blank=True, verbose_name="عنوان کمپین")
+    discount_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='percent', verbose_name="نوع تخفیف")
+    value = models.BigIntegerField(validators=[MinValueValidator(1)], verbose_name="مقدار تخفیف")
+    min_order_amount = models.BigIntegerField(default=0, verbose_name="حداقل مبلغ سفارش (تومان)")
+    max_discount_amount = models.BigIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="سقف تخفیف (تومان)",
+        help_text="فقط برای تخفیف درصدی؛ خالی = بدون سقف"
+    )
+    max_uses = models.PositiveIntegerField(default=0, verbose_name="سقف تعداد استفاده", help_text="۰ = بدون محدودیت")
+    used_count = models.PositiveIntegerField(default=0, verbose_name="تعداد استفاده شده")
+    valid_from = models.DateTimeField(null=True, blank=True, verbose_name="شروع اعتبار")
+    valid_until = models.DateTimeField(null=True, blank=True, verbose_name="پایان اعتبار")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+    class Meta:
+        verbose_name = "کد تخفیف"
+        verbose_name_plural = "کدهای تخفیف"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.code
+
+    def save(self, *args, **kwargs):
+        self.code = (self.code or '').strip().upper()
+        super().save(*args, **kwargs)
+
+    @property
+    def is_expired(self):
+        return bool(self.valid_until and self.valid_until < timezone.now())
+
+    @property
+    def usage_left(self):
+        if not self.max_uses:
+            return None
+        return max(self.max_uses - self.used_count, 0)
+
+    def validate_for(self, amount):
+        """(مجاز بودن، پیام خطا، مبلغ تخفیف) را برمی‌گرداند."""
+        now = timezone.now()
+        if not self.is_active:
+            return False, "این کد تخفیف غیرفعال است.", 0
+        if self.valid_from and self.valid_from > now:
+            return False, "زمان استفاده از این کد تخفیف فرا نرسیده است.", 0
+        if self.valid_until and self.valid_until < now:
+            return False, "مهلت استفاده از این کد تخفیف به پایان رسیده است.", 0
+        if self.max_uses and self.used_count >= self.max_uses:
+            return False, "ظرفیت استفاده از این کد تخفیف تکمیل شده است.", 0
+        if amount < self.min_order_amount:
+            return False, f"حداقل مبلغ سفارش برای این کد {self.min_order_amount:,} تومان است.", 0
+
+        if self.discount_type == 'percent':
+            discount = (amount * self.value) // 100
+            if self.max_discount_amount:
+                discount = min(discount, self.max_discount_amount)
+        else:
+            discount = self.value
+
+        discount = min(discount, amount)
+        return True, "", int(discount)
 
 
 class Order(models.Model):
@@ -22,6 +97,13 @@ class Order(models.Model):
         ('pending', 'در انتظار پرداخت'),
         ('successful', 'پرداخت موفق'),
         ('failed', 'پرداخت ناموفق'),
+    ]
+
+    SHIPPING_CHOICES = [
+        ('post', 'پست پیشتاز'),
+        ('tipax', 'تیپاکس'),
+        ('courier', 'پیک درون‌شهری'),
+        ('pickup', 'تحویل حضوری در فروشگاه'),
     ]
 
     order_number = models.CharField(max_length=32, unique=True, editable=False, verbose_name="شماره سفارش")
@@ -64,7 +146,27 @@ class Order(models.Model):
     )
     transaction_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="کد پیگیری تراکنش")
 
+    # Discounts & shipping extras
+    coupon = models.ForeignKey(
+        Coupon,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name="کد تخفیف"
+    )
+    coupon_code = models.CharField(max_length=30, blank=True, verbose_name="کد تخفیف استفاده‌شده")
+    coupon_discount = models.BigIntegerField(default=0, verbose_name="تخفیف کد تخفیف")
+    shipping_method = models.CharField(
+        max_length=20,
+        choices=SHIPPING_CHOICES,
+        default='post',
+        verbose_name="روش ارسال"
+    )
+    tracking_code = models.CharField(max_length=50, blank=True, verbose_name="کد رهگیری مرسوله")
+
     notes = models.TextField(blank=True, verbose_name="یادداشت مشتری")
+    admin_note = models.TextField(blank=True, verbose_name="یادداشت داخلی پنل")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت سفارش")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ بروزرسانی")
 

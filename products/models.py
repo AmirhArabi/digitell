@@ -51,6 +51,50 @@ class Brand(models.Model):
         return self.name
 
 
+class CategoryAttribute(models.Model):
+    """ویژگی قابل استفاده برای محصولات یک دسته (مثلاً «حافظه داخلی» برای دسته موبایل)."""
+
+    TYPE_CHOICES = [
+        ('text', 'متن آزاد'),
+        ('number', 'عدد'),
+        ('select', 'انتخابی از بین گزینه‌ها'),
+        ('boolean', 'بله / خیر'),
+    ]
+
+    name = models.CharField(max_length=100, verbose_name="نام ویژگی")
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="attributes",
+        verbose_name="دسته‌بندی"
+    )
+    unit = models.CharField(max_length=30, blank=True, verbose_name="واحد (اختیاری)")
+    type = models.CharField(max_length=15, choices=TYPE_CHOICES, default='text', verbose_name="نوع مقدار")
+    options = models.TextField(
+        blank=True,
+        verbose_name="گزینه‌ها",
+        help_text="برای نوع انتخابی، هر گزینه را در یک خط جدید بنویسید."
+    )
+    order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
+    is_active = models.BooleanField(default=True, verbose_name="فعال")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+    class Meta:
+        verbose_name = "ویژگی"
+        verbose_name_plural = "ویژگی‌ها و مشخصات"
+        ordering = ['category__name', 'order', 'name']
+
+    def __str__(self):
+        scope = self.category.name if self.category else "عمومی"
+        return f"{self.name} ({scope})"
+
+    @property
+    def options_list(self):
+        return [line.strip() for line in self.options.splitlines() if line.strip()]
+
+
 class Product(models.Model):
     title = models.CharField(max_length=255, verbose_name="عنوان محصول")
     title_en = models.CharField(max_length=255, blank=True, verbose_name="عنوان انگلیسی")
@@ -83,6 +127,7 @@ class Product(models.Model):
     discount_pct = models.PositiveIntegerField(default=0, verbose_name="درصد تخفیف")
 
     stock_qty = models.PositiveIntegerField(default=10, verbose_name="موجودی انبار")
+    low_stock_threshold = models.PositiveIntegerField(default=5, verbose_name="حد هشدار کسری موجودی")
     is_available = models.BooleanField(default=True, verbose_name="موجود در انبار")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
     is_featured = models.BooleanField(default=False, verbose_name="محصول ویژه (صفحه اصلی)")
@@ -104,6 +149,17 @@ class Product(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
+        # Generate slug from title if not set
+        if not self.slug:
+            self.slug = slugify(self.title)
+            # slugify only transliterates ASCII; fall back to a unique ASCII-based slug
+            if not self.slug:
+                self.slug = f"product-{self.pk}" if self.pk else "unnamed-product"
+                counter = 1
+                while Product.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    counter += 1
+                    self.slug = f"product-{self.pk}-{counter}" if self.pk else f"unnamed-product-{counter}"
+
         # Calculate discount percentage automatically if compare_at_price is higher
         if self.compare_at_price and self.compare_at_price > self.price:
             diff = self.compare_at_price - self.price
@@ -120,6 +176,10 @@ class Product(models.Model):
         if not first_img:
             first_img = self.images.first()
         return first_img
+
+    @property
+    def is_low_stock(self):
+        return self.stock_qty <= self.low_stock_threshold
 
     @property
     def formatted_price(self):
