@@ -28,7 +28,7 @@ class Banner(models.Model):
 
 
 class SiteSetting(models.Model):
-    store_name = models.CharField(max_length=100, default="فروشگاه زیترو", verbose_name="نام فروشگاه")
+    store_name = models.CharField(max_length=100, default="فروشگاه دیجی تل", verbose_name="نام فروشگاه")
     slogan = models.CharField(
         max_length=200,
         default="خرید اقساطی آسان انواع کالای دیجیتال و لوازم جانبی",

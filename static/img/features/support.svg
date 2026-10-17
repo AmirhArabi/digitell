@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="headsetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C084FC"/>
+      <stop offset="50%" stop-color="#9333EA"/>
+      <stop offset="100%" stop-color="#6B21A8"/>
+    </linearGradient>
+    <linearGradient id="bubbleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#7E22CE"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F472B6"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <filter id="shadow3d" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#581C87" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Glow -->
+  <circle cx="256" cy="256" r="230" fill="url(#bgGlow)"/>
+
+  <!-- Main 3D Floating Sphere / Head -->
+  <g filter="url(#shadow3d)">
+    <circle cx="256" cy="250" r="120" fill="url(#bubbleGrad)"/>
+    <circle cx="220" cy="210" r="100" fill="#E9D5FF" opacity="0.25"/>
+    <circle cx="200" cy="180" r="40" fill="#FFFFFF" opacity="0.4"/>
+  </g>
+
+  <!-- Cute Bot Face Display Screen -->
+  <rect x="186" y="210" width="140" height="85" rx="36" fill="#1E1B4B" filter="url(#shadow3d)"/>
+  
+  <!-- Glowing Friendly Bot Eyes -->
+  <circle cx="222" cy="252" r="14" fill="#38BDF8"/>
+  <circle cx="225" cy="248" r="4" fill="#FFFFFF"/>
+  <circle cx="290" cy="252" r="14" fill="#38BDF8"/>
+  <circle cx="293" cy="248" r="4" fill="#FFFFFF"/>
+  
+  <!-- Happy Smile Curve -->
+  <path d="M 244 266 Q 256 278 268 266" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- 3D Headset Band -->
+  <path d="M 120 250 A 136 136 0 0 1 392 250" fill="none" stroke="url(#headsetGrad)" stroke-width="28" stroke-linecap="round" filter="url(#shadow3d)"/>
+  <path d="M 132 240 A 124 124 0 0 1 380 240" fill="none" stroke="#F3E8FF" stroke-width="6" opacity="0.5" stroke-linecap="round"/>
+
+  <!-- Left Headset Ear Cushion -->
+  <rect x="100" y="210" width="40" height="80" rx="20" fill="url(#accentGrad)" filter="url(#shadow3d)"/>
+  <rect x="108" y="222" width="24" height="56" rx="12" fill="#FBCFE8" opacity="0.4"/>
+
+  <!-- Right Headset Ear Cushion -->
+  <rect x="372" y="210" width="40" height="80" rx="20" fill="url(#accentGrad)" filter="url(#shadow3d)"/>
+  <rect x="380" y="222" width="24" height="56" rx="12" fill="#FBCFE8" opacity="0.4"/>
+
+  <!-- Headset Microphone Arm & Tip -->
+  <path d="M 380 270 Q 370 340 310 350" fill="none" stroke="#64748B" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="304" cy="350" r="16" fill="url(#accentGrad)" filter="url(#shadow3d)"/>
+  <circle cx="302" cy="347" r="5" fill="#FFFFFF" opacity="0.7"/>
+
+  <!-- Floating 3D Chat Bubble -->
+  <g filter="url(#shadow3d)">
+    <rect x="330" y="80" width="120" height="85" rx="28" fill="#F43F5E"/>
+    <path d="M 350 165 L 365 190 L 380 165 Z" fill="#F43F5E"/>
+    <circle cx="365" cy="122" r="8" fill="#FFFFFF"/>
+    <circle cx="390" cy="122" r="8" fill="#FFFFFF"/>
+    <circle cx="415" cy="122" r="8" fill="#FFFFFF"/>
+  </g>
+
+  <!-- Sparkles -->
+  <polygon points="110,130 115,145 130,150 115,155 110,170 105,155 90,150 105,145" fill="#FACC15"/>
+  <polygon points="410,290 413,300 423,303 413,306 410,316 407,306 397,303 407,300" fill="#38BDF8"/>
+</svg>

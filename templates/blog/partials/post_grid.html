@@ -1,0 +1,116 @@
+<div id="post-list" class="flex flex-col gap-5">
+
+    <!-- نوار وضعیت فهرست -->
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200/80 bg-white px-4 py-3 text-[11px] text-slate-600">
+        <span>
+            {% if pagination.num_pages > 1 %}
+                نمایش {{ range_from }} تا {{ range_to }} از {{ total_count }} مقاله
+            {% else %}
+                {{ total_count }} مقاله
+            {% endif %}
+        </span>
+        {% if selected_category %}
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 font-bold text-blue-700">
+                دسته: {{ selected_category.name }}
+            </span>
+        {% endif %}
+    </div>
+
+    <!-- شبکهٔ مقالات -->
+    {% if posts %}
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {% for post in posts %}
+                <article class="group flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/80 bg-white transition duration-200 hover:border-blue-200 hover:shadow-lg">
+                    <div>
+                        <div class="aspect-video overflow-hidden bg-gradient-to-tr from-slate-100 to-blue-50">
+                            {% if post.cover_image %}
+                                <img src="{{ post.cover_image.url }}" alt="{{ post.title }}"
+                                     class="h-full w-full object-cover transition duration-300 group-hover:scale-105">
+                            {% else %}
+                                <div class="flex h-full w-full items-center justify-center text-4xl text-blue-300">📰</div>
+                            {% endif %}
+                        </div>
+                        <div class="p-6">
+                            <span class="mb-2 inline-block rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+                                {{ post.category.name|default:"تکنولوژی" }}
+                            </span>
+                            <h2 class="mb-2 text-base font-bold leading-snug text-slate-900 transition group-hover:text-blue-600">
+                                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            </h2>
+                            <p class="line-clamp-3 text-xs leading-relaxed text-slate-500">
+                                {{ post.excerpt }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t border-slate-100 px-6 pb-5 pt-3 text-xs text-slate-400">
+                        <span>تحریریه دیجی تل</span>
+                        <a href="{{ post.get_absolute_url }}" class="font-bold text-blue-600 hover:underline">
+                            مطالعه کامل &larr;
+                        </a>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-white py-16 text-center">
+            <div class="mb-3 text-4xl">📰</div>
+            <p class="text-sm font-bold text-slate-700">مقاله‌ای با این فیلتر یافت نشد</p>
+            <p class="mt-1 text-xs text-slate-500">دستهٔ دیگری را انتخاب کنید یا همهٔ مقالات را ببینید.</p>
+            <a href="{% url 'blog:post_list' %}"
+               class="mt-4 inline-block rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
+                همهٔ مقالات
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- صفحه‌بندی (حفظ دستهٔ فعال) -->
+    {% if pagination.num_pages > 1 %}
+        <nav class="flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white p-3" aria-label="صفحه‌بندی مقالات">
+            {% if pagination.has_previous %}
+                <a href="{{ pagination.previous_url }}"
+                   hx-get="{{ pagination.previous_url }}"
+                   hx-target="#post-list"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-indicator="#posts-loading"
+                   class="rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                    جدیدتر
+                </a>
+            {% else %}
+                <span class="rounded-xl border border-slate-100 px-3 py-2 text-[11px] font-bold text-slate-300">جدیدتر</span>
+            {% endif %}
+
+            {% for link in pagination.links %}
+                {% if link.url %}
+                    <a href="{{ link.url }}"
+                       hx-get="{{ link.url }}"
+                       hx-target="#post-list"
+                       hx-swap="outerHTML"
+                       hx-push-url="true"
+                       hx-indicator="#posts-loading"
+                       {% if link.current %}aria-current="page"{% endif %}
+                       class="min-w-9 rounded-xl px-3 py-2 text-center text-[11px] font-bold transition {% if link.current %}bg-blue-600 text-white{% else %}border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600{% endif %}">
+                        {{ link.number }}
+                    </a>
+                {% else %}
+                    <span class="px-1.5 text-[11px] font-bold text-slate-400">…</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <a href="{{ pagination.next_url }}"
+                   hx-get="{{ pagination.next_url }}"
+                   hx-target="#post-list"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-indicator="#posts-loading"
+                   class="rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                    قدیمی‌تر
+                </a>
+            {% else %}
+                <span class="rounded-xl border border-slate-100 px-3 py-2 text-[11px] font-bold text-slate-300">قدیمی‌تر</span>
+            {% endif %}
+        </nav>
+    {% endif %}
+</div>

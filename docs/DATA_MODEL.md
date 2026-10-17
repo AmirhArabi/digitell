@@ -13,6 +13,7 @@ Coupon ─< Order (SET_NULL)
 Category ─< Product; Category ─< Category (parent/children)
 Category ─< CategoryAttribute
 Product ─< ProductImage; Product ─< ProductSpecification
+Product ─< ProductReview >─ User (SET_NULL)
 Brand ─< Product (SET_NULL)
 BlogCategory ─< Post; User ─< Post (author, SET_NULL)
 User ─< Ticket ─< TicketMessage
@@ -41,7 +42,14 @@ Banner; SiteSetting (singleton-style)
     threshold، flags فعال/ویژه/پیشنهاد، ضمانت، rating، views و
     timestampها.
 -   **ProductImage**: FK محصول، فایل، alt text، primary و ترتیب.
--   **ProductSpecification**: FK محصول، نام/مقدار/ترتیب.
+-   **ProductSpecification**: FK محصول، نام/مقدار/ترتیب. فیلترهای ویژگی
+    صفحهٔ فروشگاه به‌صورت داده‌محور از همین رکوردها ساخته می‌شوند.
+-   **ProductReview**: FK محصول (CASCADE) و FK کاربر (`SET_NULL`)،
+    `author_name`، `rating` (۱ تا ۵)، عنوان/متن، `is_approved` (پیش‌فرض
+    True)، `is_verified_purchase` و timestampها؛ قید یکتا برای هر
+    (محصول، کاربر). میانگین و تعداد نمایشی از نظرهای تأییدشده محاسبه
+    می‌شود (`Product.review_average`/`review_count`) و `Product.rating`
+    فقط در نبود نظر به‌عنوان مقدار پیش‌فرض به کار می‌رود.
 
 ## cart
 
@@ -83,7 +91,8 @@ Banner; SiteSetting (singleton-style)
 -   snapshot اقلام سفارش، تاریخچه را از تغییر بعدی محصول جدا می‌کند.
 -   حذف دسته دارای محصول در پنل مسدود است؛ FK محصول PROTECT است.
 -   ادغام سبد مهمان با کاربر وجود ندارد؛ موجودی در خرید کسر نمی‌شود.
--   rating فاقد مدل review است.
+-   پرچم `is_approved` نظرها وجود دارد اما صفحهٔ moderation در پنل ادمین
+    پیاده نشده است؛ ثبت نظر پیش‌فرض منتشر می‌شود.
 -   رفتار `Address.is_default` تکمیل نشده.
 -   شمارش دیتابیس توسعه در ممیزی: 13 محصول، 9 دسته، 10 برند، 11 سفارش، 1
     کوپن و 1 تیکت؛ این مقادیر الزام محصول نیستند.

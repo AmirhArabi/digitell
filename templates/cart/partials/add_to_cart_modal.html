@@ -1,0 +1,69 @@
+{% load static %}
+<div class="cart-modal-backdrop" id="add-to-cart-modal" onclick="if(event.target === this) closeCartModal()">
+    <div class="cart-modal-card">
+        <!-- Header: Close button (left) + Title (right in RTL) -->
+        <div class="flex items-center justify-between mb-6 pb-2 border-b border-slate-100">
+            <button type="button"
+                    onclick="closeCartModal()"
+                    class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+                    aria-label="بستن">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <span class="text-xs sm:text-sm font-bold text-slate-700">کالا به سبد خرید شما اضافه شد</span>
+        </div>
+
+        <!-- Product info row -->
+        <div class="flex items-center justify-between gap-4 mb-6">
+            <!-- Title & Price (Right/Center side) -->
+            <div class="flex-1 flex flex-col justify-center gap-3">
+                <h3 class="text-sm sm:text-base font-bold text-slate-900 leading-snug line-clamp-2">
+                    {{ product.title }}
+                </h3>
+
+                <!-- Price Row with Discount, Strikethrough & Final Price -->
+                <div class="flex items-center gap-2 flex-wrap">
+                    {% if product.discount_pct > 0 %}
+                    <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg text-xs font-black bg-rose-500 text-white shadow-xs">
+                        {{ product.discount_pct }}٪
+                    </span>
+                    {% endif %}
+
+                    {% if product.formatted_compare_price %}
+                    <del class="text-xs text-rose-400 line-through font-mono">
+                        {{ product.formatted_compare_price }}
+                    </del>
+                    {% endif %}
+
+                    <div class="flex items-baseline gap-1 mr-auto sm:mr-0">
+                        <span class="text-base sm:text-lg font-black text-slate-900 fa-num">{{ product.formatted_price }}</span>
+                        <span class="text-[11px] text-slate-500 font-medium">تومان</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Thumbnail Image (Left in LTR / Right in RTL) -->
+            <div class="w-20 h-24 sm:w-24 sm:h-28 rounded-2xl bg-slate-50 p-2 border border-slate-100 flex items-center justify-center shrink-0 shadow-xs">
+                {% if product.primary_image %}
+                <img src="{{ product.primary_image.image.url }}" alt="{{ product.title }}" class="max-h-full max-w-full object-contain">
+                {% else %}
+                <span class="text-3xl">📱</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Button: مشاهده سبد خرید -->
+        <div>
+            <a href="{% url 'cart:cart_detail' %}"
+               hx-get="{% url 'cart:cart_detail' %}"
+               hx-target="#main-content-area"
+               hx-push-url="{% url 'cart:cart_detail' %}"
+               onclick="closeCartModal()"
+               class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99] text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition-all duration-200 flex items-center justify-center text-sm sm:text-base text-center cursor-pointer">
+                مشاهده سبد خرید
+            </a>
+        </div>
+    </div>
+</div>

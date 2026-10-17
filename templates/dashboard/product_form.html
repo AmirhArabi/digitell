@@ -1,6 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 
-{% block title %}{% if product %}ویرایش محصول{% else %}افزودن محصول جدید{% endif %} | پنل زیترو{% endblock %}
+{% block title %}{% if product %}ویرایش محصول{% else %}افزودن محصول جدید{% endif %} | پنل دیجی تل{% endblock %}
 {% block header_title %}{% if product %}ویرایش اطلاعات کالا: {{ product.title }}{% else %}ثبت محصول جدید در انبار{% endif %}{% endblock %}
 
 {% block content %}
@@ -237,7 +237,7 @@
                 </label>
                 <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-orange-600">
                     <input type="checkbox" name="is_special_offer" {% if product.is_special_offer %}checked{% endif %} class="w-4 h-4 rounded text-orange-600">
-                    پیشنهاد شگفت‌انگیز زیترو
+                    پیشنهاد شگفت‌انگیز دیجی تل
                 </label>
             </div>
         </section>

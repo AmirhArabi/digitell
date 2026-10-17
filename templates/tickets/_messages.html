@@ -6,7 +6,7 @@
                         {% if m.is_staff_message %}bg-white border border-slate-200 text-slate-800 rounded-tr-sm{% else %}bg-blue-600 text-white rounded-tl-sm{% endif %}">
                 <div class="flex items-center gap-2 mb-1 text-[10px] font-bold
                             {% if m.is_staff_message %}text-slate-400{% else %}text-blue-200{% endif %}">
-                    <span>{{ m.sender_name|default:"پشتیبانی زیترو" }}</span>
+                    <span>{{ m.sender_name|default:"پشتیبانی دیجی تل" }}</span>
                     <span>•</span>
                     <span>{{ m.created_at|date:"Y/m/d H:i" }}</span>
                 </div>

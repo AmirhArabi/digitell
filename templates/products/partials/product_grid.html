@@ -1,56 +1,135 @@
 <div id="product-grid" class="flex flex-col gap-4">
-    <!-- Active Filters & Count Header -->
-    <div class="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200/80 text-xs text-slate-600">
-        <div class="flex items-center gap-2">
-            <span>تعداد کالاها:</span>
-            <span class="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg">{{ total_count }} کالا</span>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="text-slate-400 hidden sm:inline">مرتب‌سازی:</span>
-            <div class="flex items-center gap-1.5 font-medium">
-                <button
-                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=newest"
-                    hx-target="#product-grid"
-                    hx-swap="outerHTML"
-                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'newest' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
-                >جدیدترین</button>
-                <button
-                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=cheapest"
-                    hx-target="#product-grid"
-                    hx-swap="outerHTML"
-                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'cheapest' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
-                >ارزان‌ترین</button>
-                <button
-                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=expensive"
-                    hx-target="#product-grid"
-                    hx-swap="outerHTML"
-                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'expensive' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
-                >گران‌ترین</button>
-                <button
-                    hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}?sort=discount"
-                    hx-target="#product-grid"
-                    hx-swap="outerHTML"
-                    class="px-2.5 py-1 rounded-lg transition {% if current_sort == 'discount' %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-100 text-slate-600{% endif %}"
-                >بیشترین تخفیف</button>
+
+    <!-- ============ نوار ابزار کاتالوگ ============ -->
+    <div class="rounded-2xl border border-slate-200/80 bg-white p-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 text-xs text-slate-600">
+                <span class="grid h-8 w-8 place-items-center rounded-xl bg-blue-50 text-blue-600">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                </span>
+                <span>
+                    {% if pagination.num_pages > 1 %}
+                        نمایش {{ range_from }} تا {{ range_to }} از {{ total_count }} کالا
+                    {% else %}
+                        {{ total_count }} کالا
+                    {% endif %}
+                </span>
+                {% if search_query %}
+                    <span class="text-slate-300">|</span>
+                    <span class="text-slate-500">نتایج جست‌وجوی «{{ search_query }}»</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <span class="hidden shrink-0 text-[11px] text-slate-400 sm:inline">مرتب‌سازی:</span>
+                {% for option in sort_options %}
+                    <a href="{{ option.url }}"
+                       hx-get="{{ option.url }}"
+                       hx-target="#product-grid"
+                       hx-swap="outerHTML"
+                       hx-push-url="true"
+                       hx-indicator="#grid-loading"
+                       class="shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-bold transition {% if option.active %}bg-blue-600 text-white{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                        {{ option.label }}
+                    </a>
+                {% endfor %}
             </div>
         </div>
+
+        {% if active_filters %}
+            <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+                <span class="text-[11px] font-bold text-slate-500">فیلترهای فعال:</span>
+                {% for filter in active_filters %}
+                    <a href="{{ filter.url }}"
+                       hx-get="{{ filter.url }}"
+                       hx-target="#product-grid"
+                       hx-swap="outerHTML"
+                       hx-push-url="true"
+                       hx-indicator="#grid-loading"
+                       title="حذف این فیلتر"
+                       class="inline-flex items-center gap-1.5 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700 transition hover:border-blue-300">
+                        {{ filter.label }}
+                        <span class="text-sm leading-none text-blue-500">&times;</span>
+                    </a>
+                {% endfor %}
+                <a href="{{ catalog_base_url }}"
+                   hx-get="{{ catalog_base_url }}"
+                   hx-target="#product-grid"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-indicator="#grid-loading"
+                   class="text-[11px] font-bold text-rose-600 hover:underline">
+                    حذف همهٔ فیلترها
+                </a>
+            </div>
+        {% endif %}
     </div>
 
-    <!-- Grid of Products -->
+    <!-- ============ شبکهٔ محصولات ============ -->
     {% if products %}
-        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {% for product in products %}
                 {% include 'products/partials/product_card.html' with product=product %}
             {% endfor %}
         </div>
     {% else %}
-        <div class="bg-white rounded-2xl border border-slate-200/80 p-12 text-center flex flex-col items-center justify-center">
-            <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mb-3">🔍</div>
-            <h4 class="font-bold text-slate-800 text-base mb-1">کالایی یافت نشد!</h4>
-            <p class="text-xs text-slate-500 mb-4">با فیلترهای انتخابی شما محصولی موجود نیست. لطفاً فیلترها را تغییر دهید.</p>
-            <a href="{% url 'products:shop' %}" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition">
-                مشاهده همه کالاها
+        <div class="flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white p-12 text-center">
+            <div class="mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-2xl text-slate-400">🔍</div>
+            <h4 class="mb-1 text-base font-bold text-slate-800">کالایی با این فیلترها یافت نشد</h4>
+            <p class="mb-4 text-xs text-slate-500">فیلترها را تغییر دهید یا همهٔ کالاها را ببینید.</p>
+            <a href="{{ catalog_base_url }}" class="rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white transition hover:bg-blue-700">
+                حذف فیلترها
             </a>
         </div>
+    {% endif %}
+
+    <!-- ============ صفحه‌بندی (با حفظ فیلترها و مرتب‌سازی) ============ -->
+    {% if pagination.num_pages > 1 %}
+        <nav class="flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border border-slate-200/80 bg-white p-3" aria-label="صفحه‌بندی کالاها">
+            {% if pagination.has_previous %}
+                <a href="{{ pagination.previous_url }}"
+                   hx-get="{{ pagination.previous_url }}"
+                   hx-target="#product-grid"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-indicator="#grid-loading"
+                   class="rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                    قبلی
+                </a>
+            {% else %}
+                <span class="rounded-xl border border-slate-100 px-3 py-2 text-[11px] font-bold text-slate-300">قبلی</span>
+            {% endif %}
+
+            {% for link in pagination.links %}
+                {% if link.url %}
+                    <a href="{{ link.url }}"
+                       hx-get="{{ link.url }}"
+                       hx-target="#product-grid"
+                       hx-swap="outerHTML"
+                       hx-push-url="true"
+                       hx-indicator="#grid-loading"
+                       {% if link.current %}aria-current="page"{% endif %}
+                       class="min-w-9 rounded-xl px-3 py-2 text-center text-[11px] font-bold transition {% if link.current %}bg-blue-600 text-white{% else %}border border-slate-200 text-slate-600 hover:border-blue-400 hover:text-blue-600{% endif %}">
+                        {{ link.number }}
+                    </a>
+                {% else %}
+                    <span class="px-1.5 text-[11px] font-bold text-slate-400">…</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+                <a href="{{ pagination.next_url }}"
+                   hx-get="{{ pagination.next_url }}"
+                   hx-target="#product-grid"
+                   hx-swap="outerHTML"
+                   hx-push-url="true"
+                   hx-indicator="#grid-loading"
+                   class="rounded-xl border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                    بعدی
+                </a>
+            {% else %}
+                <span class="rounded-xl border border-slate-100 px-3 py-2 text-[11px] font-bold text-slate-300">بعدی</span>
+            {% endif %}
+        </nav>
     {% endif %}
 </div>

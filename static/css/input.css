@@ -1,31 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  /* --- پالت رنگی اصلی: مبتنی بر #1F5EB2 --- */
+  --color-primary-50: #EFF5FB;
+  --color-primary-100: #D9E8F6;
+  --color-primary-200: #B3D1ED;
+  --color-primary-300: #7DB2DF;
+  --color-primary-400: #4A91D1;
+  --color-primary-500: #2874BA;
+  --color-primary-600: #1F5EB2;
+  --color-primary-700: #1A4F96;
+  --color-primary-800: #153F78;
+  --color-primary-900: #102F5A;
+  --color-primary-950: #0A1D38;
 
-  --color-secondary-50: #fff7ed;
-  --color-secondary-100: #ffedd5;
-  --color-secondary-500: #f97316;
-  --color-secondary-600: #ea580c;
-  --color-secondary-700: #c2410c;
+  /* --- پالت رنگی فرعی: مبتنی بر #535458 --- */
+  --color-secondary-50: #F5F5F6;
+  --color-secondary-100: #E8E8EA;
+  --color-secondary-200: #D1D1D4;
+  --color-secondary-300: #ABABAF;
+  --color-secondary-400: #858589;
+  --color-secondary-500: #6A6A6E;
+  --color-secondary-600: #535458;
+  --color-secondary-700: #45454A;
+  --color-secondary-800: #38383D;
+  --color-secondary-900: #2B2B30;
+  --color-secondary-950: #1A1A1E;
+
+  /* --- رنگ‌های مکمل و اکسنت --- */
+  --color-accent-teal: #0EA5A5;
+  --color-accent-amber: #F59E0B;
+  --color-accent-rose: #E11D48;
+  --color-accent-emerald: #059669;
 
   --font-vazir: "Vazirmatn", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* --- پالت صفحه محصول (الهام‌گرفته از زیترو) --- */
-  --color-zitro-ink: #22292f;
-  --color-zitro-line: #e9ecef;
-  --color-zitro-deal: #f03e3e;
-  --color-zitro-cash: #00c96b;
-  --color-zitro-dark: #343a40;
+  /* --- پالت صفحه محصول --- */
+  --color-zitro-ink: #1A1A1E;
+  --color-zitro-line: #E8E8EA;
+  --color-zitro-deal: #E11D48;
+  --color-zitro-cash: #059669;
+  --color-zitro-dark: #2B2B30;
 }
 
 /* ---------------------------------------------------------------------------
@@ -36,7 +51,7 @@ html {
 }
 
 .prod-anchor {
-  scroll-margin-top: 11rem;
+  scroll-margin-top: 4.5rem;
 }
 
 .collapse-panel {
@@ -82,6 +97,30 @@ body {
   text-align: right;
   background-color: #f8fafc;
   color: #1e293b;
+}
+
+/* ---------------------------------------------------------------------------
+   صفحهٔ فروشگاه — پنل فیلتر «ابتدا فیلد، سپس ردیف‌ها»
+   --------------------------------------------------------------------------- */
+.filter-panel {
+  animation: filter-panel-in 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes filter-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-panel {
+    animation: none;
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -433,3 +472,842 @@ body[data-drawer="open"] #dash-backdrop {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ===========================================================================
+   هدر مدرن — انیمیشن‌های اسکرول + تغییر شکل هدر
+   الهام‌گرفته از motion-primitives: text-effect, morphing-popover, toolbar-dynamic
+   =========================================================================== */
+
+/* --- هدر اصلی: کاملاً سفید و بهینه --- */
+.digi-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  will-change: transform, box-shadow;
+}
+
+.digi-header.is-scrolled {
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+  border-bottom-color: rgba(226, 232, 240, 0.95);
+}
+
+/* --- لوگو --- */
+.digi-logo {
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.digi-logo:hover {
+  transform: scale(1.03);
+}
+.digi-logo-img {
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  height: 2.75rem;
+}
+.digi-header.is-scrolled .digi-logo-img {
+  height: 2.25rem;
+}
+
+/* --- نام برند در هدر: انیمیشن text-effect --- */
+.digi-brand-text {
+  overflow: hidden;
+  max-width: 10rem;
+  transition: max-width 0.4s cubic-bezier(0.32, 0.72, 0, 1),
+              opacity 0.3s ease;
+}
+.digi-header.is-scrolled .digi-brand-text {
+  max-width: 0;
+  opacity: 0;
+}
+
+/* --- دکمه‌های هدر: Dynamic Toolbar اینسپایرد --- */
+.digi-header-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  color: var(--color-secondary-600);
+  transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden;
+}
+.digi-header-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--color-primary-50) 0%, var(--color-primary-100) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.digi-header-btn:hover::before {
+  opacity: 1;
+}
+.digi-header-btn:hover {
+  color: var(--color-primary-600);
+  transform: translateY(-1px);
+}
+.digi-header-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+.digi-header-btn svg,
+.digi-header-btn img {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- بج تعداد سبد خرید --- */
+.digi-cart-badge {
+  position: absolute;
+  top: -0.25rem;
+  left: -0.25rem; /* RTL aware via inset */
+  inset-inline-start: auto;
+  inset-inline-end: -0.25rem;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--color-accent-rose) 0%, #ff4573 100%);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3);
+  animation: badge-pop 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+@keyframes badge-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* --- نوار دسته‌بندی: ثابت در بالای هیروسکشن و غیرشناور --- */
+.digi-catbar {
+  position: relative;
+  z-index: 20;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease, max-height 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+  max-height: 4rem;
+}
+
+.digi-catbar.is-viewport-hidden {
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  visibility: hidden;
+  max-height: 0;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom-width: 0 !important;
+}
+
+.digi-catbar-static {
+  position: relative;
+  z-index: 10;
+}
+
+.digi-cat-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0;
+  transition: color 0.2s ease;
+}
+
+.digi-cat-link svg {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  opacity: 0.82;
+  transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease, color 0.2s ease;
+}
+
+.digi-cat-link:hover svg {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.digi-cat-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--color-primary-600);
+  border-radius: 1px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.digi-cat-link:hover::after,
+.digi-cat-link.is-active::after {
+  transform: scaleX(1);
+}
+
+/* ===========================================================================
+   پاپ‌آپ جستجو — Morphing Popover اینسپایرد
+   =========================================================================== */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5rem;
+  background: rgba(10, 29, 56, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1),
+              visibility 0.35s;
+}
+.search-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.search-popup {
+  width: min(38rem, calc(100vw - 2rem));
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 1.25rem;
+  border: 1px solid rgba(31, 94, 178, 0.12);
+  box-shadow:
+    0 4px 6px rgba(31, 94, 178, 0.04),
+    0 24px 64px rgba(10, 29, 56, 0.16);
+  transform: scale(0.94) translateY(-10px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow: hidden;
+}
+.search-overlay.is-open .search-popup {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+.search-popup-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 1rem 1.25rem;
+  padding-inline-start: 3rem;
+  font-size: 1rem;
+  font-family: var(--font-vazir);
+  color: var(--color-secondary-950);
+  direction: rtl;
+}
+.search-popup-input::placeholder {
+  color: var(--color-secondary-400);
+}
+
+.search-popup-results {
+  max-height: 24rem;
+  overflow-y: auto;
+  border-top: 1px solid var(--color-secondary-100);
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+}
+.search-result-item:hover {
+  background-color: var(--color-primary-50);
+}
+
+.search-category-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-secondary-400);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* اعداد فارسی */
+.fa-num {
+  font-feature-settings: "ss02" on;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- نوار ناوبری پایین (موبایل) --- */
+.digi-mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border-top: 1px solid rgba(31, 94, 178, 0.08);
+  box-shadow: 0 -4px 24px rgba(10, 29, 56, 0.06);
+}
+
+.digi-mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.375rem 0;
+  color: var(--color-secondary-500);
+  transition: color 0.2s ease;
+  position: relative;
+}
+.digi-mobile-nav-item.is-active,
+.digi-mobile-nav-item:hover {
+  color: var(--color-primary-600);
+}
+.digi-mobile-nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--color-primary-600);
+}
+
+/* ===========================================================================
+   فوتر مدرن
+   =========================================================================== */
+.digi-footer {
+  background: linear-gradient(180deg, #F5F5F6 0%, #ffffff 100%);
+  border-top: 1px solid var(--color-secondary-100);
+}
+
+.digi-footer-feature-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1),
+              box-shadow 0.3s ease;
+}
+.digi-footer-feature-icon:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(31, 94, 178, 0.12);
+}
+
+/* --- Shimmer Loading برای جستجو --- */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.search-shimmer {
+  background: linear-gradient(90deg, var(--color-secondary-100) 25%, var(--color-secondary-50) 50%, var(--color-secondary-100) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease infinite;
+  border-radius: 0.5rem;
+}
+
+/* --- Keyboard shortcut hint --- */
+.kbd-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--color-secondary-200);
+  background: var(--color-secondary-50);
+  color: var(--color-secondary-400);
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 1;
+  font-family: system-ui, sans-serif;
+}
+
+/* ===========================================================================
+   طراحی اپ‌بار بر اساس media/appbar.png با گسترش متحرک سرچ‌باکس
+   =========================================================================== */
+
+/* ردیف اصلی هدر */
+.appbar-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  width: 100%;
+  position: relative;
+  transition: gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (max-width: 767.98px) {
+  .is-search-active.appbar-main-row {
+    gap: 0;
+  }
+}
+
+/* آیتم‌های جمع‌شونده دو طرف (لوگو در راست، آیکون‌ها در چپ) */
+.appbar-collapsible-item {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  max-width: 260px;
+  opacity: 1;
+  transform: scale(1);
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#appbar-logo-side {
+  transform-origin: right center;
+}
+
+#appbar-actions-side {
+  transform-origin: left center;
+}
+
+/* وقتی سرچ فعال می‌شود، فقط در موبایل آیتم‌های دو طرف جمع می‌شوند */
+@media (max-width: 767.98px) {
+  .is-search-active #appbar-logo-side,
+  .is-search-active #appbar-actions-side {
+    max-width: 0 !important;
+    opacity: 0 !important;
+    transform: scale(0.8) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* کانتینر سرچ‌باکس */
+.appbar-search-wrapper {
+  flex: 1 1 0%;
+  min-width: 0;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 45;
+}
+
+/* ظاهر جعبه سرچ بر اساس media/appbar.png */
+.appbar-search-box {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 2.625rem;
+  background-color: #f0f2f5;
+  border-radius: 0.875rem;
+  border: 1px solid transparent;
+  padding: 0 0.75rem;
+  transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.appbar-search-box:hover {
+  background-color: #e9ecf0;
+}
+
+.is-search-active .appbar-search-box {
+  background-color: #ffffff;
+  border-color: rgba(31, 94, 178, 0.35);
+  box-shadow: 0 4px 20px rgba(31, 94, 178, 0.08), 0 0 0 3px rgba(31, 94, 178, 0.1);
+  cursor: text;
+}
+
+/* دکمه بازگشت سرچ */
+.appbar-search-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  pointer-events: none;
+  flex-shrink: 0;
+  color: #475569;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.2s ease;
+}
+
+.appbar-search-back-btn:hover {
+  color: #0f172a;
+}
+
+@media (max-width: 767.98px) {
+  .is-search-active .appbar-search-back-btn {
+    max-width: 2.25rem;
+    opacity: 1;
+    margin-left: 0.5rem;
+    pointer-events: auto;
+  }
+}
+
+/* آیکون ذره‌بین */
+.appbar-search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #64748b;
+  margin-left: 0.5rem;
+  transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+@media (max-width: 767.98px) {
+  .is-search-active .appbar-search-icon {
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+  }
+}
+
+/* اینپوت ورودی متن */
+.appbar-search-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #1e293b;
+  padding: 0;
+  direction: rtl;
+  font-family: var(--font-vazir);
+}
+
+.appbar-search-input::placeholder {
+  color: #4b5563;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  opacity: 0.9;
+}
+
+/* دکمه پاک کردن ورودی */
+.appbar-search-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.appbar-search-clear-btn:hover {
+  color: #334155;
+  background-color: #f1f5f9;
+}
+
+/* بج سبز سبد خرید دقیقاً مشابه media/appbar.png */
+.appbar-cart-badge {
+  position: absolute;
+  top: -0.2rem;
+  inset-inline-end: -0.25rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  border-radius: 9999px;
+  background-color: #00c58e;
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0, 197, 142, 0.4);
+  animation: badge-pop 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* دکمه‌های اکشن */
+.appbar-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  color: #334155;
+  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.appbar-action-btn:hover {
+  color: var(--color-primary-600);
+  background-color: #f1f5f9;
+}
+
+.appbar-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* بک‌دراپ تیره هنگام باز بودن جستجو */
+.appbar-search-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 35;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.appbar-search-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* دراپ‌داون نتایج جستجو */
+.appbar-search-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  max-height: calc(100vh - 6rem);
+  z-index: 55;
+  animation: appbarDropdownFade 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.is-search-active .appbar-search-dropdown {
+  display: block;
+}
+
+@keyframes appbarDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===========================================================================
+   مارکی متحرک برندها (حرکت از راست به چپ)
+   =========================================================================== */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.marquee-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 0.5rem 0;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.marquee-content {
+  display: flex;
+  width: max-content;
+  gap: 1rem;
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+.marquee-content:hover {
+  animation-play-state: paused;
+}
+
+/* ===========================================================================
+   کارت‌های سه‌بعدی انیمیشنی (Feature Highlights)
+   =========================================================================== */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.5deg);
+  }
+}
+
+.feature-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 1.25rem;
+  padding: 1.5rem 1rem;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(31, 94, 178, 0.25);
+  box-shadow: 0 12px 28px -4px rgba(31, 94, 178, 0.1);
+}
+
+.feature-3d-img {
+  width: 5rem;
+  height: 5rem;
+  object-fit: contain;
+  margin-bottom: 0.875rem;
+  animation: float-gentle 4s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
+  will-change: transform;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.08));
+}
+
+.feature-card:nth-child(2) .feature-3d-img {
+  animation-delay: -1s;
+}
+.feature-card:nth-child(3) .feature-3d-img {
+  animation-delay: -2s;
+}
+.feature-card:nth-child(4) .feature-3d-img {
+  animation-delay: -3s;
+}
+
+.feature-card:hover .feature-3d-img {
+  transform: translateY(-8px) scale(1.12);
+  filter: drop-shadow(0 14px 20px rgba(0, 0, 0, 0.16));
+}
+
+/* ===========================================================================
+   دکمه شناور بازگشت به بالای صفحه (پایین سمت راست)
+   =========================================================================== */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1rem;
+  z-index: 45;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  color: #1F5EB2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateY(16px) scale(0.9);
+  pointer-events: none;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .back-to-top-btn {
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.125rem;
+    height: 3.125rem;
+  }
+}
+
+.back-to-top-btn.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.back-to-top-btn:hover {
+  background-color: #1F5EB2;
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 8px 24px rgba(31, 94, 178, 0.28);
+}
+
+.back-to-top-btn:active {
+  transform: translateY(0) scale(0.96);
+}
+
+/* ===========================================================================
+   پاپ‌آپ مدال افزودن به سبد خرید (منطبق بر الگوی ارائه‌شده)
+   =========================================================================== */
+.cart-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: modalBackdropFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cart-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 32rem;
+  background-color: #ffffff;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: modalScaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (min-width: 640px) {
+  .cart-modal-card {
+    padding: 2rem;
+    border-radius: 1.75rem;
+  }
+}
+
+@keyframes modalBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+
+

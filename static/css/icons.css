@@ -1,0 +1,37 @@
+/* ============================================================================
+   DigiTell — SVG Icon System
+   آیکن‌های اختصاصی و یکدست با استایل مدرن و لوکس
+   تمام آیکن‌ها از استروک ۱.۵ پیکسل و linecap گرد استفاده می‌کنند
+   ============================================================================ */
+
+/* --- آیکن‌های هدر --- */
+.icon-search,
+.icon-user,
+.icon-cart,
+.icon-menu,
+.icon-close,
+.icon-chevron-down,
+.icon-home,
+.icon-category,
+.icon-blog,
+.icon-ticket,
+.icon-dashboard,
+.icon-login,
+.icon-phone,
+.icon-lightning,
+.icon-check,
+.icon-fire,
+.icon-shield,
+.icon-coin,
+.icon-bolt,
+.icon-headset,
+.icon-filter,
+.icon-price,
+.icon-status,
+.icon-tag,
+.icon-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

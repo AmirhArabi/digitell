@@ -16,7 +16,7 @@ class Command(BaseCommand):
             username="admin",
             defaults={
                 "first_name": "مدیر",
-                "last_name": "زیترو",
+                "last_name": "دیجی تل",
                 "email": "admin@zitro.ir",
                 "phone_number": "09120000000",
                 "is_staff": True,
@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         # 2. Site settings
         settings = SiteSetting.get_settings()
-        settings.store_name = "فروشگاه زیترو"
+        settings.store_name = "فروشگاه دیجی تل"
         settings.slogan = "خرید آنلاین و اقساطی انواع گوشی موبایل، لپ تاپ و لوازم دیجیتال"
         settings.phone = "۰۲۱-۹۱۰۹۸۷۶۵"
         settings.email = "support@zitro.ir"
@@ -59,15 +59,15 @@ class Command(BaseCommand):
 
         # 4. Categories
         categories_data = [
-            ("گوشی موبایل", "smartphones", 1, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>'),
-            ("تبلت", "tablets", 2, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>'),
-            ("لپ تاپ", "laptops", 3, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'),
-            ("ساعت هوشمند", "smartwatches", 4, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'),
-            ("گیمینگ", "gaming", 5, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path></svg>'),
-            ("هدفون و هندزفری", "headphones", 6, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>'),
-            ("اسپیکر و بلندگو", "speakers", 7, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"></path></svg>'),
-            ("لوازم جانبی موبایل", "accessories", 8, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>'),
-            ("تجهیزات ذخیره‌سازی", "storage", 9, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>'),
+            ("گوشی موبایل", "smartphones", 1, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="3" ry="3"></rect><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"></line><line x1="10" y1="5" x2="14" y2="5"></line></svg>'),
+            ("تبلت", "tablets", 2, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18" stroke-width="2"></line></svg>'),
+            ("لپ تاپ", "laptops", 3, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v8H4V6z"></path><path d="M2 17a2 2 0 012-2h16a2 2 0 012 2v1a1 1 0 01-1 1H3a1 1 0 01-1-1v-1z"></path></svg>'),
+            ("ساعت هوشمند", "smartwatches", 4, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="6" y="7" width="12" height="10" rx="3"></rect><path d="M9 7V3h6v4"></path><path d="M9 17v4h6v-4"></path><circle cx="12" cy="12" r="1.5"></circle></svg>'),
+            ("گیمینگ", "gaming", 5, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="6"></rect><path d="M6 12h4m-2-2v4"></path><line x1="15" y1="11" x2="15.01" y2="11" stroke-width="2"></line><line x1="18" y1="13" x2="18.01" y2="13" stroke-width="2"></line></svg>'),
+            ("هدفون و هندزفری", "headphones", 6, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0118 0v6"></path><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path></svg>'),
+            ("اسپیکر و بلندگو", "speakers", 7, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="3"></rect><circle cx="12" cy="7" r="2"></circle><circle cx="12" cy="15" r="4"></circle><circle cx="12" cy="15" r="1.5"></circle></svg>'),
+            ("لوازم جانبی موبایل", "accessories", 8, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M12 2v6m-4-6v6m-3 3h14a1 1 0 011 1v2a6 6 0 01-6 6h-4a6 6 0 01-6-6v-2a1 1 0 011-1z"></path><path d="M12 18v4"></path></svg>'),
+            ("تجهیزات ذخیره‌سازی", "storage", 9, '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="2"></rect><rect x="3" y="14" width="18" height="6" rx="2"></rect><circle cx="7" cy="7" r="1" fill="currentColor"></circle><circle cx="7" cy="17" r="1" fill="currentColor"></circle><line x1="14" y1="7" x2="17" y2="7"></line><line x1="14" y1="17" x2="17" y2="17"></line></svg>'),
         ]
         categories = {}
         for name, slug, order, icon in categories_data:
@@ -253,7 +253,7 @@ class Command(BaseCommand):
                     "is_featured": p_data["is_featured"],
                     "is_special_offer": p_data["is_special"],
                     "stock_qty": 15,
-                    "short_description": f"{p_data['title']} با ضمانت اصالت فیزیکی و تحویل فوری زیترو.",
+                    "short_description": f"{p_data['title']} با ضمانت اصالت فیزیکی و تحویل فوری دیجی تل.",
                     "description": f"مشخصات و ویژگی‌های اصلی این محصول شامل بهترین متریال، آخرین تکنولوژی روز و گارانتی معتبر شرکتی می‌باشد.",
                 }
             )
@@ -284,11 +284,11 @@ class Command(BaseCommand):
         Post.objects.get_or_create(
             slug="zitro-installment-purchase-guide",
             defaults={
-                "title": "راهنمای خرید اقساطی گوشی و لپ تاپ از فروشگاه زیترو بدون ضامن",
+                "title": "راهنمای خرید اقساطی گوشی و لپ تاپ از فروشگاه دیجی تل بدون ضامن",
                 "category": b_cat,
                 "author": admin,
-                "excerpt": "شرایط خرید اقساطی کالای دیجیتال از فروشگاه زیترو با همکاری سامانه‌های اعتباری و اسنپ‌پی.",
-                "content": "در فروشگاه زیترو می‌توانید به سادگی و بدون نیاز به چک و ضامن، انواع گوشی، لپ تاپ و لوازم جانبی را به صورت اقساطی تهیه کنید.",
+                "excerpt": "شرایط خرید اقساطی کالای دیجیتال از فروشگاه دیجی تل با همکاری سامانه‌های اعتباری و اسنپ‌پی.",
+                "content": "در فروشگاه دیجی تل می‌توانید به سادگی و بدون نیاز به چک و ضامن، انواع گوشی، لپ تاپ و لوازم جانبی را به صورت اقساطی تهیه کنید.",
             }
         )
 

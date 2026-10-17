@@ -1,5 +1,6 @@
+from django.conf import settings
 from django.db import models, transaction
-from django.db.models import BooleanField, Case, F, Value, When
+from django.db.models import Avg, BooleanField, Case, F, Value, When
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -266,6 +267,23 @@ class Product(models.Model):
         return self.available_qty > 0
 
     @property
+    def approved_reviews(self):
+        return self.reviews.filter(is_approved=True)
+
+    @property
+    def review_count(self):
+        """تعداد نظرهای تأییدشده (برای نمایش «تعداد نظرات»)."""
+        return self.approved_reviews.count()
+
+    @property
+    def review_average(self):
+        """میانگین امتیاز نظرهای تأییدشده؛ در نبود نظر، همان rating پیش‌فرض."""
+        average = self.approved_reviews.aggregate(value=Avg('rating'))['value']
+        if average is None:
+            return round(float(self.rating or 0), 1)
+        return round(float(average), 1)
+
+    @property
     def primary_image(self):
         first_img = self.images.filter(is_primary=True).first()
         if not first_img:
@@ -288,6 +306,60 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('products:product_detail', kwargs={'pk': self.pk, 'slug': self.slug})
+
+
+class ProductReview(models.Model):
+    """نظر و امتیاز کاربران روی یک محصول.
+
+    امتیاز نمایشی محصول از میانگین نظرهای تأییدشده محاسبه می‌شود؛ فیلد
+    ``Product.rating`` تنها مقدار پیش‌فرض/دستی است و وقتی نظری ثبت نشده باشد
+    به کار می‌رود.
+    """
+
+    RATING_CHOICES = [(value, str(value)) for value in range(1, 6)]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="reviews",
+        verbose_name="محصول"
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="product_reviews",
+        verbose_name="کاربر"
+    )
+    author_name = models.CharField(max_length=120, verbose_name="نام نمایشی")
+    rating = models.PositiveSmallIntegerField(choices=RATING_CHOICES, verbose_name="امتیاز")
+    title = models.CharField(max_length=150, blank=True, verbose_name="عنوان نظر")
+    body = models.TextField(verbose_name="متن نظر")
+    is_approved = models.BooleanField(default=True, verbose_name="تأییدشده")
+    is_verified_purchase = models.BooleanField(default=False, verbose_name="خریدار محصول")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ثبت")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="تاریخ ویرایش")
+
+    class Meta:
+        verbose_name = "نظر محصول"
+        verbose_name_plural = "نظرات محصولات"
+        ordering = ['-created_at', '-id']
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'user'],
+                condition=models.Q(user__isnull=False),
+                name='unique_review_per_product_per_user',
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.product.title} — {self.rating}/5"
+
+    @property
+    def star_range(self):
+        """۱ تا امتیاز ثبت‌شده (برای رندر ستاره‌ها در قالب)."""
+        return range(self.rating)
 
 
 class ProductImage(models.Model):

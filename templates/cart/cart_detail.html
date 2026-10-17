@@ -1,31 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}سبد خرید | فروشگاه زیترو{% endblock %}
+{% block title %}سبد خرید | فروشگاه دیجی تل{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-
-    <!-- Progress steps -->
-    <div class="max-w-xl mx-auto mb-10">
-        <div class="flex items-center justify-between text-xs font-bold text-slate-500">
-            <div class="flex items-center gap-2 text-blue-600">
-                <span class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs">۱</span>
-                <span>سبد خرید</span>
-            </div>
-            <div class="flex-1 h-0.5 bg-slate-200 mx-4"></div>
-            <div class="flex items-center gap-2">
-                <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs">۲</span>
-                <span>مشخصات و ارسال</span>
-            </div>
-            <div class="flex-1 h-0.5 bg-slate-200 mx-4"></div>
-            <div class="flex items-center gap-2">
-                <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs">۳</span>
-                <span>پرداخت و فاکتور</span>
-            </div>
-        </div>
-    </div>
-
-    {% include 'cart/partials/cart_table.html' %}
-
-</div>
+{% include 'cart/partials/cart_full_partial.html' %}
 {% endblock %}

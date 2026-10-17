@@ -35,8 +35,8 @@ def index_view(request):
         category__slug__in=['laptops', 'gaming']
     ).select_related('category', 'brand')[:4]
 
-    # Brands
-    brands = Brand.objects.filter(is_active=True).order_by('order')[:8]
+    # Brands for marquee
+    brands = Brand.objects.filter(is_active=True).order_by('order')
 
     # Latest blog posts
     latest_posts = Post.objects.filter(is_published=True).select_related('category')[:3]

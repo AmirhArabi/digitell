@@ -1,117 +1,264 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    {% if selected_category %}{{ selected_category.name }} | {% endif %}فروشگاه زیترو
+    {% if selected_category %}{{ selected_category.name }} | {% endif %}فروشگاه دیجی تل
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+<div class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-6">
 
     <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6">
+    <nav class="flex flex-wrap items-center gap-2 text-xs text-slate-500 mb-4">
         <a href="{% url 'home:index' %}" class="hover:text-blue-600 transition">خانه</a>
-        <span>/</span>
+        <span class="text-slate-300">/</span>
+        <a href="{% url 'products:category_list' %}" class="hover:text-blue-600 transition">دسته‌بندی‌ها</a>
+        <span class="text-slate-300">/</span>
         <a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition">فروشگاه</a>
         {% if selected_category %}
-            <span>/</span>
-            <span class="text-slate-800 font-bold">{{ selected_category.name }}</span>
+            <span class="text-slate-300">/</span>
+            <span class="text-zitro-ink font-bold">{{ selected_category.name }}</span>
         {% endif %}
     </nav>
 
+    <!-- Catalog header -->
+    <header class="mb-5 overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-l from-blue-50 via-white to-white p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="min-w-0">
+                <h1 class="text-lg sm:text-2xl font-black text-zitro-ink">
+                    {% if selected_category %}{{ selected_category.name }}{% else %}همهٔ کالاهای دیجیتال{% endif %}
+                </h1>
+                <p class="mt-1 text-xs text-slate-500">
+                    {% if selected_category %}
+                        {{ total_count }} کالا در این دسته
+                    {% else %}
+                        {{ total_count }} کالا با امکان فیلتر بر اساس برند، ویژگی‌ها و قیمت
+                    {% endif %}
+                </p>
+            </div>
+            <a href="{% url 'products:category_list' %}"
+               class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                مشاهدهٔ همهٔ دسته‌بندی‌ها
+            </a>
+        </div>
+
+        {% if category_children %}
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                <span class="text-[11px] font-bold text-slate-500">زیردسته‌ها:</span>
+                {% for child in category_children %}
+                    <a href="{{ child.get_absolute_url }}"
+                       class="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-bold text-slate-600 transition hover:border-blue-400 hover:text-blue-600">
+                        {{ child.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </header>
+
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
 
-        <!-- Sidebar Filters -->
-        <aside class="lg:col-span-1 bg-white p-5 rounded-2xl border border-slate-200/80 space-y-6 sticky top-20 shadow-xs">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
-                <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
-                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                    فیلترهای پیشرفته
-                </h3>
-                <a href="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}" class="text-[11px] text-blue-600 hover:underline">
-                    حذف فیلترها
-                </a>
-            </div>
+        <!-- ===================== فیلترها: ابتدا فیلد، سپس ردیف‌ها ===================== -->
+        <aside class="lg:col-span-1 lg:sticky lg:top-20">
+            <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
 
-            <!-- Categories Tree -->
-            <div class="space-y-2">
-                <h4 class="text-xs font-bold text-slate-800">دسته‌بندی‌ها</h4>
-                <div class="space-y-1 text-xs max-h-56 overflow-y-auto pl-1">
-                    <a href="{% url 'products:shop' %}" class="flex items-center justify-between py-1.5 px-2 rounded-lg {% if not selected_category %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-50 text-slate-600{% endif %}">
-                        <span>همه دسته‌بندی‌ها</span>
-                    </a>
-                    {% for cat in categories %}
-                        <a href="{% url 'products:category_detail' slug=cat.slug %}" class="flex items-center justify-between py-1.5 px-2 rounded-lg {% if selected_category.slug == cat.slug %}bg-blue-50 text-blue-600 font-bold{% else %}hover:bg-slate-50 text-slate-600{% endif %}">
-                            <span>{{ cat.name }}</span>
-                            <span class="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">{{ cat.products.count }}</span>
-                        </a>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <form
-                id="filter-form"
-                hx-get="{% if selected_category %}{% url 'products:category_detail' slug=selected_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}"
-                hx-target="#product-grid"
-                hx-swap="outerHTML"
-                hx-trigger="change"
-                class="space-y-5"
-            >
-                <!-- Only in stock switch -->
-                <div class="pt-4 border-t border-slate-100">
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <span class="text-xs font-semibold text-slate-800">فقط کالاهای موجود</span>
-                        <input type="checkbox" name="in_stock" value="1" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
-                    </label>
+                <div class="flex items-center justify-between border-b border-slate-100 px-4 py-3.5">
+                    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink">
+                        <svg class="h-4 w-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        فیلترها
+                    </h2>
+                    <a href="{{ catalog_base_url }}" class="text-[11px] font-bold text-blue-600 hover:underline">حذف همه</a>
                 </div>
 
-                <!-- Special Offers switch -->
-                <div class="pt-3 border-t border-slate-100">
-                    <label class="flex items-center justify-between cursor-pointer">
-                        <span class="text-xs font-semibold text-orange-600">فقط تخفیف‌های ویژه</span>
-                        <input type="checkbox" name="special" value="1" class="w-4 h-4 rounded text-orange-600 focus:ring-orange-500 border-slate-300">
-                    </label>
-                </div>
+                <form
+                    id="filter-form"
+                    hx-get="{{ catalog_base_url }}"
+                    hx-target="#product-grid"
+                    hx-swap="outerHTML"
+                    hx-trigger="change delay:150ms"
+                    hx-push-url="true"
+                    hx-indicator="#grid-loading"
+                    hx-include="this"
+                    method="get"
+                    action="{{ catalog_base_url }}"
+                >
+                    <input type="hidden" name="q" value="{{ search_query }}">
 
-                <!-- Brands -->
-                <div class="pt-4 border-t border-slate-100 space-y-2">
-                    <h4 class="text-xs font-bold text-slate-800">برندها</h4>
-                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                        {% for b in brands %}
-                            <label class="flex items-center justify-between text-xs text-slate-600 hover:text-slate-900 cursor-pointer">
-                                <span class="flex items-center gap-2">
-                                    <input type="checkbox" name="brand" value="{{ b.slug }}" class="w-3.5 h-3.5 rounded text-blue-600 focus:ring-blue-500 border-slate-300">
-                                    {{ b.name }}
-                                </span>
-                                <span class="text-[10px] text-slate-400 font-mono">{{ b.name_en }}</span>
-                            </label>
+                    <ul class="divide-y divide-slate-100">
+                        {% for field in filter_fields %}
+                            <li>
+                                <button
+                                    type="button"
+                                    data-filter-toggle="{{ field.key }}"
+                                    aria-expanded="false"
+                                    aria-controls="filter-panel-{{ field.key }}"
+                                    class="group flex w-full items-center gap-2.5 px-4 py-3.5 text-right transition hover:bg-slate-50"
+                                >
+                                    <span class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-blue-50 group-hover:text-blue-600">
+                                        {% if field.type == 'price' %}
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V6m0 10v2"></path></svg>
+                                        {% elif field.type == 'status' %}
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944 11.955 11.955 0 013.382 5.984A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                        {% elif field.type == 'link' %}
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                                        {% else %}
+                                            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a2 2 0 011.414.586l7 7a2 2 0 010 2.828l-6 6a2 2 0 01-2.828 0l-7-7A2 2 0 013 11V5a2 2 0 012-2h2z"></path></svg>
+                                        {% endif %}
+                                    </span>
+
+                                    <span class="min-w-0 flex-1">
+                                        <span class="block text-xs font-bold text-zitro-ink">{{ field.label }}</span>
+                                        {% if field.hint %}
+                                            <span class="mt-0.5 block truncate text-[10px] text-slate-400">{{ field.hint }}</span>
+                                        {% endif %}
+                                    </span>
+
+                                    {% if field.selected_count %}
+                                        <span class="shrink-0 rounded-full bg-blue-600 px-1.5 py-0.5 text-[10px] font-black text-white">{{ field.selected_count }}</span>
+                                    {% endif %}
+                                    <svg data-chevron class="h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+
+                                <div id="filter-panel-{{ field.key }}" data-filter-panel="{{ field.key }}" class="filter-panel hidden bg-slate-50/70 px-4 pb-4 pt-3">
+                                    {% if field.type == 'link' %}
+                                        <div class="space-y-1">
+                                            {% if selected_category %}
+                                                <a href="{% url 'products:shop' %}{% if search_query %}?q={{ search_query|urlencode }}{% endif %}"
+                                                   class="flex items-center justify-between rounded-xl px-2.5 py-2 text-[11px] font-bold transition hover:bg-white text-slate-600">
+                                                    <span>همهٔ کالاها</span>
+                                                </a>
+                                            {% endif %}
+                                            {% for item in field.values %}
+                                                <a href="{{ item.url }}"
+                                                   class="flex items-center justify-between rounded-xl px-2.5 py-2 text-[11px] transition hover:bg-white {% if item.active %}bg-blue-50 font-bold text-blue-600{% else %}text-slate-600{% endif %}">
+                                                    <span class="truncate">{{ item.label }}</span>
+                                                    <span class="shrink-0 font-mono text-[10px] text-slate-400">{{ item.count }}</span>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif field.type == 'checkbox' %}
+                                        <div class="max-h-60 space-y-0.5 overflow-y-auto pl-1">
+                                            {% for item in field.values %}
+                                                <label class="flex cursor-pointer items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-[11px] text-slate-600 transition hover:bg-white">
+                                                    <span class="flex min-w-0 items-center gap-2">
+                                                        <input type="checkbox" name="{{ field.param }}" value="{{ item.value }}" {% if item.selected %}checked{% endif %}
+                                                               class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                        <span class="truncate">{{ item.label }}</span>
+                                                    </span>
+                                                    {% if item.meta %}
+                                                        <span class="shrink-0 font-mono text-[10px] text-slate-400" dir="ltr">{{ item.meta }}</span>
+                                                    {% else %}
+                                                        <span class="shrink-0 font-mono text-[10px] text-slate-400">{{ item.count }}</span>
+                                                    {% endif %}
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif field.type == 'status' %}
+                                        <div class="space-y-1">
+                                            {% for item in field.values %}
+                                                <label class="flex cursor-pointer items-center justify-between gap-2 rounded-xl px-2.5 py-2 text-[11px] font-semibold text-slate-700 transition hover:bg-white">
+                                                    <span class="flex items-center gap-2">
+                                                        <input type="checkbox" name="{{ item.param }}" value="{{ item.value }}" {% if item.selected %}checked{% endif %}
+                                                               class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                                        {{ item.label }}
+                                                    </span>
+                                                    <span class="font-mono text-[10px] text-slate-400">{{ item.count }}</span>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    {% elif field.type == 'price' %}
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="mb-1 block text-[10px] text-slate-400">از (تومان)</label>
+                                                <input type="number" name="min_price" min="0" inputmode="numeric" value="{{ field.min_value }}"
+                                                       placeholder="حداقل"
+                                                       class="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                            </div>
+                                            <div>
+                                                <label class="mb-1 block text-[10px] text-slate-400">تا (تومان)</label>
+                                                <input type="number" name="max_price" min="0" inputmode="numeric" value="{{ field.max_value }}"
+                                                       placeholder="حداکثر"
+                                                       class="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </li>
                         {% endfor %}
-                    </div>
-                </div>
+                    </ul>
 
-                <!-- Price Range Filter -->
-                <div class="pt-4 border-t border-slate-100 space-y-2">
-                    <h4 class="text-xs font-bold text-slate-800">محدوده قیمت (تومان)</h4>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">از:</label>
-                            <input type="number" name="min_price" placeholder="حداقل" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">تا:</label>
-                            <input type="number" name="max_price" placeholder="حداکثر" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                        </div>
+                    <div class="border-t border-slate-100 p-3">
+                        <button type="submit"
+                                class="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white transition hover:bg-blue-700">
+                            اعمال فیلترها
+                        </button>
                     </div>
-                    <button type="submit" class="w-full mt-2 py-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-xs font-bold rounded-lg transition">
-                        اعمال قیمت
-                    </button>
-                </div>
-            </form>
+                </form>
+            </div>
         </aside>
 
-        <!-- Main Product Listing Content Area -->
+        <!-- ===================== فهرست محصولات ===================== -->
         <main class="lg:col-span-3">
+            <!-- نشانگر بارگذاری HTMX: هنگام فیلتر، مرتب‌سازی و صفحه‌بندی نمایش داده می‌شود. -->
+            <div id="grid-loading"
+                 class="htmx-indicator pointer-events-none fixed bottom-24 left-1/2 z-[55] -translate-x-1/2 md:bottom-8">
+                <span class="flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-[11px] font-bold text-blue-600 shadow-lg">
+                    <svg class="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                    در حال بارگذاری نتایج...
+                </span>
+            </div>
+
             {% include 'products/partials/product_grid.html' %}
         </main>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // فیلتر تک‌پنلی: ابتدا فقط نام فیلدها دیده می‌شود؛ انتخاب هر فیلد ردیف‌های همان فیلد را باز می‌کند.
+    (function () {
+        var toggles = document.querySelectorAll('[data-filter-toggle]');
+        var panels = document.querySelectorAll('[data-filter-panel]');
+
+        function closeAll(except) {
+            panels.forEach(function (panel) {
+                if (panel === except) return;
+                panel.classList.add('hidden');
+            });
+            toggles.forEach(function (button) {
+                if (except && button.dataset.filterToggle === except.dataset.filterPanel) return;
+                button.setAttribute('aria-expanded', 'false');
+                var chevron = button.querySelector('[data-chevron]');
+                if (chevron) chevron.classList.remove('rotate-180');
+            });
+        }
+
+        toggles.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var panel = document.getElementById('filter-panel-' + button.dataset.filterToggle);
+                if (!panel) return;
+                var isOpen = !panel.classList.contains('hidden');
+
+                if (isOpen) {
+                    panel.classList.add('hidden');
+                    button.setAttribute('aria-expanded', 'false');
+                    button.querySelector('[data-chevron]')?.classList.remove('rotate-180');
+                    return;
+                }
+
+                closeAll(panel);
+                panel.classList.remove('hidden');
+                button.setAttribute('aria-expanded', 'true');
+                button.querySelector('[data-chevron]')?.classList.add('rotate-180');
+            });
+        });
+
+        // اگر فیلتری فعال است، پنل همان فیلد را باز نگه دار.
+        var active = Array.prototype.find.call(toggles, function (button) {
+            var badge = button.querySelector('.bg-blue-600');
+            return badge && badge.textContent.trim() !== '0';
+        });
+        if (active) active.click();
+    })();
+</script>
 {% endblock %}

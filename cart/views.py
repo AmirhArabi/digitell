@@ -37,6 +37,8 @@ def cart_detail_view(request):
         'cart': cart,
         'items': cart.items.select_related('product').all(),
     }
+    if request.htmx and request.headers.get('HX-Target') in ('main-content-area', 'main'):
+        return render(request, 'cart/partials/cart_full_partial.html', context)
     return render(request, 'cart/cart_detail.html', context)
 
 
@@ -77,20 +79,21 @@ def cart_add_view(request, product_id):
             CartItem.objects.create(cart=cart, product=product, quantity=added)
 
     context = {
+        'product': product,
         'global_cart_count': cart.total_items,
         'toast_message': limit_message,
         'toast_tone': 'warning',
         'toast_default': f"«{product.title}» به سبد خرید اضافه شد." if added else '',
     }
 
-    # HTMX response: return new cart badge
+    # HTMX response: return new cart badge and add-to-cart popup modal
     if request.htmx:
         if limit_message:
             return _toast(
                 render(request, 'cart/partials/cart_badge.html', context),
                 limit_message, 'warning'
             )
-        return _toast(render(request, 'cart/partials/cart_badge.html', context), context['toast_default'])
+        return _toast(render(request, 'cart/partials/cart_add_response.html', context), context['toast_default'])
 
     if limit_message:
         messages.warning(request, limit_message)

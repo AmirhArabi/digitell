@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ product.title }} | فروشگاه زیترو{% endblock %}
+{% block title %}{{ product.title }} | فروشگاه دیجی تل{% endblock %}
 
 {% block mobile_nav %}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-3 sm:px-6 py-4 md:py-6 pb-24 md:pb-10">
+<div class="max-w-[1920px] w-full mx-auto px-3 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 pb-24 md:pb-10">
 
     <!-- مسیر صفحه + میانبر نظرات -->
     <div class="flex items-center justify-between gap-3 mb-3">
@@ -24,8 +24,8 @@
         </a>
     </div>
 
-    <!-- نوار لنگری چسبان در موبایل (الگوی صفحه محصول زیترو) -->
-    <div class="sticky top-32 md:static z-30 -mx-3 px-3 sm:mx-0 sm:px-0 py-2 mb-3 bg-slate-50/95 backdrop-blur-md border-b border-slate-200/70 md:border-0 md:bg-transparent">
+    <!-- نوار لنگری در موبایل (الگوی صفحه محصول دیجی تل) -->
+    <div id="mobile-anchor-bar" class="relative z-10 -mx-3 px-3 sm:mx-0 sm:px-0 py-2 mb-3 bg-slate-50/95 border-b border-slate-200/70 md:border-0 md:bg-transparent">
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold">
             <a href="#specs" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">مشخصات فنی</a>
             <a href="#description" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">توضیحات و نقد و بررسی</a>
@@ -64,7 +64,7 @@
                 </div>
             {% endif %}
 
-            <!-- نشان‌های اعتماد (الگوی نوار آیکونی زیترو) -->
+            <!-- نشان‌های اعتماد (الگوی نوار آیکونی دیجی تل) -->
             <div class="mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar">
                 <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
@@ -103,9 +103,11 @@
                         <span class="text-slate-300">★★★★★</span>
                         <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-amber-400" style="width: {{ rating_pct }}%">★★★★★</span>
                     </span>
-                    <b class="text-slate-700">{{ product.rating }}</b>
+                    <b class="text-slate-700">{{ rating_average }}</b>
                 </span>
-                <a href="#reviews" class="hover:text-blue-600 transition">نظرات: <b class="text-slate-700">بدون نظر</b></a>
+                <a href="#reviews" class="hover:text-blue-600 transition">
+                    نظرات: <b class="text-slate-700">{% if reviews_count %}{{ reviews_count }} نظر{% else %}بدون نظر{% endif %}</b>
+                </a>
             </div>
 
             <!-- عنوان و نشان‌ها -->
@@ -196,13 +198,23 @@
                                 ناموجود
                             </span>
                         {% endif %}
-                        <p class="mt-1 text-slate-400">فروشنده: {{ site_settings.store_name|default:"زیترو" }}</p>
+                        <p class="mt-1 text-slate-400">فروشنده: {{ site_settings.store_name|default:"دیجی تل" }}</p>
                     </div>
                 </div>
 
                 <div class="my-4 border-t border-dashed border-zitro-line"></div>
 
                 <div id="product-cta" class="flex flex-col items-stretch gap-3 sm:flex-row">
+                    {% if is_in_cart %}
+                    <a href="{% url 'cart:cart_detail' %}"
+                       hx-get="{% url 'cart:cart_detail' %}"
+                       hx-target="#main-content-area"
+                       hx-push-url="{% url 'cart:cart_detail' %}"
+                       class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        مشاهده سبد خرید
+                    </a>
+                    {% else %}
                     <form hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML"
                           class="flex flex-1 items-stretch gap-3">
                         {% csrf_token %}
@@ -219,6 +231,7 @@
                             {% if product.available_qty > 0 %}افزودن به سبد خرید{% else %}ناموجود{% endif %}
                         </button>
                     </form>
+                    {% endif %}
 
                     <a href="{% url 'home:installment' %}"
                        class="flex h-11 items-center justify-center gap-2 rounded-[10px] bg-zitro-dark px-6 text-sm font-bold text-white transition hover:opacity-90">
@@ -301,22 +314,7 @@
 
     <!-- ================= نظرات ================= -->
     <section id="reviews" class="prod-anchor mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6">
-        <h2 class="mb-3 flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
-            <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
-            نظرات
-        </h2>
-
-        <div class="rounded-2xl border border-dashed border-zitro-line bg-slate-50/60 p-5 text-center">
-            <p class="text-xs leading-relaxed text-slate-500">
-                اگر این محصول را از {{ site_settings.store_name|default:"زیترو" }} خریداری کرده‌اید یا تجربه استفاده از آن را دارید،
-                می‌توانید نظر خود را ثبت کنید. نظرات پس از بررسی کارشناسان منتشر می‌شوند.
-            </p>
-            <a href="{% url 'tickets:create_form' %}"
-               class="mt-3 inline-flex items-center gap-2 rounded-[10px] bg-zitro-dark px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90">
-                ثبت نظر
-            </a>
-        </div>
-        <p class="mt-3 text-center text-[11px] text-slate-400">نظری درباره این محصول ثبت نشده است</p>
+        {% include 'products/partials/reviews.html' %}
     </section>
 
     <!-- ================= کالاهای مشابه ================= -->
@@ -367,15 +365,28 @@
                 اعتباری قسطی
             </a>
 
-            <form class="flex-1" hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML">
-                {% csrf_token %}
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit"
-                        class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-zitro-cash text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99]">
+            <div id="mobile-product-cta-btn" class="flex-1">
+                {% if is_in_cart %}
+                <a href="{% url 'cart:cart_detail' %}"
+                   hx-get="{% url 'cart:cart_detail' %}"
+                   hx-target="#main-content-area"
+                   hx-push-url="{% url 'cart:cart_detail' %}"
+                   class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-emerald-600 text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    افزودن به سبد خرید
-                </button>
-            </form>
+                    مشاهده سبد خرید
+                </a>
+                {% else %}
+                <form class="w-full" hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit"
+                            class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-zitro-cash text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        افزودن به سبد خرید
+                    </button>
+                </form>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endif %}
@@ -383,7 +394,7 @@
 
 {% block extra_scripts %}
 <script>
-    // صفحه محصول: پله‌های تعداد، تعویض تصویر گالری و بخش‌های تاشو (الگوی زیترو)
+    // صفحه محصول: پله‌های تعداد، تعویض تصویر گالری و بخش‌های تاشو (الگوی دیجی تل)
     (function () {
         var box = document.querySelector('[data-max]');
         if (box) {

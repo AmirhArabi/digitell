@@ -1,7 +1,15 @@
 {% extends 'base.html' %}
+{% load static cache %}
+
+{% block extra_head %}
+{% if hero_banners %}
+{% with first_b=hero_banners.0 %}
+    <link rel="preload" as="image" href="{{ first_b.image.url }}" fetchpriority="high">
+{% endwith %}
+{% endif %}
+{% endblock %}
 
 {% block content %}
-<!-- Full-Viewport Hero Slider (100vw × 100vh) -->
 <!-- Full-Viewport Hero Slider (Fills exact visible viewport below header) -->
 <section id="hero-slider"
     class="relative w-full h-[calc(100svh-65px)] md:h-[calc(100vh-146px)] min-h-[400px] max-h-[850px] overflow-hidden select-none bg-slate-950 group">
@@ -14,12 +22,14 @@
                 class="block w-full h-full relative overflow-hidden flex items-center justify-center">
                 <!-- Ambient blurred background matching banner colors -->
                 <img src="{{ banner.image.url }}" alt=""
-                    class="absolute inset-0 w-full h-full object-cover filter blur-3xl opacity-30 scale-125 pointer-events-none select-none">
+                    class="absolute inset-0 w-full h-full object-cover filter blur-3xl opacity-30 scale-125 pointer-events-none select-none"
+                    loading="lazy" decoding="async">
 
                 <!-- Sharp Full Banner Foreground -->
                 <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
                     class="relative z-10 w-full h-full object-contain object-center pointer-events-none select-none drop-shadow-2xl transition-transform duration-700 group-hover:scale-[1.01]"
-                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                    {% if forloop.first %}fetchpriority="high"{% else %}decoding="async"{% endif %}>
             </a>
         </div>
         {% empty %}
@@ -27,7 +37,7 @@
         <div
             class="hero-slide absolute inset-0 w-full h-full bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 flex items-center justify-center text-white p-8">
             <div class="max-w-2xl text-center space-y-4">
-                <h1 class="text-3xl sm:text-5xl font-black">خرید اقساطی کالای دیجیتال در زیترو</h1>
+                <h1 class="text-3xl sm:text-5xl font-black">خرید اقساطی کالای دیجیتال در دیجی تل</h1>
                 <p class="text-sm sm:text-base text-slate-200">گوشی، لپ‌تاپ، کنسول بازی و لوازم جانبی با ضمانت اصالت
                     ۱۰۰٪</p>
                 <a href="{% url 'products:shop' %}"
@@ -42,17 +52,13 @@
     <!-- Prev Button (Right side in RTL) -->
     <button id="slider-prev-btn" type="button" aria-label="اسلاید قبلی"
         class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/60 hover:bg-slate-900/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
-        </svg>
+        <svg class="w-6 h-6"><use href="#icon-chevron-right"/></svg>
     </button>
 
     <!-- Next Button (Left side in RTL) -->
     <button id="slider-next-btn" type="button" aria-label="اسلاید بعدی"
         class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/60 hover:bg-slate-900/90 backdrop-blur-md border border-white/20 text-white flex items-center justify-center shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 focus:outline-none cursor-pointer">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-        </svg>
+        <svg class="w-6 h-6"><use href="#icon-chevron-left"/></svg>
     </button>
 
     <!-- Bottom Controls: Dots + Slide Counter -->
@@ -72,14 +78,12 @@
     <a href="#main-content"
         class="hidden md:flex absolute bottom-5 right-6 z-30 items-center gap-2 text-xs font-medium text-white/80 hover:text-white bg-slate-900/60 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/15 shadow-lg transition hover:scale-105">
         <span>مشاهده محصولات</span>
-        <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-        </svg>
+        <svg class="w-3.5 h-3.5 animate-bounce"><use href="#icon-chevron-down"/></svg>
     </a>
 </section>
 
 <!-- Main Store Content Container -->
-<div id="main-content" class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-12">
+<div id="main-content" class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 space-y-12">
 
     <!-- Promo Highlights Row (SnappPay + PS5) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,7 +120,7 @@
         </div>
     </div>
 
-    <!-- Category Grid (Identical to zitro.ir 8 main categories) -->
+    <!-- Category Grid (8 main categories) -->
     <section>
         <div class="flex items-center justify-between mb-6">
             <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
@@ -128,6 +132,7 @@
             </a>
         </div>
 
+        {% cache 86400 home_categories_grid %}
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
             {% for cat in categories %}
             <a href="{% url 'products:category_detail' slug=cat.slug %}"
@@ -135,7 +140,7 @@
                 <div
                     class="w-14 h-14 rounded-2xl overflow-hidden bg-blue-50 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition duration-200">
                     {% if cat.image %}
-                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-full h-full object-cover">
+                    <img src="{{ cat.image.url }}" alt="{{ cat.name }}" class="w-full h-full object-cover" loading="lazy" decoding="async" width="56" height="56">
                     {% elif cat.icon_svg %}
                     <div
                         class="group-hover:text-white group-hover:bg-blue-600 w-full h-full flex items-center justify-center rounded-2xl transition">
@@ -145,17 +150,17 @@
                     <span class="text-xl">📦</span>
                     {% endif %}
                 </div>
-                <span class="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition">{{ cat.name
-                    }}</span>
+                <span class="text-xs font-bold text-slate-800 group-hover:text-blue-600 transition">{{ cat.name }}</span>
             </a>
             {% endfor %}
         </div>
+        {% endcache %}
     </section>
 
-    <!-- Special Offers Box (پیشنهاد شگفت‌انگیز زیترو) -->
+    <!-- Special Offers Box (پیشنهاد شگفت‌انگیز دیجی تل - رنگ مکمل نارنجی/کهربایی پرانرژی) -->
     {% if special_offers %}
     <section
-        class="rounded-3xl bg-gradient-to-r from-rose-600 via-rose-500 to-red-600 p-6 sm:p-8 text-white shadow-xl shadow-rose-600/20">
+        class="rounded-3xl bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 p-6 sm:p-8 text-white shadow-xl shadow-orange-500/20">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/20">
             <div class="flex items-center gap-3">
                 <div
@@ -163,13 +168,13 @@
                     🔥
                 </div>
                 <div>
-                    <h2 class="text-xl font-black">پیشنهاد شگفت‌انگیز زیترو</h2>
-                    <p class="text-xs text-rose-100">تخفیف‌های ویژه با تعداد و زمان محدود</p>
+                    <h2 class="text-xl font-black">پیشنهاد شگفت‌انگیز دیجی تل</h2>
+                    <p class="text-xs text-amber-100">تخفیف‌های ویژه با تعداد و زمان محدود</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <span class="text-xs text-rose-100">فرصت باقی‌مانده:</span>
+                <span class="text-xs text-amber-100">فرصت باقی‌مانده:</span>
                 <div class="flex items-center gap-1 font-mono text-xs font-bold">
                     <span class="bg-black/30 px-2 py-1 rounded-md">12</span>:
                     <span class="bg-black/30 px-2 py-1 rounded-md">45</span>:
@@ -178,11 +183,11 @@
             </div>
         </div>
 
-        <!-- Products row in special offer -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Products row in special offer (Mobile Slider / Desktop Grid) -->
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 lg:grid-cols-6 gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-2 px-2 sm:mx-0 sm:px-0">
             {% for product in special_offers %}
             <a href="{{ product.get_absolute_url }}"
-                class="bg-white rounded-2xl p-3 text-slate-800 flex flex-col justify-between hover:scale-102 transition shadow-sm group">
+                class="shrink-0 w-[155px] sm:w-auto snap-start bg-white rounded-2xl p-3 text-slate-800 flex flex-col justify-between hover:scale-102 transition shadow-sm group">
                 <div class="aspect-square bg-slate-50 rounded-xl p-2 mb-2 flex items-center justify-center relative">
                     {% if product.discount_pct > 0 %}
                     <span
@@ -192,7 +197,8 @@
                     {% endif %}
                     {% if product.primary_image %}
                     <img src="{{ product.primary_image.image.url }}" alt="{{ product.title }}"
-                        class="max-h-full max-w-full object-contain">
+                        class="max-h-full max-w-full object-contain"
+                        loading="lazy" decoding="async" width="160" height="160">
                     {% else %}
                     <span class="text-2xl">📱</span>
                     {% endif %}
@@ -205,11 +211,10 @@
 
                 <div>
                     {% if product.formatted_compare_price %}
-                    <span class="text-[11px] text-slate-400 line-through block">{{ product.formatted_compare_price
-                        }}</span>
+                    <span class="text-[11px] text-slate-400 line-through block">{{ product.formatted_compare_price }}</span>
                     {% endif %}
                     <div class="flex items-baseline justify-between">
-                        <span class="text-xs sm:text-sm font-black text-rose-600">{{ product.formatted_price }}</span>
+                        <span class="text-xs sm:text-sm font-black text-orange-600">{{ product.formatted_price }}</span>
                         <span class="text-[10px] text-slate-400">تومان</span>
                     </div>
                 </div>
@@ -231,9 +236,11 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in featured_products %}
-            {% include 'products/partials/product_card.html' with product=product %}
+            <div class="shrink-0 w-[175px] sm:w-auto snap-start flex flex-col">
+                {% include 'products/partials/product_card.html' with product=product %}
+            </div>
             {% endfor %}
         </div>
     </section>
@@ -246,7 +253,7 @@
         {% if banner.position == 'banner_pair' %}
         <a href="{{ banner.link_url }}"
             class="rounded-2xl overflow-hidden hover:scale-[1.02] transition duration-200 shadow-sm block aspect-[785/300]">
-            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-full object-cover">
+            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-full object-cover" loading="lazy" decoding="async">
         </a>
         {% endif %}
         {% endfor %}
@@ -278,15 +285,17 @@
     {% endif %}
     {% endwith %}
 
-    <!-- Wide Banners (banner_wide position) -->
-    {% for banner in banners %}
-    {% if banner.position == 'banner_wide' %}
-    <a href="{{ banner.link_url }}"
-        class="block rounded-3xl overflow-hidden hover:scale-[1.005] transition duration-200 shadow-md">
-        <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-auto object-cover">
-    </a>
-    {% endif %}
-    {% endfor %}
+    <!-- Wide Banners (banner_wide position - 4 per row on desktop, 2 per row on mobile) -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        {% for banner in banners %}
+        {% if banner.position == 'banner_wide' %}
+        <a href="{{ banner.link_url }}"
+            class="block rounded-2xl overflow-hidden hover:scale-[1.02] transition duration-200 shadow-sm border border-slate-100">
+            <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-auto object-cover" loading="lazy" decoding="async">
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
 
     <!-- Smartphones Category Row -->
     {% if smartphone_products %}
@@ -302,28 +311,94 @@
             </a>
         </div>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in smartphone_products %}
-            {% include 'products/partials/product_card.html' with product=product %}
+            <div class="shrink-0 w-[175px] sm:w-auto snap-start flex flex-col">
+                {% include 'products/partials/product_card.html' with product=product %}
+            </div>
             {% endfor %}
         </div>
     </section>
     {% endif %}
 
-    <!-- Popular Brands -->
-    <section class="bg-white rounded-3xl border border-slate-200/80 p-8">
-        <h3 class="text-center font-bold text-sm text-slate-600 mb-6">
-            محبوب‌ترین برندهای موجود در فروشگاه زیترو
-        </h3>
-        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-4 items-center">
-            {% for b in brands %}
-            <a href="{% url 'products:shop' %}?brand={{ b.slug }}"
-                class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50 text-center font-bold text-xs text-slate-700 hover:text-blue-600 transition border border-slate-100 flex flex-col items-center justify-center h-16">
-                <span>{{ b.name }}</span>
-                <span class="text-[10px] text-slate-400 font-mono">{{ b.name_en }}</span>
+    <!-- Laptops & Gaming Category Row -->
+    {% if laptop_gaming_products %}
+    <section>
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                <h2 class="font-black text-lg text-slate-900">لپ‌تاپ‌ها و تجهیزات گیمینگ</h2>
+            </div>
+            <a href="{% url 'products:category_detail' slug='laptops' %}"
+                class="text-xs font-bold text-blue-600 hover:underline">
+                مشاهده بیشتر &larr;
             </a>
+        </div>
+
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+            {% for product in laptop_gaming_products %}
+            <div class="shrink-0 w-[175px] sm:w-auto snap-start flex flex-col">
+                {% include 'products/partials/product_card.html' with product=product %}
+            </div>
             {% endfor %}
         </div>
+    </section>
+    {% endif %}
+
+    <!-- Popular Brands (با لوگوی بندانگشتی و انیمیشن متحرک افقی از راست به چپ) -->
+    <section class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 overflow-hidden shadow-xs">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
+                <h3 class="font-bold text-sm sm:text-base text-slate-800">
+                    محبوب‌ترین برندهای موجود در فروشگاه دیجی تل
+                </h3>
+            </div>
+            <a href="{% url 'products:shop' %}" class="text-xs font-bold text-blue-600 hover:underline">
+                مشاهده همه برندها &larr;
+            </a>
+        </div>
+
+        {% cache 86400 home_brands_marquee %}
+        <div class="marquee-wrapper">
+            <div class="marquee-content">
+                {% for b in brands %}
+                <a href="{% url 'products:shop' %}?brand={{ b.slug }}"
+                    class="shrink-0 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-300 transition-all duration-300 group shadow-xs">
+                    <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center border border-slate-100 shrink-0 shadow-xs group-hover:scale-105 transition">
+                        {% if b.logo %}
+                        <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="w-full h-full object-contain" loading="lazy" decoding="async" width="40" height="40">
+                        {% else %}
+                        <img src="{% static 'img/brands/' %}{{ b.slug }}.svg" alt="{{ b.name }}" class="w-full h-full object-contain" onerror="this.style.display='none'" loading="lazy" decoding="async" width="40" height="40">
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-xs font-black text-slate-800 group-hover:text-blue-600 transition">{{ b.name }}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">{{ b.name_en }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+
+                <!-- Duplicate set for infinite smooth looping -->
+                {% for b in brands %}
+                <a href="{% url 'products:shop' %}?brand={{ b.slug }}"
+                    class="shrink-0 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-slate-50/90 hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-300 transition-all duration-300 group shadow-xs">
+                    <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center border border-slate-100 shrink-0 shadow-xs group-hover:scale-105 transition">
+                        {% if b.logo %}
+                        <img src="{{ b.logo.url }}" alt="{{ b.name }}" class="w-full h-full object-contain" loading="lazy" decoding="async" width="40" height="40">
+                        {% else %}
+                        <img src="{% static 'img/brands/' %}{{ b.slug }}.svg" alt="{{ b.name }}" class="w-full h-full object-contain" onerror="this.style.display='none'" loading="lazy" decoding="async" width="40" height="40">
+                        {% endif %}
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-xs font-black text-slate-800 group-hover:text-blue-600 transition">{{ b.name }}</span>
+                        <span class="text-[10px] text-slate-400 font-mono">{{ b.name_en }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endcache %}
     </section>
 
     <!-- Latest Blog Posts -->
@@ -332,13 +407,14 @@
         <div class="flex items-center justify-between mb-6">
             <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
                 <span class="w-2.5 h-6 rounded-full bg-blue-600 inline-block"></span>
-                جدیدترین مقالات مجله زیترو
+                جدیدترین مقالات مجله دیجی تل
             </h2>
             <a href="{% url 'blog:post_list' %}" class="text-xs font-bold text-blue-600 hover:underline">
                 مشاهده وبلاگ &larr;
             </a>
         </div>
 
+        {% cache 1800 home_blog_posts %}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             {% for post in latest_posts %}
             <a href="{{ post.get_absolute_url }}"
@@ -347,7 +423,8 @@
                 <div class="aspect-video bg-gradient-to-tr from-slate-100 to-blue-50 overflow-hidden">
                     {% if post.cover_image %}
                     <img src="{{ post.cover_image.url }}" alt="{{ post.title }}"
-                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                        loading="lazy" decoding="async" width="400" height="225">
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center text-4xl text-blue-300">📰</div>
                     {% endif %}
@@ -371,6 +448,7 @@
             </a>
             {% endfor %}
         </div>
+        {% endcache %}
     </section>
     {% endif %}
 

@@ -1,0 +1,36 @@
+{% load static %}
+<!-- Cart badge update -->
+<span id="cart-badge" class="appbar-cart-badge fa-num">{{ global_cart_count|default:0 }}</span>
+
+<!-- OOB Modal Popup based on user template -->
+<div id="cart-modal-container" hx-swap-oob="innerHTML">
+    {% include 'cart/partials/add_to_cart_modal.html' %}
+</div>
+
+<!-- OOB Product Detail Desktop CTA update -->
+<div id="product-cta" hx-swap-oob="innerHTML" class="flex flex-col items-stretch gap-3 sm:flex-row">
+    <a href="{% url 'cart:cart_detail' %}"
+       hx-get="{% url 'cart:cart_detail' %}"
+       hx-target="#main-content-area"
+       hx-push-url="{% url 'cart:cart_detail' %}"
+       class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        مشاهده سبد خرید
+    </a>
+    <a href="{% url 'home:installment' %}"
+       class="flex h-11 items-center justify-center gap-2 rounded-[10px] bg-zitro-dark px-6 text-sm font-bold text-white transition hover:opacity-90">
+        اعتباری قسطی
+    </a>
+</div>
+
+<!-- OOB Product Detail Mobile Sticky CTA update -->
+<div id="mobile-product-cta-btn" hx-swap-oob="innerHTML" class="flex-1">
+    <a href="{% url 'cart:cart_detail' %}"
+       hx-get="{% url 'cart:cart_detail' %}"
+       hx-target="#main-content-area"
+       hx-push-url="{% url 'cart:cart_detail' %}"
+       class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-emerald-600 text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        مشاهده سبد خرید
+    </a>
+</div>
