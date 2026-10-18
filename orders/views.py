@@ -1,9 +1,11 @@
 import uuid
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from cart.models import Cart
 from home.models import SiteSetting
+from accounts.models import Address
 from .models import Coupon, InsufficientStockError, Order, OrderItem
 
 
@@ -103,6 +105,13 @@ def checkout_view(request):
         messages.warning(request, "سبد خرید شما خالی است.")
         return redirect('products:shop')
 
+    if request.user.is_authenticated:
+        addresses = request.user.addresses.all()
+        default_address = addresses.filter(is_default=True).first() or addresses.first()
+    else:
+        addresses = Address.objects.none()
+        default_address = None
+
     if request.method == 'POST':
         recipient_name = request.POST.get('recipient_name', '').strip()
         recipient_phone = request.POST.get('recipient_phone', '').strip()
@@ -123,6 +132,8 @@ def checkout_view(request):
             return render(request, 'orders/checkout.html', {
                 'cart': cart,
                 'items': cart.items.select_related('product').all(),
+                'addresses': addresses,
+                'default_address': default_address,
                 **summary,
             })
 
@@ -168,6 +179,8 @@ def checkout_view(request):
             return render(request, 'orders/checkout.html', {
                 'cart': cart,
                 'items': cart.items.select_related('product').all(),
+                'addresses': addresses,
+                'default_address': default_address,
                 **summary,
             })
 
@@ -187,6 +200,8 @@ def checkout_view(request):
     return render(request, 'orders/checkout.html', {
         'cart': cart,
         'items': cart.items.select_related('product').all(),
+        'addresses': addresses,
+        'default_address': default_address,
         **_payment_summary(request, cart),
     })
 
@@ -232,6 +247,24 @@ def mock_payment_view(request, order_number):
 def order_success_view(request, order_number):
     order = get_object_or_404(Order, order_number=order_number)
     return render(request, 'orders/order_success.html', {'order': order})
+
+
+def order_invoice_pdf_view(request, order_number):
+    """دانلود فاکتور رسمی به صورت فایل PDF."""
+    order = get_object_or_404(Order, order_number=order_number)
+
+    # اگر سفارش متعلق به کاربری است و کاربر لاگین کرده باشد، دسترسی چک شود
+    if order.user and request.user.is_authenticated and not request.user.is_staff and order.user != request.user:
+        messages.error(request, "شما مجاز به دریافت فاکتور این سفارش نیستید.")
+        return redirect('accounts:profile')
+
+    from .invoice_pdf import generate_official_invoice_pdf
+    pdf_bytes = generate_official_invoice_pdf(order)
+
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    filename = f"Invoice-{order.order_number}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
 
 
 def order_tracking_view(request):

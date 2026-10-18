@@ -8,7 +8,7 @@ import json
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from accounts.models import User
+from accounts.models import User, Address
 from cart.models import Cart, CartItem
 from orders.models import Coupon, InsufficientStockError, Order, OrderItem
 from products.models import Brand, Category, Product
@@ -433,6 +433,37 @@ class PaymentAndReleaseTests(StockReservationBase):
         self.assertEqual(self.product.stock_qty, 3)
         self.assertEqual(self.product.reserved_qty, 0)
 
+    def test_checkout_context_includes_user_saved_addresses(self):
+        user = User.objects.create_user(username='customer1', password='pass1234')
+        self.client.login(username='customer1', password='pass1234')
+        addr = Address.objects.create(
+            user=user,
+            title='دفتر',
+            recipient_name='مشتری نمونه',
+            recipient_phone='09123334455',
+            province='تهران',
+            city='تهران',
+            postal_address='خیابان کریمخان',
+            is_default=True
+        )
+        self.add_to_cart_htmx(quantity=1)
+        response = self.client.get(reverse('orders:checkout'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('addresses', response.context)
+        self.assertEqual(len(response.context['addresses']), 1)
+        self.assertEqual(response.context['default_address'], addr)
+        self.assertContains(response, 'دفتر')
+        self.assertContains(response, 'خیابان کریمخان')
+
+    def test_order_invoice_pdf_download(self):
+        order = self.make_order(quantity=1, reserve=True)
+        url = reverse('orders:order_invoice_pdf', kwargs={'order_number': order.order_number})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertIn(f"Invoice-{order.order_number}.pdf", response['Content-Disposition'])
+        self.assertTrue(response.content.startswith(b'%PDF'))
+
     def test_coupon_usage_is_still_recorded(self):
         coupon = Coupon.objects.create(code='zitro10', discount_type='percent', value=10)
         self.add_to_cart_htmx(quantity=1)
@@ -446,6 +477,19 @@ class PaymentAndReleaseTests(StockReservationBase):
         )
         coupon.refresh_from_db()
         self.assertEqual(coupon.used_count, 1)
+
+    def test_invoice_pdf_download_returns_valid_pdf(self):
+        """فاکتور رسمی باید در قالب PDF معتبر با هدر صحیح تولید و دانلود شود."""
+        order = self._order_from_checkout(quantity=1)
+        response = self.client.get(
+            reverse('orders:order_invoice_pdf', kwargs={'order_number': order.order_number})
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertIn(f'Invoice-{order.order_number}.pdf', response['Content-Disposition'])
+        self.assertTrue(len(response.content) > 1000)
+        self.assertTrue(response.content.startswith(b'%PDF'))
+
 
 
 class DashboardStockReleaseTests(StockReservationBase):
