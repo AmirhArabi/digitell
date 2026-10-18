@@ -103,12 +103,13 @@
                         </div>
                     </div>
 
-                    <!-- Editable Details Banner -->
-                    <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-700">مشخصات ارسال این سفارش:</span>
-                        <span class="text-[11px] text-slate-400">اطلاعات زیر بر اساس آدرس انتخابی تنظیم شده و قابل ویرایش هستند</span>
-                    </div>
                 {% endif %}
+
+                <!-- Hidden Address Fields (Populated from selected address) -->
+                <input type="hidden" id="field_province" name="province" value="{% if default_address %}{{ default_address.province }}{% elif province %}{{ province }}{% else %}تهران{% endif %}">
+                <input type="hidden" id="field_city" name="city" value="{% if default_address %}{{ default_address.city }}{% elif city %}{{ city }}{% else %}تهران{% endif %}">
+                <input type="hidden" id="field_shipping_address" name="shipping_address" value="{% if default_address %}{{ default_address.postal_address }}{% elif shipping_address %}{{ shipping_address }}{% else %}تهران{% endif %}">
+                <input type="hidden" id="field_postal_code" name="postal_code" value="{% if default_address %}{{ default_address.postal_code|default:'' }}{% elif postal_code %}{{ postal_code }}{% endif %}">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                     <div>
@@ -117,7 +118,7 @@
                             type="text"
                             id="field_recipient_name"
                             name="recipient_name"
-                            value="{% if default_address %}{{ default_address.recipient_name }}{% elif user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"
+                            value="{% if default_address %}{{ default_address.recipient_name }}{% elif recipient_name %}{{ recipient_name }}{% elif user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}"
                             required
                             placeholder="مثال: علیرضا محمدی"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
@@ -130,62 +131,15 @@
                             type="tel"
                             id="field_recipient_phone"
                             name="recipient_phone"
-                            value="{% if default_address %}{{ default_address.recipient_phone }}{% elif user.is_authenticated %}{{ user.phone_number|default:'' }}{% endif %}"
+                            value="{% if default_address %}{{ default_address.recipient_phone }}{% elif recipient_phone %}{{ recipient_phone }}{% elif user.is_authenticated %}{{ user.phone_number|default:'' }}{% endif %}"
                             required
                             placeholder="مثال: 09123456789"
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         >
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1.5">استان *</label>
-                        <input
-                            type="text"
-                            id="field_province"
-                            name="province"
-                            value="{% if default_address %}{{ default_address.province }}{% else %}تهران{% endif %}"
-                            required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                        >
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1.5">شهر *</label>
-                        <input
-                            type="text"
-                            id="field_city"
-                            name="city"
-                            value="{% if default_address %}{{ default_address.city }}{% else %}تهران{% endif %}"
-                            required
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                        >
+                        <p id="checkout-phone-feedback" class="text-[11px] text-slate-400 mt-1">شماره همراه جهت هماهنگی ارسال و دریافت پیامک وضعیت</p>
                     </div>
 
                     <div class="sm:col-span-2">
-                        <label class="block font-semibold text-slate-700 mb-1.5">آدرس پستی دقیق *</label>
-                        <textarea
-                            id="field_shipping_address"
-                            name="shipping_address"
-                            rows="2"
-                            required
-                            placeholder="نام خیابان، کوچه، پلاک، واحد..."
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                        >{% if default_address %}{{ default_address.postal_address }}{% endif %}</textarea>
-                    </div>
-
-                    <div>
-                        <label class="block font-semibold text-slate-700 mb-1.5">کد پستی (۱۰ رقمی)</label>
-                        <input
-                            type="text"
-                            id="field_postal_code"
-                            name="postal_code"
-                            value="{% if default_address %}{{ default_address.postal_code|default:'' }}{% endif %}"
-                            placeholder="۱۲۳۴۵۶۷۸۹۰"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-                        >
-                    </div>
-
-                    <div>
                         <label class="block font-semibold text-slate-700 mb-1.5">توضیحات و یادداشت سفارش (اختیاری)</label>
                         <input
                             type="text"
@@ -194,6 +148,57 @@
                             class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                         >
                     </div>
+
+                    {% if not user.is_authenticated %}
+                        <!-- Dynamic Guest Account Registration & Password Section -->
+                        <div id="guest-password-container" class="sm:col-span-2 {% if not guest_needs_password %}hidden{% endif %} transition-all duration-300">
+                            <div class="p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 to-indigo-50/90 border border-blue-200/90 shadow-2xs space-y-3">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/25">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between gap-2 flex-wrap mb-1">
+                                            <h4 class="font-bold text-xs text-blue-900 flex items-center gap-1.5">
+                                                <span>ساخت خودکار حساب کاربری دیجی تل</span>
+                                                <span class="text-[10px] bg-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded-full">مشتری جدید</span>
+                                            </h4>
+                                            <span class="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                                ارسال پیامک اطلاعات ورود
+                                            </span>
+                                        </div>
+                                        <p class="text-[11px] text-blue-700 leading-relaxed">
+                                            شماره همراه شما در فروشگاه دیجی تل عضو نیست. با تعیین رمز عبور زیر، حساب کاربری شما فوراً ساخته شده، مشخصات ورود پیامک می‌شود و بدون نیاز به ثبت‌نام مجدد به درگاه پرداخت هدایت خواهید شد.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="pt-2 border-t border-blue-200/60">
+                                    <label class="block font-bold text-slate-800 mb-1.5 text-xs">تعیین رمز عبور حساب کاربری *</label>
+                                    <div class="relative max-w-sm">
+                                        <input
+                                            type="password"
+                                            id="field_account_password"
+                                            name="account_password"
+                                            placeholder="حداقل ۴ نویسه (کاراکتر)"
+                                            class="w-full bg-white border border-blue-200 rounded-xl p-3 pl-10 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                                        >
+                                        <button type="button" onclick="toggleCheckoutPassword()" class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-slate-600 transition">
+                                            <svg id="checkout-eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        </button>
+                                    </div>
+                                    <p id="password-validation-error" class="hidden text-[11px] text-rose-600 font-bold mt-1.5">لطفاً برای ساخت خودکار حساب کاربری، یک رمز عبور حداقل ۴ رقمی تعیین فرمایید.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Existing user notice (hidden by default) -->
+                        <div id="guest-existing-user-notice" class="hidden sm:col-span-2 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span>شماره همراه شما قبلاً در فروشگاه ثبت شده است. این سفارش به صورت خودکار به سابقه حساب کاربری شما پیوند خواهد خورد.</span>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -277,15 +282,31 @@
                 مرور سفارش
             </h3>
 
-            <!-- Mini items list -->
-            <div class="max-h-56 overflow-y-auto space-y-3 pr-1 text-xs">
+            <!-- Mini items list with product thumbnail -->
+            <div class="max-h-72 overflow-y-auto space-y-3 pr-1 text-xs divide-y divide-slate-100">
                 {% for item in items %}
-                    <div class="flex items-center justify-between gap-3 py-1">
-                        <div class="flex items-center gap-2 truncate">
-                            <span class="text-slate-400 font-bold">{{ item.quantity }}x</span>
-                            <span class="text-slate-700 truncate">{{ item.product.title }}</span>
+                    <div class="flex items-center justify-between gap-3 pt-2.5 first:pt-0">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <!-- Product Thumbnail -->
+                            <div class="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200/80 p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                                {% if item.product.primary_image %}
+                                    <img src="{{ item.product.primary_image.image.url }}" alt="{{ item.product.title }}" class="w-full h-full object-contain">
+                                {% else %}
+                                    <span class="text-lg">📱</span>
+                                {% endif %}
+                            </div>
+                            <div class="min-w-0">
+                                <a href="{{ item.product.get_absolute_url }}" target="_blank" class="text-slate-800 font-semibold hover:text-blue-600 transition truncate block" title="{{ item.product.title }}">
+                                    {{ item.product.title }}
+                                </a>
+                                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
+                                    <span>تعداد: <strong class="text-slate-700 font-bold font-mono">{{ item.quantity }}</strong></span>
+                                    <span>×</span>
+                                    <span>{{ item.product.formatted_price }} تومان</span>
+                                </div>
+                            </div>
                         </div>
-                        <span class="font-bold text-slate-900 shrink-0">{{ item.formatted_line_total }}</span>
+                        <span class="font-black text-slate-900 shrink-0 text-left">{{ item.formatted_line_total }} <span class="text-[10px] text-slate-500 font-normal">تومان</span></span>
                     </div>
                 {% endfor %}
             </div>
@@ -573,4 +594,94 @@ function submitAjaxAddress(e) {
 }
 </script>
 {% endif %}
+
+<script>
+function toEngDigits(str) {
+    if (!str) return '';
+    return str.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+              .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+
+function toggleCheckoutPassword() {
+    const input = document.getElementById('field_account_password');
+    if (!input) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const phoneInput = document.getElementById('field_recipient_phone');
+    const feedback = document.getElementById('checkout-phone-feedback');
+    const passwordContainer = document.getElementById('guest-password-container');
+    const existingNotice = document.getElementById('guest-existing-user-notice');
+    const passwordInput = document.getElementById('field_account_password');
+    const passwordError = document.getElementById('password-validation-error');
+    const checkoutForm = phoneInput ? phoneInput.closest('form') : null;
+
+    // Check phone availability for guest auto-registration
+    function checkPhoneStatus(phone) {
+        if (!passwordContainer) return; // Authenticated user
+
+        const cleaned = toEngDigits(phone).replace(/\D/g, '');
+        if (cleaned.length === 11 && cleaned.startsWith('09')) {
+            fetch("{% url 'accounts:check_phone' %}?phone=" + encodeURIComponent(cleaned))
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exists) {
+                        passwordContainer.classList.add('hidden');
+                        if (existingNotice) existingNotice.classList.remove('hidden');
+                        if (feedback) {
+                            feedback.innerHTML = '<span class="text-emerald-600 font-bold">✓ شماره در سیستم ثبت است؛ سفارش به حساب کاربری شما متصل می‌گردد.</span>';
+                        }
+                    } else {
+                        passwordContainer.classList.remove('hidden');
+                        if (existingNotice) existingNotice.classList.add('hidden');
+                        if (feedback) {
+                            feedback.innerHTML = '<span class="text-blue-600 font-bold">★ کاربر جدید؛ لطفاً جهت ساخت حساب کاربری رمز عبور را وارد فرمایید.</span>';
+                        }
+                    }
+                })
+                .catch(() => {});
+        } else if (cleaned.length > 0 && (!cleaned.startsWith('09') || cleaned.length !== 11)) {
+            if (feedback) {
+                feedback.innerHTML = '<span class="text-slate-400">شماره ۱۱ رقمی همراه اول، ایرانسل یا رایتل را وارد فرمایید.</span>';
+            }
+        }
+    }
+
+    if (phoneInput && passwordContainer) {
+        let phoneDebounce = null;
+        phoneInput.addEventListener('input', function() {
+            clearTimeout(phoneDebounce);
+            phoneDebounce = setTimeout(() => {
+                checkPhoneStatus(phoneInput.value);
+            }, 300);
+        });
+
+        // Trigger on initial page load if already populated
+        if (phoneInput.value && phoneInput.value.trim().length >= 10) {
+            checkPhoneStatus(phoneInput.value);
+        }
+    }
+
+    if (checkoutForm && passwordContainer) {
+        checkoutForm.addEventListener('submit', function(e) {
+            // Only validate password if the password box is visible
+            if (!passwordContainer.classList.contains('hidden')) {
+                const passVal = (passwordInput ? passwordInput.value : '').trim();
+                if (!passVal || passVal.length < 4) {
+                    e.preventDefault();
+                    if (passwordError) passwordError.classList.remove('hidden');
+                    if (passwordInput) {
+                        passwordInput.focus();
+                        passwordInput.classList.add('border-rose-400', 'ring-2', 'ring-rose-500/20');
+                    }
+                    return false;
+                } else {
+                    if (passwordError) passwordError.classList.add('hidden');
+                }
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

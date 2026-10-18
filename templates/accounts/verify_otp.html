@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}تأیید شماره همراه | فروشگاه دیجی تل{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+
+        <div class="text-center">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center font-black text-2xl mx-auto mb-3 shadow-lg shadow-emerald-500/25">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+            </div>
+            <h1 class="text-lg font-black text-slate-900">کد تأیید پیامک شد</h1>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                کد تأیید ۶ رقمی به شماره همراه
+                <span class="font-mono font-bold text-slate-800" dir="ltr">{{ phone }}</span>
+                ارسال گردید.
+            </p>
+            <div class="mt-2">
+                <a href="{% url 'accounts:login' %}" class="inline-flex items-center gap-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <span>ویرایش شماره همراه</span>
+                </a>
+            </div>
+        </div>
+
+        {% if dev_code %}
+            <div class="p-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-center justify-between">
+                <span>کد شبیه‌سازی‌شده آزمایشی:</span>
+                <span class="font-mono font-black text-base tracking-widest bg-white px-2.5 py-0.5 rounded-lg border border-amber-300">{{ dev_code }}</span>
+            </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'accounts:verify_otp' %}" id="otp-form" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="phone" value="{{ phone }}">
+            <input type="hidden" name="code" id="hidden_full_code">
+
+            <!-- 6-digit OTP Input Boxes -->
+            <div>
+                <label class="block text-center font-bold text-xs text-slate-700 mb-3">کد ۶ رقمی دریافتی را وارد کنید:</label>
+                <div class="flex items-center justify-center gap-2 sm:gap-2.5" dir="ltr" id="otp-inputs-container">
+                    <input type="text" maxlength="1" inputmode="numeric" autocomplete="one-time-code" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" autofocus data-index="0">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" data-index="1">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" data-index="2">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" data-index="3">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" data-index="4">
+                    <input type="text" maxlength="1" inputmode="numeric" class="otp-digit w-11 h-13 sm:w-12 sm:h-14 text-center font-mono font-black text-xl rounded-2xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 focus:outline-none transition shadow-2xs" data-index="5">
+                </div>
+            </div>
+
+            <!-- Auto-submitting banner (hidden initially) -->
+            <div id="submitting-spinner" class="hidden text-center text-xs text-emerald-600 font-bold items-center justify-center gap-2">
+                <svg class="animate-spin w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                <span>در حال اعتبارسنجی خودکار...</span>
+            </div>
+
+            <button
+                type="submit"
+                id="submit-otp-btn"
+                class="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 active:scale-98 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2 text-xs"
+            >
+                <span>تأیید و ورود به دیجی تل</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </button>
+        </form>
+
+        <!-- Timer & Resend Button -->
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+            <div id="timer-wrapper" class="text-slate-500 flex items-center gap-1.5 font-medium">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>ارسال مجدد تا</span>
+                <span id="countdown-timer" class="font-mono font-bold text-slate-800" dir="ltr">02:00</span>
+            </div>
+
+            <button
+                type="button"
+                id="resend-btn"
+                disabled
+                onclick="resendOTP()"
+                class="text-blue-600 font-bold hover:underline disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed transition"
+            >
+                ارسال مجدد پیامک کد
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+// Auto-focus, paste, auto-advance, backspace and auto-submit logic
+const inputs = document.querySelectorAll('.otp-digit');
+const form = document.getElementById('otp-form');
+const hiddenInput = document.getElementById('hidden_full_code');
+const spinner = document.getElementById('submitting-spinner');
+const submitBtn = document.getElementById('submit-otp-btn');
+
+function toEnglishDigits(str) {
+    if (!str) return '';
+    return str.replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+              .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+}
+
+function checkAndAutoSubmit() {
+    let fullCode = '';
+    inputs.forEach(input => fullCode += input.value.trim());
+    if (fullCode.length === 6 && /^\d{6}$/.test(fullCode)) {
+        hiddenInput.value = fullCode;
+        if (spinner) spinner.classList.remove('hidden');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75');
+        }
+        form.submit();
+    }
+}
+
+inputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+        let val = toEnglishDigits(e.target.value);
+        val = val.replace(/\D/g, '');
+
+        if (val.length > 1) {
+            // Handle paste into single input
+            const chars = val.slice(0, 6).split('');
+            chars.forEach((ch, i) => {
+                if (inputs[i]) inputs[i].value = ch;
+            });
+            const nextIdx = Math.min(chars.length, 5);
+            inputs[nextIdx].focus();
+            checkAndAutoSubmit();
+            return;
+        }
+
+        e.target.value = val;
+
+        if (val && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+        }
+
+        checkAndAutoSubmit();
+    });
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !e.target.value && idx > 0) {
+            inputs[idx - 1].focus();
+        }
+    });
+
+    input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = toEnglishDigits((e.clipboardData || window.clipboardData).getData('text')).replace(/\D/g, '');
+        if (!pasteData) return;
+        const chars = pasteData.slice(0, 6).split('');
+        chars.forEach((ch, i) => {
+            if (inputs[i]) inputs[i].value = ch;
+        });
+        const focusIdx = Math.min(chars.length, 5);
+        if (inputs[focusIdx]) inputs[focusIdx].focus();
+        checkAndAutoSubmit();
+    });
+});
+
+// Form submit listener
+form.addEventListener('submit', (e) => {
+    let fullCode = '';
+    inputs.forEach(input => fullCode += toEnglishDigits(input.value.trim()));
+    hiddenInput.value = fullCode;
+});
+
+// WebOTP API (auto-read incoming SMS on modern mobile browsers)
+if ('OTPCredential' in window) {
+    const ac = new AbortController();
+    navigator.credentials.get({
+        otp: { transport: ['sms'] },
+        signal: ac.signal
+    }).then(otp => {
+        if (otp && otp.code) {
+            const digits = toEnglishDigits(otp.code).replace(/\D/g, '').slice(0, 6).split('');
+            digits.forEach((d, i) => {
+                if (inputs[i]) inputs[i].value = d;
+            });
+            checkAndAutoSubmit();
+        }
+    }).catch(err => {
+        // Fallback gracefully if canceled or not supported
+    });
+}
+
+// Countdown timer logic (120 seconds)
+let timeLeft = 120;
+const countdownElem = document.getElementById('countdown-timer');
+const resendBtn = document.getElementById('resend-btn');
+
+function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    countdownElem.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        resendBtn.disabled = false;
+        countdownElem.textContent = '00:00';
+    } else {
+        timeLeft--;
+    }
+}
+
+const timerInterval = setInterval(updateTimer, 1000);
+
+function resendOTP() {
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'در حال ارسال مجدد...';
+
+    fetch("{% url 'accounts:resend_otp' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        timeLeft = 120;
+        updateTimer();
+        setInterval(updateTimer, 1000);
+        resendBtn.textContent = 'ارسال مجدد پیامک کد';
+        alert('کد تأیید جدید پیامک شد.');
+    })
+    .catch(() => {
+        window.location.href = "{% url 'accounts:resend_otp' %}";
+    });
+}
+</script>
+{% endblock %}

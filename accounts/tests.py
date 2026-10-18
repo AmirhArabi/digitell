@@ -186,3 +186,103 @@ class CustomerProfileTests(TestCase):
         self.assertTrue(data['address']['is_default'])
         self.assertEqual(self.user.addresses.count(), 1)
 
+
+class PhoneAuthenticationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        from home.models import SiteSetting
+        self.site_setting = SiteSetting.get_settings()
+        self.existing_phone = '09121112233'
+        self.user = User.objects.create_user(
+            username=self.existing_phone,
+            phone_number=self.existing_phone,
+            first_name='علی',
+            last_name='کریمی',
+            password='securePassword123'
+        )
+
+    def test_check_phone_existing_user(self):
+        url = reverse('accounts:check_phone')
+        response = self.client.get(f"{url}?phone={self.existing_phone}")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['exists'])
+        self.assertEqual(data['name'], 'علی کریمی')
+
+    def test_check_phone_new_user(self):
+        url = reverse('accounts:check_phone')
+        response = self.client.get(f"{url}?phone=09359876543")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['exists'])
+
+    def test_login_otp_flow(self):
+        self.site_setting.login_method = 'otp'
+        self.site_setting.save()
+
+        # Step 1: Request OTP
+        new_phone = '09351234567'
+        response = self.client.post(reverse('accounts:login'), {
+            'phone_number': new_phone
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('accounts:verify_otp'), response.url)
+
+        # Step 2: Verify OTP created
+        from accounts.models import OTPCode
+        otp = OTPCode.objects.filter(phone_number=new_phone, is_used=False).first()
+        self.assertIsNotNone(otp)
+        self.assertEqual(len(otp.code), 6)
+
+        # Step 3: Submit invalid code
+        response = self.client.post(reverse('accounts:verify_otp'), {
+            'code': '000000'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'نامعتبر است یا منقضی شده است')
+
+        # Step 4: Submit valid code
+        response = self.client.post(reverse('accounts:verify_otp'), {
+            'code': otp.code
+        })
+        self.assertEqual(response.status_code, 302)
+
+        # User is created and logged in
+        new_user = User.objects.filter(phone_number=new_phone).first()
+        self.assertIsNotNone(new_user)
+        otp.refresh_from_db()
+        self.assertTrue(otp.is_used)
+
+    def test_login_password_existing_user(self):
+        self.site_setting.login_method = 'password'
+        self.site_setting.save()
+
+        response = self.client.post(reverse('accounts:login'), {
+            'phone_number': self.existing_phone,
+            'password': 'securePassword123'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.id)
+
+    def test_login_password_new_user_registration(self):
+        self.site_setting.login_method = 'password'
+        self.site_setting.save()
+
+        new_phone = '09901112233'
+        # First attempt without password prompts for password
+        response = self.client.post(reverse('accounts:login'), {
+            'phone_number': new_phone,
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['is_new_user'])
+
+        # Second attempt with password creates user and logs in
+        response = self.client.post(reverse('accounts:login'), {
+            'phone_number': new_phone,
+            'password': 'myNewPassword123'
+        })
+        self.assertEqual(response.status_code, 302)
+        created_user = User.objects.filter(phone_number=new_phone).first()
+        self.assertIsNotNone(created_user)
+        self.assertEqual(int(self.client.session['_auth_user_id']), created_user.id)
+

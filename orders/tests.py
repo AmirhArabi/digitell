@@ -575,3 +575,71 @@ class ProductPageAvailabilityTests(StockReservationBase):
         response = self.client.get(url)
         self.assertContains(response, 'ناموجود')
         self.assertRegex(response.content.decode(), r'type="submit"\s+disabled')
+
+
+class GuestCheckoutRegistrationTests(StockReservationBase):
+    """ثبت‌نام خودکار مشتریان مهمان، تعیین رمز عبور و ارسال پیامک مشخصات ورود."""
+
+    def test_guest_checkout_auto_registers_user_with_password(self):
+        self.add_to_cart_htmx(quantity=1)
+        phone = '09371239988'
+        self.assertFalse(User.objects.filter(phone_number=phone).exists())
+
+        response = self.checkout(
+            recipient_name='مهرداد حسینی',
+            recipient_phone=phone,
+            shipping_address='تهران، خیابان شریعتی، پلاک ۲۰',
+            account_password='superSecretPassword1',
+        )
+        self.assertEqual(response.status_code, 302)
+
+        # Check user was created
+        created_user = User.objects.filter(phone_number=phone).first()
+        self.assertIsNotNone(created_user)
+        self.assertEqual(created_user.first_name, 'مهرداد')
+        self.assertEqual(created_user.last_name, 'حسینی')
+        self.assertTrue(created_user.check_password('superSecretPassword1'))
+
+        # Check address was saved for user
+        self.assertTrue(created_user.addresses.filter(postal_address='تهران، خیابان شریعتی، پلاک ۲۰').exists())
+
+        # Check order is assigned to new user
+        order = Order.objects.get(recipient_phone=phone)
+        self.assertEqual(order.user, created_user)
+
+        # User is authenticated in current session
+        self.assertEqual(int(self.client.session['_auth_user_id']), created_user.id)
+
+    def test_guest_checkout_rejects_password_too_short(self):
+        self.add_to_cart_htmx(quantity=1)
+        phone = '09371239999'
+
+        response = self.checkout(
+            recipient_name='سارا کاظمی',
+            recipient_phone=phone,
+            shipping_address='تهران، پلاک ۱',
+            account_password='12',  # Less than 4 characters
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'حداقل ۴ نویسه')
+        self.assertFalse(User.objects.filter(phone_number=phone).exists())
+
+    def test_guest_checkout_with_existing_user_attaches_order(self):
+        self.add_to_cart_htmx(quantity=1)
+        existing_phone = '09129990000'
+        existing_user = User.objects.create_user(
+            username=existing_phone,
+            phone_number=existing_phone,
+            first_name='فرشاد',
+            password='oldPassword123'
+        )
+
+        response = self.checkout(
+            recipient_name='فرشاد نوری',
+            recipient_phone=existing_phone,
+            shipping_address='تهران، نیاوران',
+        )
+        self.assertEqual(response.status_code, 302)
+
+        order = Order.objects.get(recipient_phone=existing_phone)
+        self.assertEqual(order.user, existing_user)

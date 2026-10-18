@@ -43,11 +43,23 @@ class SiteSetting(models.Model):
     instagram = models.CharField(max_length=100, blank=True, default="zitro_ir", verbose_name="اینستاگرام")
     whatsapp = models.CharField(max_length=100, blank=True, verbose_name="واتساپ")
 
+    LOGIN_METHOD_CHOICES = [
+        ('otp', 'شماره تماس + کد تأیید یکبار مصرف (OTP)'),
+        ('password', 'شماره تماس + رمز عبور'),
+    ]
+
     shipping_cost = models.BigIntegerField(default=49000, verbose_name="هزینه ارسال پیش‌فرض (تومان)")
     free_shipping_threshold = models.BigIntegerField(
         default=0,
         verbose_name="آستانه ارسال رایگان (تومان)",
         help_text="سفارش‌های بالاتر از این مبلغ ارسال رایگان دارند؛ ۰ = غیرفعال"
+    )
+    login_method = models.CharField(
+        max_length=20,
+        choices=LOGIN_METHOD_CHOICES,
+        default='otp',
+        verbose_name="روش ورود و ثبت‌نام مشتریان",
+        help_text="تعیین شیوه احراز هویت با شماره تماس در فروشگاه: رمز عبور یا کد پیامکی OTP"
     )
     about_us = models.TextField(blank=True, verbose_name="درباره فروشگاه")
     footer_note = models.CharField(max_length=255, blank=True, verbose_name="متن پاورقی سایت")

@@ -1841,6 +1841,9 @@ def settings_view(request):
         settings_obj.whatsapp = request.POST.get('whatsapp', '').strip()
         settings_obj.shipping_cost = to_int(request.POST.get('shipping_cost'), settings_obj.shipping_cost)
         settings_obj.free_shipping_threshold = to_int(request.POST.get('free_shipping_threshold'), 0)
+        login_method = request.POST.get('login_method', '').strip()
+        if login_method in ['otp', 'password']:
+            settings_obj.login_method = login_method
         settings_obj.about_us = request.POST.get('about_us', '').strip()
         settings_obj.footer_note = request.POST.get('footer_note', '').strip()
         settings_obj.save()

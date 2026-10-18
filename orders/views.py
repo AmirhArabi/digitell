@@ -3,9 +3,11 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import login
 from cart.models import Cart
 from home.models import SiteSetting
-from accounts.models import Address
+from accounts.models import Address, User
+from accounts.services import normalize_phone, send_sms
 from .models import Coupon, InsufficientStockError, Order, OrderItem
 
 
@@ -131,18 +133,98 @@ def checkout_view(request):
             messages.error(request, "لطفاً تمام اطلاعات ستاره‌دار آدرس را وارد فرمایید.")
             return render(request, 'orders/checkout.html', {
                 'cart': cart,
-                'items': cart.items.select_related('product').all(),
+                'items': cart.items.select_related('product').prefetch_related('product__images').all(),
                 'addresses': addresses,
                 'default_address': default_address,
+                'recipient_name': recipient_name,
+                'recipient_phone': recipient_phone,
+                'province': province,
+                'city': city,
+                'shipping_address': shipping_address,
+                'postal_code': postal_code,
                 **summary,
             })
+
+        order_user = request.user if request.user.is_authenticated else None
+
+        # Guest user auto-registration if not previously registered
+        if not request.user.is_authenticated:
+            norm_phone = normalize_phone(recipient_phone)
+            existing_user = User.objects.filter(phone_number=norm_phone).first() or User.objects.filter(username=norm_phone).first()
+            if existing_user:
+                order_user = existing_user
+            else:
+                account_password = request.POST.get('account_password', '').strip()
+                if account_password and len(account_password) < 4:
+                    messages.error(request, "رمز عبور باید حداقل ۴ نویسه (کاراکتر) باشد.")
+                    return render(request, 'orders/checkout.html', {
+                        'cart': cart,
+                        'items': cart.items.select_related('product').prefetch_related('product__images').all(),
+                        'addresses': addresses,
+                        'default_address': default_address,
+                        'guest_needs_password': True,
+                        'recipient_name': recipient_name,
+                        'recipient_phone': recipient_phone,
+                        'province': province,
+                        'city': city,
+                        'shipping_address': shipping_address,
+                        'postal_code': postal_code,
+                        **summary,
+                    })
+
+                if not account_password:
+                    import random
+                    account_password = f"{random.randint(100000, 999999)}"
+
+                name_parts = recipient_name.split(' ', 1)
+                first_name = name_parts[0]
+                last_name = name_parts[1] if len(name_parts) > 1 else ''
+
+                new_user = User.objects.create_user(
+                    username=norm_phone,
+                    phone_number=norm_phone,
+                    first_name=first_name,
+                    last_name=last_name,
+                    password=account_password,
+                    is_verified=True,
+                )
+
+                # Save address in new user's dashboard
+                Address.objects.create(
+                    user=new_user,
+                    title="آدرس ثبت سفارش",
+                    recipient_name=recipient_name,
+                    recipient_phone=norm_phone,
+                    province=province or "تهران",
+                    city=city or "تهران",
+                    postal_address=shipping_address,
+                    postal_code=postal_code,
+                    is_default=True,
+                )
+
+                # Dispatch credentials SMS
+                sms_message = (
+                    f"سلام {recipient_name} عزیز،\n"
+                    f"حساب کاربری شما در فروشگاه دیجی تل با موفقیت ایجاد شد.\n"
+                    f"نام کاربری: {norm_phone}\n"
+                    f"رمز عبور: {account_password}\n"
+                    f"سفارش شما ثبت گردید و به درگاه پرداخت متصل می‌شوید."
+                )
+                send_sms(norm_phone, sms_message)
+
+                # Log the user into the current session
+                login(request, new_user)
+                if not cart.user:
+                    cart.user = new_user
+                    cart.save(update_fields=['user'])
+                order_user = new_user
 
         # Create Order and reserve its stock atomically: nothing is written to the
         # database unless every line can be reserved (no partial/oversold orders).
         try:
             with transaction.atomic():
                 order = Order.objects.create(
-                    user=request.user if request.user.is_authenticated else None,
+                    user=order_user,
                     recipient_name=recipient_name,
                     recipient_phone=recipient_phone,
                     province=province,
@@ -178,7 +260,7 @@ def checkout_view(request):
             messages.error(request, _stock_error_message(error))
             return render(request, 'orders/checkout.html', {
                 'cart': cart,
-                'items': cart.items.select_related('product').all(),
+                'items': cart.items.select_related('product').prefetch_related('product__images').all(),
                 'addresses': addresses,
                 'default_address': default_address,
                 **summary,
@@ -199,7 +281,7 @@ def checkout_view(request):
 
     return render(request, 'orders/checkout.html', {
         'cart': cart,
-        'items': cart.items.select_related('product').all(),
+        'items': cart.items.select_related('product').prefetch_related('product__images').all(),
         'addresses': addresses,
         'default_address': default_address,
         **_payment_summary(request, cart),

@@ -35,14 +35,23 @@
             <div id="appbar-main-row" class="appbar-main-row">
 
                 <!-- Logo & Brand (Right side in RTL) -->
-                <div id="appbar-logo-side" class="appbar-collapsible-item md:max-w-none">
+                <div id="appbar-logo-side" class="appbar-collapsible-item md:max-w-none flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- Mobile Hamburger Menu Button (Before Logo) -->
+                    <button type="button"
+                            id="header-mobile-hamburger-btn"
+                            onclick="if(typeof openMobileMenu === 'function'){openMobileMenu();}else{window.location.href='{% url 'accounts:profile' %}';}"
+                            class="lg:hidden p-1.5 -mr-1 text-slate-700 hover:text-blue-600 rounded-xl hover:bg-slate-100 transition active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
+                            title="منوی حساب کاربری"
+                            aria-label="باز کردن منو">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
                     <a href="{% url 'home:index' %}" class="flex items-center group py-0.5" title="دیجی‌تل">
                         <img src="{% static 'img/logo-digi.webp' %}" alt="دیجی‌تل" class="h-7 sm:h-8 md:h-9 lg:h-10 w-auto object-contain transition-all duration-300">
                     </a>
                 </div>
 
                 <!-- Search Box (Center, expands full width on click with animation) -->
-                <div id="appbar-search-wrapper" class="appbar-search-wrapper md:max-w-xl lg:max-w-2xl xl:max-w-3xl md:mx-6 lg:mx-8">
+                <div id="appbar-search-wrapper" class="appbar-search-wrapper max-w-[15rem] xs:max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-2 sm:mx-4 md:mx-6 lg:mx-8">
                     <form id="appbar-search-form" action="{% url 'products:shop' %}" method="GET" class="relative w-full" role="search">
                         <div id="appbar-search-box" class="appbar-search-box">
                             
@@ -556,6 +565,53 @@
         window.closeCartModal = function () {
             var container = document.getElementById('cart-modal-container');
             if (container) container.innerHTML = '';
+        };
+
+        // کپی شماره سفارش یا متن در کلیپ‌بورد با فیدبک بصری
+        window.copyToClipboard = function (text, btnElement) {
+            if (!text) return;
+            var cleanText = String(text).trim();
+
+            function showSuccessUI() {
+                if (!btnElement) return;
+                var origHtml = btnElement.innerHTML;
+                var origTitle = btnElement.getAttribute('title') || '';
+
+                btnElement.innerHTML = '<svg class="w-3.5 h-3.5 text-emerald-600 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg><span class="text-[10px] text-emerald-700 font-bold mr-1">کپی شد</span>';
+                btnElement.classList.add('bg-emerald-50', 'border-emerald-200');
+
+                setTimeout(function () {
+                    btnElement.innerHTML = origHtml;
+                    btnElement.classList.remove('bg-emerald-50', 'border-emerald-200');
+                    if (origTitle) btnElement.setAttribute('title', origTitle);
+                }, 2000);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cleanText).then(showSuccessUI).catch(function () {
+                    fallbackCopy(cleanText);
+                });
+            } else {
+                fallbackCopy(cleanText);
+            }
+
+            function fallbackCopy(str) {
+                var textArea = document.createElement("textarea");
+                textArea.value = str;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showSuccessUI();
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                }
+                document.body.removeChild(textArea);
+            }
         };
     </script>
 

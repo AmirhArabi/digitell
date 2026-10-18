@@ -4,7 +4,9 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import User, Address, Favorite
+from home.models import SiteSetting
+from .models import User, Address, Favorite, OTPCode
+from .services import normalize_phone, send_sms, generate_otp, verify_otp
 from products.models import Product
 
 
@@ -15,33 +17,207 @@ def to_persian_digits(val):
     return str(val).translate(trans)
 
 
+def check_phone_view(request):
+    """بررسی وضعیت ثبت‌نام شماره همراه (برای اعتبارسنجی آنی در لاگین و تسویه حساب)."""
+    raw_phone = request.GET.get('phone') or request.POST.get('phone', '')
+    phone = normalize_phone(raw_phone)
+    if not phone or len(phone) < 10:
+        return JsonResponse({'status': 'invalid', 'exists': False, 'message': 'شماره نامعتبر است'})
+    user = User.objects.filter(phone_number=phone).first() or User.objects.filter(username=phone).first()
+    if user:
+        full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+        return JsonResponse({
+            'status': 'ok',
+            'phone': phone,
+            'exists': True,
+            'name': full_name,
+            'full_name': full_name,
+        })
+    return JsonResponse({'status': 'ok', 'phone': phone, 'exists': False})
+
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('home:index')
 
+    site_settings = SiteSetting.get_settings()
+    login_method = getattr(site_settings, 'login_method', 'otp')
+    next_url = request.GET.get('next') or request.POST.get('next') or 'home:index'
+
     if request.method == 'POST':
-        login_id = request.POST.get('login_id', '').strip()
-        password = request.POST.get('password', '')
+        login_input = (request.POST.get('phone_number') or request.POST.get('login_id') or '').strip()
+        norm_phone = normalize_phone(login_input)
+        is_phone = bool(norm_phone and norm_phone.startswith('09') and len(norm_phone) == 11)
 
-        # Allow login by username OR phone_number
-        user = authenticate(request, username=login_id, password=password)
-        if not user:
-            # Try phone_number lookup
-            try:
-                user_obj = User.objects.get(phone_number=login_id)
+        # Mode: OTP
+        if login_method == 'otp' and is_phone:
+            code, _ = generate_otp(norm_phone)
+            request.session['pending_auth_phone'] = norm_phone
+            request.session['auth_next_url'] = next_url
+            messages.success(request, f"کد تأیید ۶ رقمی به شماره {norm_phone} پیامک شد.")
+            return redirect('accounts:verify_otp')
+
+        # Mode: Password (or non-phone username fallback e.g. 'admin')
+        password = request.POST.get('password', '').strip()
+
+        if is_phone:
+            user_obj = User.objects.filter(phone_number=norm_phone).first() or User.objects.filter(username=norm_phone).first()
+            if user_obj:
+                if not password:
+                    messages.error(request, "لطفاً رمز عبور خود را وارد نمایید.")
+                    return render(request, 'accounts/login.html', {
+                        'login_method': login_method,
+                        'phone_number': norm_phone,
+                        'user_exists': True,
+                        'next_url': next_url,
+                    })
                 user = authenticate(request, username=user_obj.username, password=password)
-            except User.DoesNotExist:
-                user = None
+                if user:
+                    login(request, user)
+                    messages.success(request, f"خوش آمدید، {user.first_name or user.username} عزیز!")
+                    return redirect(next_url)
+                else:
+                    messages.error(request, "رمز عبور وارد شده اشتباه است.")
+                    return render(request, 'accounts/login.html', {
+                        'login_method': login_method,
+                        'phone_number': norm_phone,
+                        'user_exists': True,
+                        'next_url': next_url,
+                    })
+            else:
+                # User not registered yet
+                if not password:
+                    messages.info(request, "این شماره قبلاً ثبت‌نام نشده است. لطفاً یک رمز عبور برای حساب خود تعیین فرمایید تا ثبت‌نام شما کامل شود.")
+                    return render(request, 'accounts/login.html', {
+                        'login_method': login_method,
+                        'phone_number': norm_phone,
+                        'user_exists': False,
+                        'is_new_user': True,
+                        'next_url': next_url,
+                    })
+                if len(password) < 4:
+                    messages.error(request, "رمز عبور باید حداقل ۴ نویسه (کاراکتر) باشد.")
+                    return render(request, 'accounts/login.html', {
+                        'login_method': login_method,
+                        'phone_number': norm_phone,
+                        'user_exists': False,
+                        'is_new_user': True,
+                        'next_url': next_url,
+                    })
 
-        if user:
-            login(request, user)
-            messages.success(request, f"خوش آمدید، {user.first_name or user.username} عزیز!")
-            next_url = request.GET.get('next')
-            return redirect(next_url or 'home:index')
+                new_user = User.objects.create_user(
+                    username=norm_phone,
+                    phone_number=norm_phone,
+                    password=password,
+                    is_verified=True,
+                )
+                login(request, new_user)
+                send_sms(norm_phone, f"به دیجی تل خوش آمدید!\nحساب کاربری شما با شماره {norm_phone} با موفقیت ساخته شد.")
+                messages.success(request, "حساب کاربری شما با موفقیت ساخته شد و وارد شدید.")
+                return redirect(next_url)
         else:
-            messages.error(request, "نام کاربری/شماره موبایل یا رمز عبور اشتباه است.")
+            # Fallback for standard username e.g. admin
+            if not login_input:
+                messages.error(request, "لطفاً شماره تلفن همراه معتبر وارد نمایید.")
+                return render(request, 'accounts/login.html', {'login_method': login_method, 'next_url': next_url})
 
-    return render(request, 'accounts/login.html')
+            user = authenticate(request, username=login_input, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, f"خوش آمدید، {user.first_name or user.username} عزیز!")
+                return redirect(next_url)
+            else:
+                messages.error(request, "نام کاربری یا رمز عبور اشتباه است.")
+
+    return render(request, 'accounts/login.html', {
+        'login_method': login_method,
+        'next_url': next_url,
+    })
+
+
+def verify_otp_view(request):
+    """صفحه دریافت و اعتبارسنجی خودکار کد یکبار مصرف ۶ رقمی."""
+    if request.user.is_authenticated:
+        return redirect('home:index')
+
+    phone = request.session.get('pending_auth_phone') or request.GET.get('phone', '')
+    phone = normalize_phone(phone)
+    if not phone:
+        messages.warning(request, "لطفاً ابتدا شماره همراه خود را وارد فرمایید.")
+        return redirect('accounts:login')
+
+    next_url = request.session.get('auth_next_url') or request.GET.get('next') or 'home:index'
+
+    if request.method == 'POST':
+        code = request.POST.get('code', '').strip()
+        if not code:
+            digits = [request.POST.get(f'digit_{i}', '').strip() for i in range(1, 7)]
+            code = ''.join(digits)
+
+        code = normalize_phone(code)
+
+        if not code or len(code) != 6:
+            messages.error(request, "کد تأیید باید دقیقاً ۶ رقم باشد.")
+            return render(request, 'accounts/verify_otp.html', {'phone': phone, 'next_url': next_url})
+
+        if verify_otp(phone, code):
+            user = User.objects.filter(phone_number=phone).first() or User.objects.filter(username=phone).first()
+            if user:
+                login(request, user)
+                messages.success(request, f"خوش آمدید، {user.first_name or user.username} عزیز!")
+            else:
+                user = User.objects.create_user(
+                    username=phone,
+                    phone_number=phone,
+                    is_verified=True,
+                )
+                login(request, user)
+                send_sms(phone, f"به دیجی تل خوش آمدید!\nحساب کاربری شما با شماره {phone} با موفقیت ایجاد شد.")
+                messages.success(request, "ثبت‌نام شما با موفقیت انجام شد و به حساب خود وارد شدید.")
+
+            if 'pending_auth_phone' in request.session:
+                del request.session['pending_auth_phone']
+            if 'auth_next_url' in request.session:
+                del request.session['auth_next_url']
+
+            return redirect(next_url)
+        else:
+            messages.error(request, "کد تأیید وارد شده نامعتبر است یا منقضی شده است.")
+
+    from django.conf import settings
+    recent_otp = None
+    if settings.DEBUG:
+        recent_otp = OTPCode.objects.filter(phone_number=phone, is_used=False).order_by('-created_at').first()
+
+    return render(request, 'accounts/verify_otp.html', {
+        'phone': phone,
+        'next_url': next_url,
+        'dev_code': recent_otp.code if recent_otp else None,
+    })
+
+
+def resend_otp_view(request):
+    """ارسال مجدد کد یکبار مصرف به شماره در انتظار."""
+    if request.user.is_authenticated:
+        return redirect('home:index')
+
+    phone = request.session.get('pending_auth_phone') or request.GET.get('phone') or request.POST.get('phone', '')
+    phone = normalize_phone(phone)
+    if not phone:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'شماره همراه یافت نشد.'}, status=400)
+        messages.error(request, "شماره همراه یافت نشد.")
+        return redirect('accounts:login')
+
+    code, _ = generate_otp(phone)
+    msg = f"کد تأیید جدید برای شماره {phone} پیامک شد."
+    messages.success(request, msg)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'ok', 'message': msg, 'code': code})
+
+    return redirect('accounts:verify_otp')
+
 
 
 def register_view(request):
@@ -218,6 +394,40 @@ def profile_view(request):
 
     recent_orders = orders[:5]
 
+    # User reviews (نظرات ثبت شده کاربر)
+    reviews = (
+        request.user.product_reviews
+        .select_related('product', 'product__category')
+        .prefetch_related('product__images')
+        .order_by('-created_at')
+        .all()
+    )
+    reviews_count = reviews.count()
+
+    # User tickets (تیکت‌های پشتیبانی کاربر)
+    tickets = (
+        request.user.tickets
+        .prefetch_related('messages')
+        .order_by('-created_at')
+        .all()
+    )
+    tickets_count = tickets.count()
+
+    # Persian dates for reviews and tickets
+    try:
+        import jdatetime
+        for r in reviews:
+            rj = jdatetime.datetime.fromgregorian(datetime=r.created_at)
+            r.jalali_date = to_persian_digits(rj.strftime("%d %B %Y"))
+        for t in tickets:
+            tj = jdatetime.datetime.fromgregorian(datetime=t.created_at)
+            t.jalali_date = to_persian_digits(tj.strftime("%d %B %Y - %H:%M"))
+    except Exception:
+        for r in reviews:
+            r.jalali_date = r.created_at.strftime("%Y/%m/%d")
+        for t in tickets:
+            t.jalali_date = t.created_at.strftime("%Y/%m/%d")
+
     context = {
         'orders': orders,
         'recent_orders': recent_orders,
@@ -232,6 +442,10 @@ def profile_view(request):
         'latest_favorite': latest_favorite,
         'addresses': addresses,
         'default_address': default_address,
+        'reviews': reviews,
+        'reviews_count': reviews_count,
+        'tickets': tickets,
+        'tickets_count': tickets_count,
         'persian_date_str': persian_date_str,
         'persian_join_year': persian_join_year,
     }

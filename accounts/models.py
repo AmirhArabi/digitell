@@ -80,3 +80,25 @@ class Favorite(models.Model):
     def __str__(self):
         return f"{self.user} - {self.product}"
 
+
+class OTPCode(models.Model):
+    phone_number = models.CharField(max_length=15, db_index=True, verbose_name="شماره موبایل")
+    code = models.CharField(max_length=6, verbose_name="کد تأیید")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="زمان ایجاد")
+    expires_at = models.DateTimeField(verbose_name="زمان انقضا")
+    is_used = models.BooleanField(default=False, verbose_name="استفاده شده")
+
+    class Meta:
+        verbose_name = "کد تأیید یکبار مصرف (OTP)"
+        verbose_name_plural = "کدهای تأیید یکبار مصرف (OTP)"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.phone_number}: {self.code}"
+
+    @property
+    def is_valid(self):
+        from django.utils import timezone
+        return not self.is_used and timezone.now() <= self.expires_at
+
+
