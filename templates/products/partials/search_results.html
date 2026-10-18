@@ -1,5 +1,23 @@
-{% if products %}
+{% if categories or products %}
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden divide-y divide-slate-100 max-h-96 overflow-y-auto">
+        {% for cat in categories %}
+            <a href="{{ cat.get_absolute_url }}" class="flex items-center gap-3.5 p-3 bg-blue-50/70 hover:bg-blue-100/70 transition group">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold text-blue-700 bg-blue-100/90 px-2 py-0.5 rounded-full">دسته‌بندی</span>
+                        <h5 class="text-xs font-bold text-slate-800 truncate group-hover:text-blue-700 transition">{{ cat.name }}</h5>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-0.5">مشاهده همه کالاهای این دسته‌بندی</p>
+                </div>
+                <div class="text-left shrink-0 text-blue-600 group-hover:-translate-x-1 transition-transform">
+                    <svg class="w-4 h-4"><use href="#icon-chevron-left"/></svg>
+                </div>
+            </a>
+        {% endfor %}
+
         {% for p in products %}
             <a href="{{ p.get_absolute_url }}" class="flex items-center gap-3.5 p-3 hover:bg-slate-50 transition group">
                 <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center p-1.5 shrink-0 overflow-hidden">
@@ -24,6 +42,7 @@
                 </div>
             </a>
         {% endfor %}
+
         <div class="p-2.5 bg-slate-50 text-center">
             <a href="{% url 'products:shop' %}?q={{ query }}" class="text-xs font-bold text-blue-600 hover:text-blue-700">
                 مشاهده تمام نتایج برای "{{ query }}" &larr;
@@ -32,6 +51,6 @@
     </div>
 {% elif query %}
     <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-4 text-center text-xs text-slate-500">
-        محصولی با عبارت «{{ query }}» پیدا نشد.
+        نتیجه‌ای برای «{{ query }}» پیدا نشد.
     </div>
 {% endif %}

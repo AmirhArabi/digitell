@@ -71,6 +71,13 @@ class ZitroShopTestCase(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "Galaxy A55")
 
+        # Test search query matching a category prioritizes category first
+        res_cat = self.client.get(reverse('products:live_search'), {'q': 'موبایل'})
+        self.assertEqual(res_cat.status_code, 200)
+        self.assertContains(res_cat, "دسته‌بندی")
+        self.assertContains(res_cat, "گوشی موبایل")
+        self.assertIn(self.category, res_cat.context['categories'])
+
     def test_cart_add_and_htmx_flow(self):
         # HTMX Add to cart
         add_url = reverse('cart:cart_add', kwargs={'product_id': self.product.id})

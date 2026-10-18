@@ -13,4 +13,5 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
     path('addresses/add-ajax/', views.add_address_ajax_view, name='add_address_ajax'),
     path('favorites/toggle/<int:product_id>/', views.toggle_favorite_view, name='toggle_favorite'),
+    path('deposit/', views.deposit_view, name='deposit'),
 ]

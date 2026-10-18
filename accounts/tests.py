@@ -338,3 +338,49 @@ class PhoneAuthenticationTests(TestCase):
         self.assertFalse(user.email_marketing_subscribed)
         self.assertEqual(user.jalali_birth_date, '1375/08/20')
 
+
+class DepositViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(
+            username='09129998877',
+            phone_number='09129998877',
+            first_name='محسن',
+            last_name='یگانه',
+            password='password123'
+        )
+
+    def test_anonymous_deposit_page_loads(self):
+        response = self.client.get(reverse('accounts:deposit'))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['is_readonly'])
+        self.assertContains(response, 'واریز وجه')
+
+    def test_authenticated_deposit_page_auto_fills_and_readonly(self):
+        self.client.login(username='09129998877', password='password123')
+        response = self.client.get(reverse('accounts:deposit'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['is_readonly'])
+        self.assertEqual(response.context['full_name'], 'محسن یگانه')
+        self.assertEqual(response.context['phone_number'], '09129998877')
+
+    def test_deposit_post_success(self):
+        self.client.login(username='09129998877', password='password123')
+        response = self.client.post(reverse('accounts:deposit'), {
+            'amount': '1,500,000',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['success'])
+        self.assertEqual(response.context['deposit_amount'], 1500000)
+        self.assertTrue(response.context['tracking_code'].startswith('DEP-'))
+
+    def test_deposit_post_invalid_amount(self):
+        response = self.client.post(reverse('accounts:deposit'), {
+            'full_name': 'سارا احمدی',
+            'phone_number': '09351112233',
+            'amount': '500',  # کمتر از حداقل ۱۰۰۰ تومان
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['success'])
+
+

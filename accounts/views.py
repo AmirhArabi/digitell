@@ -596,3 +596,77 @@ def add_address_ajax_view(request):
         }
     })
 
+
+def deposit_view(request):
+    """صفحه و فرم واریز وجه با قابلیت تکمیل خودکار اطلاعات کاربران لاگین‌شده و محاسبه حروف تومان."""
+    import random
+    is_authenticated = request.user.is_authenticated
+    user = request.user if is_authenticated else None
+
+    # استخراج مقادیر پیش‌فرض
+    full_name = ""
+    phone_number = ""
+    if is_authenticated:
+        full_name = (f"{user.first_name} {user.last_name}".strip()) or user.username
+        phone_number = user.phone_number or getattr(user, 'username', '')
+
+    context = {
+        'full_name': full_name,
+        'phone_number': phone_number,
+        'is_readonly': is_authenticated,
+        'success': False,
+        'tracking_code': None,
+        'deposit_amount': None,
+    }
+
+    if request.method == 'POST':
+        # دریافت اطلاعات
+        if is_authenticated:
+            posted_name = full_name
+            posted_phone = phone_number
+        else:
+            posted_name = request.POST.get('full_name', '').strip()
+            posted_phone = request.POST.get('phone_number', '').strip()
+
+        amount_raw = request.POST.get('amount', '').strip()
+
+        # تمیزکاری مبلغ: حذف کاما، فاصله و تبدیل ارقام فارسی به انگلیسی
+        clean_amount = amount_raw.replace(',', '').replace('،', '').replace(' ', '')
+        for fa, en in zip('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789'):
+            clean_amount = clean_amount.replace(fa, en)
+
+        errors = []
+        if not posted_name:
+            errors.append('لطفاً نام و نام خانوادگی را وارد فرمایید.')
+        if not posted_phone:
+            errors.append('لطفاً شماره تماس را وارد فرمایید.')
+
+        try:
+            amount_val = int(clean_amount)
+            if amount_val < 1000:
+                errors.append('حداقل مبلغ واریزی ۱,۰۰۰ تومان می‌باشد.')
+        except (ValueError, TypeError):
+            errors.append('مبلغ واریزی نامعتبر است.')
+            amount_val = None
+
+        if errors:
+            for err in errors:
+                messages.error(request, err)
+            context['full_name'] = posted_name
+            context['phone_number'] = posted_phone
+            context['amount_value'] = amount_raw
+            return render(request, 'accounts/deposit.html', context)
+
+        # ساخت کد رهگیری و نمایش فیدبک موفقیت
+        tracking_code = f"DEP-{random.randint(100000, 999999)}"
+        context['success'] = True
+        context['tracking_code'] = tracking_code
+        context['deposit_amount'] = amount_val
+        context['full_name'] = posted_name
+        context['phone_number'] = posted_phone
+        messages.success(request, f'درخواست واریز مبلغ {amount_val:,} تومان با موفقیت ثبت شد.')
+        return render(request, 'accounts/deposit.html', context)
+
+    return render(request, 'accounts/deposit.html', context)
+
+

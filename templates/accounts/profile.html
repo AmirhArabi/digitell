@@ -1070,9 +1070,14 @@
                                             تاریخ تولد (شمسی)
                                             <span class="text-rose-500">*</span>
                                         </label>
-                                        <input type="text" name="birth_date" value="{{ user.jalali_birth_date }}" dir="ltr" placeholder="مثلاً: 1375/08/20"
-                                               class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono focus:bg-white focus:outline-none focus:border-blue-500 font-medium">
-                                        <span class="text-[10px] text-slate-400 mt-1 block">فرمت: سال/ماه/روز (مثال: ۱۳۷۵/۰۶/۱۵)</span>
+                                        <div class="relative">
+                                            <input type="text" id="id_birth_date" name="birth_date" value="{{ user.jalali_birth_date }}" dir="ltr" placeholder="مثلاً: 1375/08/20" readonly
+                                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono focus:bg-white focus:outline-none focus:border-blue-500 font-medium cursor-pointer transition">
+                                            <button type="button" id="btn-open-birthdate-picker" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition" aria-label="انتخاب تاریخ تولد">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                            </button>
+                                        </div>
+                                        <span class="text-[10px] text-slate-400 mt-1 block">جهت انتخاب تاریخ تولد روی فیلد کلیک کنید (فرمت: سال/ماه/روز)</span>
                                     </div>
                                     <div>
                                         <label class="block font-semibold text-slate-600 mb-1.5">جنسیت</label>
@@ -1452,5 +1457,259 @@ document.addEventListener('DOMContentLoaded', function() {
         switchTab(tab);
     }
 });
+
+// =========================================================================
+// iOS-Style Jalali Date Picker for User Birthdate
+// =========================================================================
+(function () {
+    const input = document.getElementById('id_birth_date');
+    const openBtn = document.getElementById('btn-open-birthdate-picker');
+    const modal = document.getElementById('ios-datepicker-modal');
+    const backdrop = document.getElementById('ios-datepicker-backdrop');
+    const cancelBtn = document.getElementById('ios-dp-cancel');
+    const confirmBtn = document.getElementById('ios-dp-confirm');
+
+    const daysContainer = document.getElementById('ios-dp-days');
+    const monthsContainer = document.getElementById('ios-dp-months');
+    const yearsContainer = document.getElementById('ios-dp-years');
+
+    if (!input || !modal) return;
+
+    const PERSIAN_MONTHS = [
+        'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+        'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+    ];
+
+    const START_YEAR = 1320;
+    const END_YEAR = 1404;
+    const ITEM_HEIGHT = 40; // پیکسل ارتفاع هر آیتم چرخ دنده
+
+    let currentSelectedYear = 1375;
+    let currentSelectedMonth = 1; // 1 to 12
+    let currentSelectedDay = 15;
+
+    // ایجاد لیست سال‌ها
+    function buildYears() {
+        yearsContainer.innerHTML = '';
+        for (let y = START_YEAR; y <= END_YEAR; y++) {
+            const item = document.createElement('div');
+            item.className = 'ios-picker-item h-10 flex items-center justify-center snap-center text-sm font-semibold transition cursor-pointer text-slate-400 hover:text-slate-800';
+            item.dataset.value = y;
+            item.textContent = y;
+            item.addEventListener('click', () => scrollToItem(yearsContainer, y - START_YEAR));
+            yearsContainer.appendChild(item);
+        }
+    }
+
+    // ایجاد لیست ماه‌ها
+    function buildMonths() {
+        monthsContainer.innerHTML = '';
+        PERSIAN_MONTHS.forEach((m, idx) => {
+            const item = document.createElement('div');
+            item.className = 'ios-picker-item h-10 flex items-center justify-center snap-center text-sm font-semibold transition cursor-pointer text-slate-400 hover:text-slate-800';
+            item.dataset.value = idx + 1;
+            item.textContent = m;
+            item.addEventListener('click', () => scrollToItem(monthsContainer, idx));
+            monthsContainer.appendChild(item);
+        });
+    }
+
+    // ایجاد لیست روزها بر اساس ماه جاری
+    function buildDays() {
+        const maxDays = currentSelectedMonth <= 6 ? 31 : (currentSelectedMonth <= 11 ? 30 : 29);
+        if (currentSelectedDay > maxDays) currentSelectedDay = maxDays;
+
+        daysContainer.innerHTML = '';
+        for (let d = 1; d <= maxDays; d++) {
+            const item = document.createElement('div');
+            item.className = 'ios-picker-item h-10 flex items-center justify-center snap-center text-sm font-semibold transition cursor-pointer text-slate-400 hover:text-slate-800';
+            item.dataset.value = d;
+            item.textContent = String(d).padStart(2, '0');
+            item.addEventListener('click', () => scrollToItem(daysContainer, d - 1));
+            daysContainer.appendChild(item);
+        }
+    }
+
+    function scrollToItem(container, index, smooth = true) {
+        container.scrollTo({
+            top: index * ITEM_HEIGHT,
+            behavior: smooth ? 'smooth' : 'auto'
+        });
+    }
+
+    function updateActiveStyles(container) {
+        const items = container.querySelectorAll('.ios-picker-item');
+        const selectedIndex = Math.round(container.scrollTop / ITEM_HEIGHT);
+        items.forEach((item, idx) => {
+            if (idx === selectedIndex) {
+                item.classList.remove('text-slate-400', 'font-normal');
+                item.classList.add('text-blue-600', 'font-black', 'text-base', 'scale-105');
+            } else {
+                item.classList.remove('text-blue-600', 'font-black', 'text-base', 'scale-105');
+                item.classList.add('text-slate-400', 'font-normal');
+            }
+        });
+        return selectedIndex;
+    }
+
+    // لیسنر اسکرول برای هر ستون
+    function setupScrollListener(container, callback) {
+        let timeout;
+        container.addEventListener('scroll', () => {
+            updateActiveStyles(container);
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const idx = updateActiveStyles(container);
+                if (callback) callback(idx);
+            }, 80);
+        }, { passive: true });
+    }
+
+    function openPicker() {
+        // خواندن تاریخ فعلی از اینپوت
+        const val = (input.value || '').trim();
+        if (val) {
+            const clean = val.replace(/-/g, '/');
+            const parts = clean.split('/');
+            if (parts.length === 3) {
+                const y = parseInt(parts[0], 10);
+                const m = parseInt(parts[1], 10);
+                const d = parseInt(parts[2], 10);
+                if (!isNaN(y) && y >= START_YEAR && y <= END_YEAR) currentSelectedYear = y;
+                if (!isNaN(m) && m >= 1 && m <= 12) currentSelectedMonth = m;
+                if (!isNaN(d) && d >= 1 && d <= 31) currentSelectedDay = d;
+            }
+        }
+
+        buildYears();
+        buildMonths();
+        buildDays();
+
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        // اسکرول به مقادیر اولیه
+        setTimeout(() => {
+            scrollToItem(yearsContainer, currentSelectedYear - START_YEAR, false);
+            scrollToItem(monthsContainer, currentSelectedMonth - 1, false);
+            scrollToItem(daysContainer, currentSelectedDay - 1, false);
+
+            setTimeout(() => {
+                updateActiveStyles(yearsContainer);
+                updateActiveStyles(monthsContainer);
+                updateActiveStyles(daysContainer);
+            }, 50);
+        }, 30);
+    }
+
+    function closePicker() {
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
+    function confirmPicker() {
+        const yIndex = Math.round(yearsContainer.scrollTop / ITEM_HEIGHT);
+        const mIndex = Math.round(monthsContainer.scrollTop / ITEM_HEIGHT);
+        const dIndex = Math.round(daysContainer.scrollTop / ITEM_HEIGHT);
+
+        const year = START_YEAR + Math.max(0, Math.min(yIndex, END_YEAR - START_YEAR));
+        const month = Math.max(1, Math.min(mIndex + 1, 12));
+        const maxDays = month <= 6 ? 31 : (month <= 11 ? 30 : 29);
+        const day = Math.max(1, Math.min(dIndex + 1, maxDays));
+
+        const formatted = `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}`;
+        input.value = formatted;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        closePicker();
+    }
+
+    // اینیشیالایز شنوندگان
+    setupScrollListener(yearsContainer, (idx) => {
+        currentSelectedYear = START_YEAR + idx;
+    });
+
+    setupScrollListener(monthsContainer, (idx) => {
+        const newMonth = idx + 1;
+        if (newMonth !== currentSelectedMonth) {
+            currentSelectedMonth = newMonth;
+            buildDays();
+            setTimeout(() => {
+                scrollToItem(daysContainer, Math.min(currentSelectedDay - 1, (currentSelectedMonth <= 6 ? 30 : 29)), false);
+                updateActiveStyles(daysContainer);
+            }, 20);
+        }
+    });
+
+    setupScrollListener(daysContainer, (idx) => {
+        currentSelectedDay = idx + 1;
+    });
+
+    input.addEventListener('click', (e) => {
+        e.preventDefault();
+        openPicker();
+    });
+
+    if (openBtn) {
+        openBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPicker();
+        });
+    }
+
+    if (cancelBtn) cancelBtn.addEventListener('click', closePicker);
+    if (confirmBtn) confirmBtn.addEventListener('click', confirmPicker);
+    if (backdrop) backdrop.addEventListener('click', closePicker);
+})();
 </script>
+
+<!-- iOS Style Jalali Date Picker Modal -->
+<div id="ios-datepicker-modal" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
+    <!-- Backdrop -->
+    <div id="ios-datepicker-backdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"></div>
+
+    <!-- iOS Wheel Bottom Sheet / Modal Card -->
+    <div class="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm bg-[#F2F2F7] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border border-slate-200/80 transition-all duration-300">
+        <!-- iOS Header Toolbar -->
+        <div class="flex items-center justify-between px-5 py-3.5 bg-white border-b border-slate-200/80">
+            <button type="button" id="ios-dp-cancel" class="text-sm font-semibold text-rose-500 hover:text-rose-600 active:opacity-70 transition">
+                انصراف
+            </button>
+            <span class="text-xs font-bold text-slate-800">
+                انتخاب تاریخ تولد
+            </span>
+            <button type="button" id="ios-dp-confirm" class="text-sm font-bold text-blue-600 hover:text-blue-700 active:opacity-70 transition">
+                تأیید
+            </button>
+        </div>
+
+        <!-- 3 Wheels Container (روز / ماه / سال) -->
+        <div class="relative py-4 px-4 select-none bg-white">
+            <!-- Center Selection Highlight Slot (iOS Glass Indicator) -->
+            <div class="pointer-events-none absolute inset-x-4 top-1/2 -translate-y-1/2 h-10 rounded-xl bg-slate-100 border-y border-slate-200/90 z-10"></div>
+
+            <div class="grid grid-cols-3 gap-2 h-44 relative" dir="rtl">
+                <!-- Day Column -->
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-slate-400 mb-1 z-20">روز</span>
+                    <div id="ios-dp-days" class="w-full h-36 overflow-y-auto no-scrollbar scroll-smooth snap-y snap-mandatory py-13 text-center">
+                    </div>
+                </div>
+
+                <!-- Month Column -->
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-slate-400 mb-1 z-20">ماه</span>
+                    <div id="ios-dp-months" class="w-full h-36 overflow-y-auto no-scrollbar scroll-smooth snap-y snap-mandatory py-13 text-center">
+                    </div>
+                </div>
+
+                <!-- Year Column -->
+                <div class="flex flex-col items-center">
+                    <span class="text-[10px] font-bold text-slate-400 mb-1 z-20">سال</span>
+                    <div id="ios-dp-years" class="w-full h-36 overflow-y-auto no-scrollbar scroll-smooth snap-y snap-mandatory py-13 text-center">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

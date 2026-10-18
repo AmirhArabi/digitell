@@ -624,7 +624,15 @@ def product_review_view(request, pk):
 def live_search_view(request):
     q = request.GET.get('q', '').strip()
     if len(q) < 2:
-        return render(request, 'products/partials/search_results.html', {'products': []})
+        return render(request, 'products/partials/search_results.html', {'products': [], 'categories': []})
+
+    # بررسی دسته‌بندی‌ها در ابتدا (اگر کلمه سرچ شده دسته بندی بود در ردیف اول نمایش داده شود)
+    matched_categories = list(
+        Category.objects.filter(
+            Q(name__icontains=q) | Q(name_en__icontains=q),
+            is_active=True
+        )[:3]
+    )
 
     products = Product.objects.filter(
         Q(title__icontains=q) |
@@ -633,4 +641,12 @@ def live_search_view(request):
         Q(brand__name__icontains=q)
     ).filter(is_active=True)[:6]
 
-    return render(request, 'products/partials/search_results.html', {'products': products, 'query': q})
+    return render(
+        request,
+        'products/partials/search_results.html',
+        {
+            'products': products,
+            'categories': matched_categories,
+            'query': q,
+        }
+    )
