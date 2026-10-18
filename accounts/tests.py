@@ -286,3 +286,55 @@ class PhoneAuthenticationTests(TestCase):
         self.assertIsNotNone(created_user)
         self.assertEqual(int(self.client.session['_auth_user_id']), created_user.id)
 
+    def test_user_profile_completion_properties(self):
+        user = User.objects.create_user(
+            username='incomplete_user',
+            phone_number='09120001122',
+            first_name='علی',
+            last_name='کریمی',
+            password='password123'
+        )
+        self.assertFalse(user.is_profile_complete)
+        self.assertIn("کد ملی", user.missing_fields_list)
+        self.assertIn("تاریخ تولد", user.missing_fields_list)
+
+        # Update supplementary fields
+        user.national_code = '0012345678'
+        import datetime
+        user.birth_date = datetime.date(1996, 11, 10)
+        user.save()
+
+        self.assertTrue(user.is_profile_complete)
+        self.assertEqual(user.jalali_birth_date, '1375/08/20')
+
+    def test_profile_update_supplementary_post(self):
+        user = User.objects.create_user(
+            username='supp_user',
+            phone_number='09123334455',
+            password='password123'
+        )
+        self.client.login(username='supp_user', password='password123')
+        response = self.client.post(reverse('accounts:profile'), {
+            'action': 'update_supplementary',
+            'first_name': 'سهراب',
+            'last_name': 'سپهری',
+            'national_code': '0011223344',
+            'birth_date': '1375/08/20',
+            'gender': 'male',
+            'job_title': 'نویسنده',
+            'sheba_number': '123456789012345678901234',
+            'card_number': '6037991812345678',
+            'sms_marketing': 'on',
+        })
+        self.assertEqual(response.status_code, 302)
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'سهراب')
+        self.assertEqual(user.last_name, 'سپهری')
+        self.assertEqual(user.national_code, '0011223344')
+        self.assertEqual(user.gender, 'male')
+        self.assertEqual(user.job_title, 'نویسنده')
+        self.assertTrue(user.sheba_number.startswith('IR'))
+        self.assertTrue(user.sms_marketing_subscribed)
+        self.assertFalse(user.email_marketing_subscribed)
+        self.assertEqual(user.jalali_birth_date, '1375/08/20')
+

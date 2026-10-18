@@ -336,6 +336,73 @@ def profile_view(request):
                 messages.success(request, "کالا از لیست علاقه‌مندی‌ها حذف شد.")
             return redirect('accounts:profile')
 
+        elif action == 'update_supplementary':
+            user = request.user
+            first_name = request.POST.get('first_name', '').strip()
+            last_name = request.POST.get('last_name', '').strip()
+            national_code = request.POST.get('national_code', '').strip()
+            birth_date_str = request.POST.get('birth_date', '').strip()
+            gender = request.POST.get('gender', '').strip()
+            job_title = request.POST.get('job_title', '').strip()
+            sheba_number = request.POST.get('sheba_number', '').strip()
+            card_number = request.POST.get('card_number', '').strip()
+            sms_marketing = request.POST.get('sms_marketing') == 'on'
+            email_marketing = request.POST.get('email_marketing') == 'on'
+
+            if first_name:
+                user.first_name = first_name
+            if last_name:
+                user.last_name = last_name
+
+            # Parse birth date (supports Jalali 1375/05/20 or YYYY-MM-DD)
+            parsed_birth_date = None
+            if birth_date_str:
+                clean_date = birth_date_str.replace('-', '/').strip()
+                for fa, en in zip('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789'):
+                    clean_date = clean_date.replace(fa, en)
+                parts = clean_date.split('/')
+                if len(parts) == 3:
+                    try:
+                        y, m, d = int(parts[0]), int(parts[1]), int(parts[2])
+                        if 1250 <= y <= 1450:
+                            import jdatetime
+                            jd = jdatetime.date(y, m, d)
+                            parsed_birth_date = jd.togregorian()
+                        elif 1920 <= y <= 2050:
+                            import datetime
+                            parsed_birth_date = datetime.date(y, m, d)
+                    except Exception:
+                        pass
+
+            user.national_code = national_code
+            if parsed_birth_date:
+                user.birth_date = parsed_birth_date
+            elif not birth_date_str:
+                user.birth_date = None
+
+            if gender in ['male', 'female', 'other']:
+                user.gender = gender
+            elif not gender:
+                user.gender = ''
+
+            user.job_title = job_title
+
+            if sheba_number:
+                sheba_clean = sheba_number.upper().replace(' ', '')
+                if not sheba_clean.startswith('IR') and sheba_clean.isdigit():
+                    sheba_clean = f"IR{sheba_clean}"
+                user.sheba_number = sheba_clean[:26]
+            else:
+                user.sheba_number = ""
+
+            user.card_number = card_number.replace('-', '').replace(' ', '')[:19]
+            user.sms_marketing_subscribed = sms_marketing
+            user.email_marketing_subscribed = email_marketing
+            user.save()
+
+            messages.success(request, "اطلاعات تکمیلی و بازاریابی حساب کاربری شما با موفقیت ذخیره شد.")
+            return redirect('accounts:profile')
+
     orders = request.user.orders.prefetch_related('items', 'items__product', 'items__product__images').all()
     addresses = request.user.addresses.all()
     default_address = addresses.filter(is_default=True).first() or addresses.first()
@@ -428,6 +495,10 @@ def profile_view(request):
         for t in tickets:
             t.jalali_date = t.created_at.strftime("%Y/%m/%d")
 
+    missing_fields = request.user.missing_fields_list
+    is_profile_incomplete = len(missing_fields) > 0
+    profile_completion_percentage = request.user.profile_completion_percentage
+
     context = {
         'orders': orders,
         'recent_orders': recent_orders,
@@ -448,6 +519,9 @@ def profile_view(request):
         'tickets_count': tickets_count,
         'persian_date_str': persian_date_str,
         'persian_join_year': persian_join_year,
+        'missing_fields': missing_fields,
+        'is_profile_incomplete': is_profile_incomplete,
+        'profile_completion_percentage': profile_completion_percentage,
     }
     return render(request, 'accounts/profile.html', context)
 
