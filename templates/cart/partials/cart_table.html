@@ -37,7 +37,7 @@
                                     {{ item.product.warranty }}
                                 </span>
                                 <div class="text-[11px] text-slate-400">
-                                    قیمت واحد: <strong class="text-slate-700">{{ item.product.formatted_price }}</strong> تومان
+                                    قیمت واحد: <strong class="text-slate-700">{{ item.product.formatted_price }}</strong> {% include 'includes/toman_icon.html' %}
                                 </div>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                             <!-- Line total -->
                             <div class="text-left min-w-[100px]">
                                 <span class="text-sm sm:text-base font-black text-slate-900 block">{{ item.formatted_line_total }}</span>
-                                <span class="text-[10px] text-slate-400">تومان</span>
+                                <span class="text-[10px] text-slate-400">{% include 'includes/toman_icon.html' %}</span>
                             </div>
 
                             <!-- Remove item button -->
@@ -88,13 +88,13 @@
                 <div class="space-y-3.5 text-xs">
                     <div class="flex items-center justify-between text-slate-600">
                         <span>قیمت محصولات ({{ cart.total_items }} کالا)</span>
-                        <span class="font-bold text-slate-800">{{ cart.formatted_total_price }} تومان</span>
+                        <span class="font-bold text-slate-800">{{ cart.formatted_total_price }} {% include 'includes/toman_icon.html' %}</span>
                     </div>
 
                     {% if cart.total_discount > 0 %}
                         <div class="flex items-center justify-between text-rose-600 bg-rose-50/70 p-2.5 rounded-xl border border-rose-100">
                             <span>سود شما از این خرید:</span>
-                            <span class="font-bold">{{ cart.formatted_total_discount }} تومان</span>
+                            <span class="font-bold">{{ cart.formatted_total_discount }} {% include 'includes/toman_icon.html' %}</span>
                         </div>
                     {% endif %}
 
@@ -107,7 +107,7 @@
                         <span class="font-bold text-sm text-slate-900">مبلغ قابل پرداخت:</span>
                         <div class="text-left">
                             <span class="text-lg font-black text-blue-600">{{ cart.formatted_total_price }}</span>
-                            <span class="text-xs text-slate-500 mr-1">تومان</span>
+                            <span class="text-xs text-slate-500 mr-1">{% include 'includes/toman_icon.html' %}</span>
                         </div>
                     </div>
                 </div>

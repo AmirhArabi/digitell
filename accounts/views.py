@@ -662,6 +662,7 @@ def deposit_view(request):
         context['success'] = True
         context['tracking_code'] = tracking_code
         context['deposit_amount'] = amount_val
+        context['deposit_amount_display'] = f"{amount_val:,}"
         context['full_name'] = posted_name
         context['phone_number'] = posted_phone
         messages.success(request, f'درخواست واریز مبلغ {amount_val:,} تومان با موفقیت ثبت شد.')

@@ -82,7 +82,7 @@
                             </td>
                             <td class="py-3.5 px-4 text-slate-700">{{ order.province }} - {{ order.city }}</td>
                             <td class="py-3.5 px-4 font-black text-slate-900">
-                                {{ order.formatted_final_amount }} تومان
+                                {{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}
                                 {% if order.coupon_code %}<span class="block text-[10px] text-emerald-600 font-bold">کد: {{ order.coupon_code }}</span>{% endif %}
                             </td>
                             <td class="py-3.5 px-4">

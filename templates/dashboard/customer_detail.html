@@ -45,14 +45,14 @@
             <span class="text-[11px] text-slate-400 font-semibold block">مجموع خرید موفق</span>
             <div class="flex items-baseline gap-1 mt-2">
                 <span class="text-lg font-black text-slate-900">{{ total_spent }}</span>
-                <span class="text-[10px] text-slate-400">تومان</span>
+                <span class="text-[10px] text-slate-400">{% include 'includes/toman_icon.html' %}</span>
             </div>
         </div>
         <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
             <span class="text-[11px] text-slate-400 font-semibold block">میانگین هر سفارش</span>
             <div class="flex items-baseline gap-1 mt-2">
                 <span class="text-lg font-black text-slate-900">{{ avg_order_value }}</span>
-                <span class="text-[10px] text-slate-400">تومان</span>
+                <span class="text-[10px] text-slate-400">{% include 'includes/toman_icon.html' %}</span>
             </div>
         </div>
         <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
@@ -186,7 +186,7 @@
                                     <td class="py-3 px-4 font-mono font-bold text-slate-800">{{ order.order_number }}</td>
                                     <td class="py-3 px-4 text-slate-500">{{ order.created_at|date:"Y/m/d H:i" }}</td>
                                     <td class="py-3 px-4 text-slate-600">{{ order.items.count }} قلم</td>
-                                    <td class="py-3 px-4 font-black text-slate-900">{{ order.formatted_final_amount }} تومان</td>
+                                    <td class="py-3 px-4 font-black text-slate-900">{{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</td>
                                     <td class="py-3 px-4">
                                         <span class="px-2 py-1 rounded-lg text-[10px] font-bold
                                             {% if order.status == 'delivered' %}bg-emerald-50 text-emerald-700
@@ -253,7 +253,7 @@
                         beginAtZero: true,
                         grid: { display: false, drawBorder: false },
                         border: { display: false },
-                        ticks: { font: { family: "Vazirmatn, sans-serif", size: 10 }, color: '#10b981', precision: 0 }
+                        ticks: { font: { family: "YekanBakhFaNum, YekanBakh, sans-serif", size: 10 }, color: '#10b981', precision: 0 }
                     }
                 }
             }

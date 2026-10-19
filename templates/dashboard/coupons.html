@@ -47,10 +47,10 @@
                             <td class="py-3.5 px-4 font-mono font-black text-slate-900" dir="ltr">{{ c.code }}</td>
                             <td class="py-3.5 px-4 text-slate-600">{{ c.title|default:"-" }}</td>
                             <td class="py-3.5 px-4 font-bold text-slate-800">
-                                {% if c.discount_type == 'percent' %}{{ c.value }}٪{% else %}{{ c.value }} تومان{% endif %}
-                                {% if c.max_discount_amount %}<span class="block text-[10px] text-slate-400">سقف {{ c.max_discount_amount }} تومان</span>{% endif %}
+                                {% if c.discount_type == 'percent' %}{{ c.value }}٪{% else %}{{ c.value }} {% include 'includes/toman_icon.html' %}{% endif %}
+                                {% if c.max_discount_amount %}<span class="block text-[10px] text-slate-400">سقف {{ c.max_discount_amount }} {% include 'includes/toman_icon.html' %}</span>{% endif %}
                             </td>
-                            <td class="py-3.5 px-4 text-slate-600">{{ c.min_order_amount }} تومان</td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ c.min_order_amount }} {% include 'includes/toman_icon.html' %}</td>
                             <td class="py-3.5 px-4">
                                 <span class="font-bold text-slate-800">{{ c.used_count }}</span>
                                 <span class="text-slate-400">/ {% if c.max_uses %}{{ c.max_uses }}{% else %}بی‌نهایت{% endif %}</span>

@@ -209,7 +209,7 @@ class ProductPageDesignTests(TestCase):
         self.assertIn('1,899,000', html)
         self.assertIn('3,200,000', html)
         self.assertIn('41%', html)
-        self.assertIn('سود شما از این خرید: 1,301,000 تومان', html)
+        self.assertIn('سود شما از این خرید: 1,301,000 <svg class="toman-icon"', html)
         self.assertIn('کالای اصل', html)
         self.assertIn('فروشنده: ', html)
 

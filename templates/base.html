@@ -10,11 +10,7 @@
     <meta name="description"
         content="فروشگاه اینترنتی دیجی تل؛ خرید آسان و اقساطی انواع گوشی موبایل، لپ تاپ، ساعت هوشمند، کنسول بازی و لوازم جانبی اصل با بهترین قیمت.">
 
-    <!-- Fonts: Vazirmatn -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <!-- Fonts: YekanBakh (local, static/fonts/yekanbakh) — از طریق @font-face در output.css بارگذاری می‌شود -->
 
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
@@ -239,9 +235,9 @@
         </a>
         <!-- دکمه انتقال به فرم واریز وجه -->
         <a href="{% url 'accounts:deposit' %}"
-            class="flex flex-col items-center gap-1 text-emerald-600 hover:text-emerald-700">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            <span class="text-[10px] font-bold text-emerald-700">واریز وجه</span>
+            class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
+            <svg class="w-5 h-5"><use href="#icon-wallet"/></svg>
+            <span class="text-[10px] font-medium">واریز وجه</span>
         </a>
         <a href="{% url 'blog:post_list' %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">

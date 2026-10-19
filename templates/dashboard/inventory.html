@@ -20,7 +20,7 @@
             <span class="text-slate-400 font-semibold block mb-2">ارزش ریالی موجودی:</span>
             <div class="flex items-baseline gap-1">
                 <span class="text-2xl font-black text-slate-900">{{ inventory_value }}</span>
-                <span class="text-[11px] text-slate-500">تومان</span>
+                <span class="text-[11px] text-slate-500">{% include 'includes/toman_icon.html' %}</span>
             </div>
         </div>
     </div>
@@ -78,7 +78,7 @@
                             </td>
                             <td class="py-3 px-4 font-mono text-slate-500">{{ p.sku }}</td>
                             <td class="py-3 px-4 text-slate-600">{{ p.category.name }}</td>
-                            <td class="py-3 px-4 font-black text-slate-900">{{ p.formatted_price }} تومان</td>
+                            <td class="py-3 px-4 font-black text-slate-900">{{ p.formatted_price }} {% include 'includes/toman_icon.html' %}</td>
                             <td class="py-3 px-4">
                                 <input type="number" min="0" name="stock_{{ p.pk }}" value="{{ p.stock_qty }}"
                                        class="w-24 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 font-mono font-bold focus:bg-white focus:outline-none focus:border-blue-500">

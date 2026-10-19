@@ -31,7 +31,7 @@
             <span class="text-[11px] font-semibold text-slate-500 block">میانگین ارزش هر مشتری</span>
             <div class="flex items-baseline gap-1.5 mt-2">
                 <span class="text-xl font-black text-slate-900">{{ avg_ltv }}</span>
-                <span class="text-[11px] text-slate-400">تومان</span>
+                <span class="text-[11px] text-slate-400">{% include 'includes/toman_icon.html' %}</span>
             </div>
             <p class="text-[10px] text-slate-400 mt-2">مجموع خرید ÷ خریداران فعال</p>
         </article>
@@ -96,7 +96,7 @@
             <button type="submit" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال فیلتر</button>
             <a href="{% url 'dashboard:customers' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">حذف فیلترها</a>
         </div>
-        <p class="text-[10px] text-slate-400">آستانه مشتری ویژه در حال حاضر <strong class="text-slate-600">{{ vip_threshold }}</strong> تومان خرید موفق و حداقل دو سفارش است.</p>
+        <p class="text-[10px] text-slate-400">آستانه مشتری ویژه در حال حاضر <strong class="text-slate-600">{{ vip_threshold }}</strong> {% include 'includes/toman_icon.html' %} خرید موفق و حداقل دو سفارش است.</p>
     </form>
 
     <!-- لیست مشتریان -->
@@ -157,11 +157,11 @@
                                 <span class="block text-[10px] text-slate-400">از {{ c.orders_count }} سفارش</span>
                             </td>
                             <td class="py-3.5 px-4 text-slate-700 font-semibold">
-                                {% if c.avg_order_value %}{{ c.avg_order_value }} <span class="text-[10px] text-slate-400">تومان</span>{% else %}—{% endif %}
+                                {% if c.avg_order_value %}{{ c.avg_order_value }} <span class="text-[10px] text-slate-400">{% include 'includes/toman_icon.html' %}</span>{% else %}—{% endif %}
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="font-black {% if c.total_spent %}text-slate-900{% else %}text-slate-300{% endif %}">{{ c.total_spent|default:0 }}</span>
-                                <span class="text-[10px] text-slate-400 mr-1">تومان</span>
+                                <span class="text-[10px] text-slate-400 mr-1">{% include 'includes/toman_icon.html' %}</span>
                             </td>
                             <td class="py-3.5 px-4 w-40">
                                 <div class="flex items-center gap-2">

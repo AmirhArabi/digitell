@@ -12,7 +12,7 @@
             <span class="text-[11px] text-slate-400 font-semibold block mb-2">فروش کل موفق:</span>
             <div class="flex items-baseline gap-1">
                 <span class="text-xl font-black text-slate-900">{{ total_sales }}</span>
-                <span class="text-[10px] text-slate-500">تومان</span>
+                <span class="text-[10px] text-slate-500">{% include 'includes/toman_icon.html' %}</span>
             </div>
             <span class="text-[10px] text-emerald-600 font-bold block mt-2">تراکنش‌های تسویه‌شده</span>
         </div>
@@ -21,9 +21,9 @@
             <span class="text-[11px] text-slate-400 font-semibold block mb-2">فروش امروز:</span>
             <div class="flex items-baseline gap-1">
                 <span class="text-xl font-black text-slate-900">{{ sales_today }}</span>
-                <span class="text-[10px] text-slate-500">تومان</span>
+                <span class="text-[10px] text-slate-500">{% include 'includes/toman_icon.html' %}</span>
             </div>
-            <span class="text-[10px] text-slate-400 font-bold block mt-2">۷ روز اخیر: {{ sales_week }} تومان</span>
+            <span class="text-[10px] text-slate-400 font-bold block mt-2">۷ روز اخیر: {{ sales_week }} {% include 'includes/toman_icon.html' %}</span>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs">
@@ -100,7 +100,7 @@
                                         <a href="{% url 'dashboard:order_detail' order.pk %}" class="hover:text-blue-600">{{ order.order_number }}</a>
                                     </td>
                                     <td class="py-3 text-slate-700">{{ order.recipient_name }}</td>
-                                    <td class="py-3 font-black text-slate-900">{{ order.formatted_final_amount }} تومان</td>
+                                    <td class="py-3 font-black text-slate-900">{{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</td>
                                     <td class="py-3">
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {% if order.status == 'paid' %}bg-emerald-50 text-emerald-700{% elif order.status == 'pending' %}bg-amber-50 text-amber-700{% else %}bg-blue-50 text-blue-700{% endif %}">
                                             {{ order.get_status_display }}

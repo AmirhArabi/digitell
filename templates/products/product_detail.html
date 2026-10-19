@@ -158,7 +158,7 @@
                 <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-500 text-lg font-black text-white shadow-xs">٪</span>
                 <span class="min-w-0 flex-1">
                     <span class="block text-xs font-black text-zitro-ink">خرید اقساطی بدون ضامن با اسنپ‌پی</span>
-                    <span class="block text-[11px] text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-700">{{ formatted_installment }} تومان</b></span>
+                    <span class="block text-[11px] text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-700">{{ formatted_installment }} {% include 'includes/toman_icon.html' %}</b></span>
                 </span>
                 <svg class="w-4 h-4 shrink-0 text-orange-500 transition group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
             </a>
@@ -169,16 +169,16 @@
                     <div>
                         {% if product.formatted_compare_price %}
                             <div class="mb-1 flex items-center gap-2">
-                                <del class="text-sm font-medium text-zitro-deal">{{ product.formatted_compare_price }} تومان</del>
+                                <del class="text-sm font-medium text-zitro-deal">{{ product.formatted_compare_price }} {% include 'includes/toman_icon.html' %}</del>
                                 <span class="rounded-md bg-zitro-deal px-1.5 py-0.5 text-[11px] font-bold text-white">{{ product.discount_pct }}%</span>
                             </div>
                         {% endif %}
                         <div class="flex items-baseline gap-1.5">
                             <span class="text-2xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
-                            <span class="text-xs font-bold text-slate-500">تومان</span>
+                            <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
                         </div>
                         {% if savings %}
-                            <p class="mt-0.5 text-[11px] font-bold text-emerald-600">سود شما از این خرید: {{ formatted_savings }} تومان</p>
+                            <p class="mt-0.5 text-[11px] font-bold text-emerald-600">سود شما از این خرید: {{ formatted_savings }} {% include 'includes/toman_icon.html' %}</p>
                         {% endif %}
                     </div>
 
@@ -356,7 +356,7 @@
                 {% endif %}
                 <div class="flex items-baseline gap-1">
                     <span class="text-base font-black text-zitro-ink">{{ product.formatted_price }}</span>
-                    <span class="text-[10px] text-slate-500">تومان</span>
+                    <span class="text-[10px] text-slate-500">{% include 'includes/toman_icon.html' %}</span>
                 </div>
             </div>
 

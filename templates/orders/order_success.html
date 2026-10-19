@@ -37,7 +37,7 @@
             </div>
             <div>
                 <span class="text-slate-400 block mb-1">مبلغ پرداختی:</span>
-                <strong class="text-slate-900 font-black">{{ order.formatted_final_amount }} تومان</strong>
+                <strong class="text-slate-900 font-black">{{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</strong>
             </div>
         </div>
     </div>
@@ -75,11 +75,11 @@
                             {% else %}
                                 <span class="font-bold text-slate-800 block truncate">{{ item.product_title }}</span>
                             {% endif %}
-                            <span class="text-[11px] text-slate-400 font-medium">{{ item.quantity }} عدد × {{ item.formatted_unit_price }} تومان</span>
+                            <span class="text-[11px] text-slate-400 font-medium">{{ item.quantity }} عدد × {{ item.formatted_unit_price }} {% include 'includes/toman_icon.html' %}</span>
                         </div>
                     </div>
                     <div class="text-left font-black text-slate-900 shrink-0 text-xs sm:text-sm">
-                        {{ item.formatted_total_price }} تومان
+                        {{ item.formatted_total_price }} {% include 'includes/toman_icon.html' %}
                     </div>
                 </div>
             {% endfor %}

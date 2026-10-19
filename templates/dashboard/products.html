@@ -131,7 +131,7 @@
                                     <span class="text-slate-500 block mt-1">{{ p.brand.name|default:"-" }}</span>
                                 </td>
                                 <td class="py-3 px-3">
-                                    <span class="font-black text-slate-900 block">{{ p.formatted_price }} تومان</span>
+                                    <span class="font-black text-slate-900 block">{{ p.formatted_price }} {% include 'includes/toman_icon.html' %}</span>
                                     {% if p.discount_pct %}<span class="text-[10px] text-rose-600 font-bold">{{ p.discount_pct }}٪ تخفیف</span>{% endif %}
                                 </td>
                                 <td class="py-3 px-3">

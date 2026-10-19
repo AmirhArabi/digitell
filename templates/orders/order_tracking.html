@@ -79,7 +79,7 @@
                     <div class="text-xs text-slate-600 space-y-1">
                         <p><strong>تحویل‌گیرنده:</strong> {{ order.recipient_name }}</p>
                         <p><strong>آدرس:</strong> {{ order.province }}، {{ order.city }}، {{ order.shipping_address }}</p>
-                        <p><strong>مبلغ سفارش:</strong> {{ order.formatted_final_amount }} تومان</p>
+                        <p><strong>مبلغ سفارش:</strong> {{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</p>
                     </div>
                 </div>
             {% else %}

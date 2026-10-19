@@ -39,9 +39,9 @@
                                         {% if item.product %}<a href="{% url 'dashboard:product_edit' item.product.pk %}" class="hover:text-blue-600">{{ item.product_title }}</a>{% else %}{{ item.product_title }}{% endif %}
                                     </td>
                                     <td class="py-3 font-mono text-slate-500">{{ item.product_sku|default:"-" }}</td>
-                                    <td class="py-3 text-slate-600">{{ item.formatted_unit_price }} تومان</td>
+                                    <td class="py-3 text-slate-600">{{ item.formatted_unit_price }} {% include 'includes/toman_icon.html' %}</td>
                                     <td class="py-3 font-bold text-slate-800">{{ item.quantity }}</td>
-                                    <td class="py-3 font-black text-slate-900">{{ item.formatted_total_price }} تومان</td>
+                                    <td class="py-3 font-black text-slate-900">{{ item.formatted_total_price }} {% include 'includes/toman_icon.html' %}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -49,13 +49,13 @@
                 </div>
 
                 <div class="mt-6 pt-4 border-t border-slate-100 space-y-2 text-xs">
-                    <div class="flex items-center justify-between"><span class="text-slate-500">جمع مبالغ کالاها</span><span class="font-bold text-slate-800">{{ order.formatted_products_total }} تومان</span></div>
-                    <div class="flex items-center justify-between"><span class="text-slate-500">سود و تخفیف مشتری</span><span class="font-bold text-emerald-600">{{ order.discount_amount }} تومان</span></div>
+                    <div class="flex items-center justify-between"><span class="text-slate-500">جمع مبالغ کالاها</span><span class="font-bold text-slate-800">{{ order.formatted_products_total }} {% include 'includes/toman_icon.html' %}</span></div>
+                    <div class="flex items-center justify-between"><span class="text-slate-500">سود و تخفیف مشتری</span><span class="font-bold text-emerald-600">{{ order.discount_amount }} {% include 'includes/toman_icon.html' %}</span></div>
                     {% if order.coupon_code %}
-                        <div class="flex items-center justify-between"><span class="text-slate-500">کد تخفیف ({{ order.coupon_code }})</span><span class="font-bold text-emerald-600">{{ order.coupon_discount }} تومان</span></div>
+                        <div class="flex items-center justify-between"><span class="text-slate-500">کد تخفیف ({{ order.coupon_code }})</span><span class="font-bold text-emerald-600">{{ order.coupon_discount }} {% include 'includes/toman_icon.html' %}</span></div>
                     {% endif %}
-                    <div class="flex items-center justify-between"><span class="text-slate-500">هزینه ارسال ({{ order.get_shipping_method_display }})</span><span class="font-bold text-slate-800">{{ order.formatted_shipping_cost }} تومان</span></div>
-                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-sm"><span class="font-bold text-slate-700">مبلغ نهایی</span><span class="font-black text-slate-900">{{ order.formatted_final_amount }} تومان</span></div>
+                    <div class="flex items-center justify-between"><span class="text-slate-500">هزینه ارسال ({{ order.get_shipping_method_display }})</span><span class="font-bold text-slate-800">{{ order.formatted_shipping_cost }} {% include 'includes/toman_icon.html' %}</span></div>
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-sm"><span class="font-bold text-slate-700">مبلغ نهایی</span><span class="font-black text-slate-900">{{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</span></div>
                 </div>
             </div>
 

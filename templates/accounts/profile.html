@@ -364,7 +364,7 @@
                                                     {{ order.jalali_date|default:order.created_at|date:"Y/m/d" }}
                                                 </td>
                                                 <td class="py-4 px-3 font-bold text-slate-800">
-                                                    {{ order.formatted_final_amount }} تومان
+                                                    {{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}
                                                 </td>
                                                 <td class="py-4 px-3 text-center">
                                                     {% if order.status == 'shipped' %}
@@ -544,7 +544,7 @@
                                                 {{ latest_favorite.category.name }}{% if latest_favorite.brand %} · {{ latest_favorite.brand.name }}{% endif %}
                                             </p>
                                             <p class="text-xs font-black text-slate-800 mt-2">
-                                                {{ latest_favorite.formatted_price }} تومان
+                                                {{ latest_favorite.formatted_price }} {% include 'includes/toman_icon.html' %}
                                             </p>
                                         </div>
                                     </div>
@@ -711,10 +711,10 @@
                                                             {% else %}
                                                                 <span class="text-slate-800 font-bold block truncate">{{ item.product_title }}</span>
                                                             {% endif %}
-                                                            <span class="text-[11px] text-slate-400 font-medium">{{ item.quantity }} عدد × {{ item.formatted_unit_price }} تومان</span>
+                                                            <span class="text-[11px] text-slate-400 font-medium">{{ item.quantity }} عدد × {{ item.formatted_unit_price }} {% include 'includes/toman_icon.html' %}</span>
                                                         </div>
                                                     </div>
-                                                    <span class="font-black text-slate-900 shrink-0 text-xs sm:text-sm">{{ item.formatted_total_price }} تومان</span>
+                                                    <span class="font-black text-slate-900 shrink-0 text-xs sm:text-sm">{{ item.formatted_total_price }} {% include 'includes/toman_icon.html' %}</span>
                                                 </div>
                                             {% endfor %}
                                         </div>
@@ -722,7 +722,7 @@
                                         <div class="flex items-center justify-between flex-wrap gap-2 text-xs pt-1">
                                             <div>
                                                 <span class="text-slate-500">مبلغ کل سفارش:</span>
-                                                <strong class="text-slate-900 font-black mr-1">{{ order.formatted_final_amount }} تومان</strong>
+                                                <strong class="text-slate-900 font-black mr-1">{{ order.formatted_final_amount }} {% include 'includes/toman_icon.html' %}</strong>
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <a href="{% url 'orders:order_invoice_pdf' order_number=order.order_number %}"
@@ -793,7 +793,7 @@
                                             </p>
                                         </div>
                                         <div class="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between">
-                                            <span class="font-black text-xs text-slate-800">{{ fav.product.formatted_price }} تومان</span>
+                                            <span class="font-black text-xs text-slate-800">{{ fav.product.formatted_price }} {% include 'includes/toman_icon.html' %}</span>
                                             <a href="{{ fav.product.get_absolute_url }}" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-[11px] font-bold hover:bg-blue-700 transition">
                                                 مشاهده و خرید
                                             </a>

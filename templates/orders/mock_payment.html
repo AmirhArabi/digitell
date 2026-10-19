@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>درگاه پرداخت آزمایشی دیجی تل | شاپرک</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/output.css">
-    <style>body { font-family: 'Vazirmatn', sans-serif; }</style>
+    <style>body { font-family: 'YekanBakhFaNum', 'YekanBakh', system-ui, sans-serif; }</style>
 </head>
 <body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
@@ -41,7 +40,7 @@
                 <span>مبلغ قابل پرداخت:</span>
                 <div class="text-left">
                     <span class="text-base font-black text-blue-700">{{ order.formatted_final_amount }}</span>
-                    <span class="text-slate-500 mr-1">تومان</span>
+                    <span class="text-slate-500 mr-1">{% include 'includes/toman_icon.html' %}</span>
                 </div>
             </div>
         </div>

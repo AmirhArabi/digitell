@@ -302,11 +302,11 @@
                                 <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
                                     <span>تعداد: <strong class="text-slate-700 font-bold font-mono">{{ item.quantity }}</strong></span>
                                     <span>×</span>
-                                    <span>{{ item.product.formatted_price }} تومان</span>
+                                    <span>{{ item.product.formatted_price }} {% include 'includes/toman_icon.html' %}</span>
                                 </div>
                             </div>
                         </div>
-                        <span class="font-black text-slate-900 shrink-0 text-left">{{ item.formatted_line_total }} <span class="text-[10px] text-slate-500 font-normal">تومان</span></span>
+                        <span class="font-black text-slate-900 shrink-0 text-left">{{ item.formatted_line_total }} <span class="text-[10px] text-slate-500 font-normal">{% include 'includes/toman_icon.html' %}</span></span>
                     </div>
                 {% endfor %}
             </div>
@@ -314,27 +314,27 @@
             <div class="border-t border-slate-100 pt-4 space-y-2.5 text-xs">
                 <div class="flex items-center justify-between text-slate-600">
                     <span>جمع کل کالاها:</span>
-                    <span class="font-bold text-slate-800">{{ cart.formatted_total_price }} تومان</span>
+                    <span class="font-bold text-slate-800">{{ cart.formatted_total_price }} {% include 'includes/toman_icon.html' %}</span>
                 </div>
 
                 {% if cart.total_discount > 0 %}
                     <div class="flex items-center justify-between text-rose-600 bg-rose-50 p-2 rounded-xl">
                         <span>تخفیف دیجی تل:</span>
-                        <span class="font-bold">{{ cart.formatted_total_discount }} تومان</span>
+                        <span class="font-bold">{{ cart.formatted_total_discount }} {% include 'includes/toman_icon.html' %}</span>
                     </div>
                 {% endif %}
 
                 {% if coupon_discount %}
                     <div class="flex items-center justify-between text-emerald-700 bg-emerald-50 p-2 rounded-xl">
                         <span>کد تخفیف ({{ coupon_code }}):</span>
-                        <span class="font-bold">- {{ coupon_discount|intcomma }} تومان</span>
+                        <span class="font-bold">- {{ coupon_discount|intcomma }} {% include 'includes/toman_icon.html' %}</span>
                     </div>
                 {% endif %}
 
                 <div class="flex items-center justify-between text-slate-600">
                     <span>هزینه ارسال:</span>
                     {% if shipping_cost %}
-                        <span class="font-bold text-slate-800">{{ shipping_cost|intcomma }} تومان</span>
+                        <span class="font-bold text-slate-800">{{ shipping_cost|intcomma }} {% include 'includes/toman_icon.html' %}</span>
                     {% else %}
                         <span class="text-emerald-600 font-bold">رایگان</span>
                     {% endif %}
@@ -344,7 +344,7 @@
                     <span class="font-bold text-sm text-slate-900">مبلغ نهایی:</span>
                     <div class="text-left">
                         <span class="text-xl font-black text-blue-600">{{ final_amount|intcomma }}</span>
-                        <span class="text-xs text-slate-500 mr-1">تومان</span>
+                        <span class="text-xs text-slate-500 mr-1">{% include 'includes/toman_icon.html' %}</span>
                     </div>
                 </div>
             </div>
