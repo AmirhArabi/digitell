@@ -68,11 +68,11 @@ def date_range_from_request(request, default_days=30):
     try:
         start = parse(request.GET.get('from', ''), '%Y-%m-%d').date()
     except ValueError:
-        start = (timezone.now() - timedelta(days=default_days)).date()
+        start = timezone.localdate() - timedelta(days=default_days)
     try:
         end = parse(request.GET.get('to', ''), '%Y-%m-%d').date()
     except ValueError:
-        end = timezone.now().date()
+        end = timezone.localdate()
     if start > end:
         start, end = end, start
     start_dt = timezone.make_aware(datetime.combine(start, datetime.min.time()))
@@ -580,10 +580,10 @@ def reports_view(request):
         'orders_total': current['all_orders'],
         'unpaid_count': current['unpaid'],
         'items_sold': f"{current['items']:,}",
-        'preset_seven': (timezone.now() - timedelta(days=6)).date().isoformat(),
-        'preset_thirty': (timezone.now() - timedelta(days=29)).date().isoformat(),
-        'preset_ninety': (timezone.now() - timedelta(days=89)).date().isoformat(),
-        'preset_year': (timezone.now() - timedelta(days=364)).date().isoformat(),
+        'preset_seven': (timezone.localdate() - timedelta(days=6)).isoformat(),
+        'preset_thirty': (timezone.localdate() - timedelta(days=29)).isoformat(),
+        'preset_ninety': (timezone.localdate() - timedelta(days=89)).isoformat(),
+        'preset_year': (timezone.localdate() - timedelta(days=364)).isoformat(),
     }
     return render(request, 'dashboard/reports.html', context)
 
@@ -650,7 +650,7 @@ def reports_inventory_export_view(request):
             'فعال' if product.is_active else 'غیرفعال',
         ])
     return csv_response(
-        f"inventory-{timezone.now().date()}.csv",
+        f"inventory-{timezone.localdate()}.csv",
         ['کد کالا', 'محصول', 'دسته‌بندی', 'برند', 'قیمت (تومان)', 'موجودی',
          'حد هشدار', 'ارزش انبار (تومان)', 'وضعیت موجودی', 'وضعیت نمایش'],
         rows,
@@ -1400,7 +1400,7 @@ def orders_export_view(request):
         for order in orders
     ]
     return csv_response(
-        f"orders-{timezone.now().date()}.csv",
+        f"orders-{timezone.localdate()}.csv",
         ['شماره سفارش', 'تاریخ', 'گیرنده', 'موبایل', 'استان/شهر', 'آدرس', 'کد پستی',
          'وضعیت سفارش', 'وضعیت پرداخت', 'روش پرداخت', 'کد رهگیری',
          'جمع کالا', 'تخفیف', 'کد تخفیف', 'هزینه ارسال', 'مبلغ نهایی'],

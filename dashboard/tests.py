@@ -649,7 +649,7 @@ class ReportsAnalyticsTests(DashboardBaseTestCase):
         self.make_order(amount=10_000_000)
         self.make_order(amount=4_000_000, days_ago=40)
 
-        today = timezone.now().date()
+        today = timezone.localdate()
         response = self.client.get(reverse('dashboard:reports'), {
             'from': (today - timedelta(days=29)).isoformat(),
             'to': today.isoformat(),
@@ -678,7 +678,7 @@ class ReportsAnalyticsTests(DashboardBaseTestCase):
         Product.objects.create(title='کالای کم‌موجود', slug='low-stock', sku='LS-1',
                                category=self.category, price=3_000, stock_qty=2, low_stock_threshold=5)
 
-        today = timezone.now().date()
+        today = timezone.localdate()
         orders_csv = self.client.get(reverse('dashboard:reports_export'), {
             'from': (today - timedelta(days=7)).isoformat(), 'to': today.isoformat(),
         })

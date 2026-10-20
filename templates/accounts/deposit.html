@@ -26,20 +26,20 @@
         <h1 class="pay-title">پرداخت شما با موفقیت ثبت شد</h1>
         <p class="pay-subtitle">اطلاعات تراکنش شما با مشخصات زیر در سامانه ثبت گردید.</p>
 
-        <div class="pay-receipt">
-            <div class="pay-receipt-row">
-                <span class="pay-receipt-label">کد رهگیری تراکنش</span>
+        <div class="pay-receipt grid grid-cols-2 gap-4">
+            <div>
+                <span class="pay-receipt-label">کد رهگیری</span>
                 <span class="pay-receipt-value pay-code">{{ tracking_code }}</span>
             </div>
-            <div class="pay-receipt-row">
+            <div>
                 <span class="pay-receipt-label">نام و نام خانوادگی</span>
                 <span class="pay-receipt-value">{{ full_name }}</span>
             </div>
-            <div class="pay-receipt-row">
+            <div>
                 <span class="pay-receipt-label">شماره تماس</span>
                 <span class="pay-receipt-value">{{ phone_number }}</span>
             </div>
-            <div class="pay-receipt-row">
+            <div>
                 <span class="pay-receipt-label">مبلغ واریزی</span>
                 <span class="pay-receipt-value pay-receipt-amount toman-amount">{{ deposit_amount_display }}{% include 'includes/toman_icon.html' %}</span>
             </div>
