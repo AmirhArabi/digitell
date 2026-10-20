@@ -1,9 +1,13 @@
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
+
 from products.models import Product, Category, Brand
 from blog.models import Post
 from .models import Banner, SiteSetting
+from utils.cache import view_cache, CACHE_TTL_LONG, CACHE_TTL_MEDIUM
 
 
+@view_cache(timeout=CACHE_TTL_LONG, prefix='home:index', cache_anon_only=False)
 def index_view(request):
     banners = Banner.objects.filter(is_active=True).order_by('order')
     hero_banners = Banner.objects.filter(is_active=True, position='hero').order_by('order')

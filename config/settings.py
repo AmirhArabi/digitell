@@ -92,15 +92,19 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'accounts.User'
 
 MIDDLEWARE = [
+    'utils.middleware.PerformanceMonitorMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'utils.middleware.CacheHeaderMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'utils.middleware.HtmlMinifyMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -166,7 +170,66 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'digitell-cache',
+        'TIMEOUT': 300,
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        },
     }
+}
+
+# ──────────────────────────────────────────────────────────────
+# تنظیمات بهینه‌سازی سرعت دیجی‌تل
+# ──────────────────────────────────────────────────────────────
+
+# WhiteNoise: فشرده‌سازی و هش‌گذاری فایل‌های استاتیک
+# در محیط تولید: CompressedManifest (نیاز به collectstatic)
+# در محیط توسعه: CompressedStaticFiles (بدون نیاز به manifest)
+if not DEBUG:
+    STORAGES = {
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+
+# نسخه کش (تغییر دهید تا کش بی‌اعتبار شود)
+DIGITELL_CACHE_VERSION = 'v1'
+
+# آستانه لاگ درخواست‌های کند (میلی‌ثانیه)
+DIGITELL_SLOW_REQUEST_MS = 500
+
+# فعال‌سازی minify در حالت debug
+DIGITELL_MINIFY_DEBUG = False
+
+# ──────────────────────────────────────────────────────────────
+# لاگینگ
+# ──────────────────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'utils.cache': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'utils.middleware': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
 }
 
 LOGIN_URL = 'accounts:login'
