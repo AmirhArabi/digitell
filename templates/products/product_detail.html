@@ -24,28 +24,18 @@
         </a>
     </div>
 
-    <!-- نوار لنگری در موبایل (الگوی صفحه محصول دیجی تل) -->
-    <div id="mobile-anchor-bar" class="relative z-10 -mx-3 px-3 sm:mx-0 sm:px-0 py-2 mb-3 bg-slate-50/95 border-b border-slate-200/70 md:border-0 md:bg-transparent">
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold">
-            <a href="#specs" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">مشخصات فنی</a>
-            <a href="#description" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">توضیحات و نقد و بررسی</a>
-            <a href="#reviews" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">نظرات</a>
-            <a href="#similar" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition">کالاهای مشابه</a>
-        </div>
-    </div>
+    <div class="product-detail-layout grid grid-cols-1 lg:grid-cols-12 gap-y-0 lg:gap-8 items-start">
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
-
-        <!-- ================= گالری تصاویر ================= -->
-        <div id="product-gallery" class="lg:col-span-5 lg:sticky lg:top-36 w-full">
-            <div class="relative flex items-center justify-center aspect-square overflow-hidden rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 group">
+        <!-- ================= گالری تصاویر (ثابت در موبایل / ستون ۵ در دسکتاپ) ================= -->
+        <div id="product-gallery" class="mobile-product-gallery-sticky lg:col-span-5 w-full">
+            <div class="relative flex items-center justify-center aspect-square max-h-[50vh] sm:max-h-[55vh] lg:max-h-none overflow-hidden rounded-2xl border border-zitro-line bg-white p-3 sm:p-6 group mx-auto">
                 {% if product.discount_pct > 0 %}
                     <span class="absolute top-3 right-3 rounded-md bg-zitro-deal px-2.5 py-1 text-[11px] font-black text-white shadow-xs">{{ product.discount_pct }}% تخفیف</span>
                 {% endif %}
 
                 {% if product.primary_image %}
                     <img id="main-product-img" src="{{ product.primary_image.image.url }}" alt="{{ product.title }}"
-                         class="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105">
+                         class="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105 will-change-transform">
                 {% else %}
                     <div class="flex h-32 w-32 items-center justify-center rounded-3xl bg-blue-50 text-blue-600">
                         <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
@@ -54,18 +44,18 @@
             </div>
 
             {% if product.images.all|length > 1 %}
-                <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                <div class="mt-2.5 flex items-center justify-center sm:justify-start gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
                     {% for img in product.images.all %}
                         <button type="button" data-gallery-thumb="{{ img.image.url }}"
-                                class="gallery-thumb h-16 w-16 shrink-0 rounded-xl border bg-white p-1 transition {% if img.is_primary %}border-blue-500{% else %}border-zitro-line hover:border-blue-400{% endif %}">
+                                class="gallery-thumb h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl border bg-white p-1 transition {% if img.is_primary %}border-blue-500{% else %}border-zitro-line hover:border-blue-400{% endif %}">
                             <img src="{{ img.image.url }}" alt="{{ product.title }}" class="h-full w-full object-contain">
                         </button>
                     {% endfor %}
                 </div>
             {% endif %}
 
-            <!-- نشان‌های اعتماد (الگوی نوار آیکونی دیجی تل) -->
-            <div class="mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar">
+            <!-- نشان‌های اعتماد در حالت دسکتاپ (زیر گالری تصاویر) -->
+            <div class="mt-3 hidden lg:flex items-stretch gap-2 overflow-x-auto no-scrollbar">
                 <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
@@ -85,260 +75,297 @@
             </div>
         </div>
 
-        <!-- ================= اطلاعات و خرید ================= -->
-        <div class="lg:col-span-7 space-y-4">
+        <!-- ================= لایه اورلی (در موبایل روی تصویر حرکت می‌کند / در دسکتاپ contents) ================= -->
+        <div id="product-mobile-overlay" class="mobile-product-overlay-sheet lg:contents">
 
-            <!-- برند / دسته‌بندی / امتیاز / نظرات -->
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-500">
-                {% if product.brand %}
-                    <span>برند:
-                        <a href="{% url 'products:shop' %}?q={{ product.brand.name|urlencode }}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.brand.name }}</a>
-                    </span>
-                {% endif %}
-                <span>دسته‌بندی:
-                    <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.category.name }}</a>
-                </span>
-                <span class="flex items-center gap-1">امتیاز:
-                    <span class="relative inline-block leading-none" dir="ltr">
-                        <span class="text-slate-300">★★★★★</span>
-                        <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-amber-400" style="width: {{ rating_pct }}%">★★★★★</span>
-                    </span>
-                    <b class="text-slate-700">{{ rating_average }}</b>
-                </span>
-                <a href="#reviews" class="hover:text-blue-600 transition">
-                    نظرات: <b class="text-slate-700">{% if reviews_count %}{{ reviews_count }} نظر{% else %}بدون نظر{% endif %}</b>
-                </a>
-            </div>
+            <!-- دستگیره کشویی بالای لایه اورلی در موبایل -->
+            <div class="mobile-sheet-handle lg:hidden" aria-hidden="true"></div>
 
-            <!-- عنوان و نشان‌ها -->
-            <div id="product-title-block" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5">
-                <h1 class="text-base sm:text-xl font-black leading-snug text-zitro-ink">{{ product.title }}</h1>
-                {% if product.title_en %}
-                    <p dir="ltr" class="mt-1 text-left font-mono text-[11px] text-slate-400">{{ product.title_en }}</p>
-                {% endif %}
+            <!-- ================= اطلاعات و خرید (ستون ۷ در دسکتاپ) ================= -->
+            <div class="lg:col-span-7 space-y-4">
 
-                <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                    <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        کالای اصل
+                <!-- برند / دسته‌بندی / امتیاز / نظرات -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-500">
+                    {% if product.brand %}
+                        <span>برند:
+                            <a href="{% url 'products:shop' %}?q={{ product.brand.name|urlencode }}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.brand.name }}</a>
+                        </span>
+                    {% endif %}
+                    <span>دسته‌بندی:
+                        <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.category.name }}</a>
                     </span>
-                    <span class="inline-flex items-center gap-1 rounded-lg border border-zitro-line bg-slate-50 px-2 py-1 font-bold text-slate-600">
-                        <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        {{ product.warranty }}
+                    <span class="flex items-center gap-1">امتیاز:
+                        <span class="relative inline-block leading-none" dir="ltr">
+                            <span class="text-slate-300">★★★★★</span>
+                            <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-amber-400" style="width: {{ rating_pct }}%">★★★★★</span>
+                        </span>
+                        <b class="text-slate-700">{{ rating_average }}</b>
                     </span>
-                    <span class="font-mono text-slate-400">کد کالا: {{ product.sku }}</span>
+                    <a href="#reviews" class="hover:text-blue-600 transition">
+                        نظرات: <b class="text-slate-700">{% if reviews_count %}{{ reviews_count }} نظر{% else %}بدون نظر{% endif %}</b>
+                    </a>
                 </div>
 
-                {% if product.short_description %}
-                    <p class="mt-3 text-xs leading-relaxed text-slate-600">{{ product.short_description }}</p>
+                <!-- عنوان و نشان‌ها -->
+                <div id="product-title-block" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5 shadow-xs">
+                    <h1 class="text-base sm:text-xl font-black leading-snug text-zitro-ink">{{ product.title }}</h1>
+                    {% if product.title_en %}
+                        <p dir="ltr" class="mt-1 text-left font-mono text-[11px] text-slate-400">{{ product.title_en }}</p>
+                    {% endif %}
+
+                    <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
+                        <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            کالای اصل
+                        </span>
+                        <span class="inline-flex items-center gap-1 rounded-lg border border-zitro-line bg-slate-50 px-2 py-1 font-bold text-slate-600">
+                            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            {{ product.warranty }}
+                        </span>
+                        <span class="font-mono text-slate-400">کد کالا: {{ product.sku }}</span>
+                    </div>
+
+                    {% if product.short_description %}
+                        <p class="mt-3 text-xs leading-relaxed text-slate-600">{{ product.short_description }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- خلاصه مشخصات -->
+                {% if spec_summary %}
+                    <div id="product-spec-summary" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5 shadow-xs">
+                        <div class="mb-2 flex items-center justify-between">
+                            <h2 class="text-sm font-black text-zitro-ink">مشخصات</h2>
+                            <a href="#specs" class="text-[11px] font-bold text-blue-600 hover:underline">نمایش همه</a>
+                        </div>
+                        <div class="divide-y divide-zitro-line text-[11px]">
+                            {% for spec in spec_summary %}
+                                <div class="flex items-start gap-3 py-2">
+                                    <span class="w-24 shrink-0 text-slate-500 sm:w-32">{{ spec.name }}</span>
+                                    <span class="font-bold text-zitro-ink">{{ spec.value }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 {% endif %}
+
+                <!-- بنر خرید اقساطی -->
+                <a href="{% url 'home:installment' %}"
+                   class="group flex items-center gap-3 rounded-2xl border border-orange-200 bg-gradient-to-l from-orange-50 via-amber-50 to-white p-4 transition hover:border-orange-300 shadow-xs">
+                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-500 text-lg font-black text-white shadow-xs">٪</span>
+                    <span class="min-w-0 flex-1">
+                        <span class="block text-xs font-black text-zitro-ink">خرید اقساطی بدون ضامن با اسنپ‌پی</span>
+                        <span class="block text-[11px] text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-700">{{ formatted_installment }} {% include 'includes/toman_icon.html' %}</b></span>
+                    </span>
+                    <svg class="w-4 h-4 shrink-0 text-orange-500 transition group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </a>
+
+                <!-- قیمت و خرید -->
+                <div id="product-price" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5 shadow-xs">
+                    <div class="flex flex-wrap items-end justify-between gap-3">
+                        <div>
+                            {% if product.formatted_compare_price %}
+                                <div class="mb-1 flex items-center gap-2">
+                                    <del class="text-sm font-medium text-zitro-deal">{{ product.formatted_compare_price }} {% include 'includes/toman_icon.html' %}</del>
+                                    <span class="rounded-md bg-zitro-deal px-1.5 py-0.5 text-[11px] font-bold text-white">{{ product.discount_pct }}%</span>
+                                </div>
+                            {% endif %}
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="text-2xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
+                                <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
+                            </div>
+                            {% if savings %}
+                                <p class="mt-0.5 text-[11px] font-bold text-emerald-600">سود شما از این خرید: {{ formatted_savings }} {% include 'includes/toman_icon.html' %}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-[11px]">
+                            {% if product.available_qty > 0 %}
+                                {% if product.is_low_stock %}
+                                    <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 font-bold text-amber-700">
+                                        فقط {{ product.available_qty }} عدد باقی مانده
+                                    </span>
+                                {% else %}
+                                    <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
+                                        موجود در انبار ({{ product.available_qty }} عدد)
+                                    </span>
+                                {% endif %}
+                            {% else %}
+                                <span class="inline-flex items-center gap-1 rounded-lg border border-rose-100 bg-rose-50 px-2 py-1 font-bold text-rose-700">
+                                    ناموجود
+                                </span>
+                            {% endif %}
+                            <p class="mt-1 text-slate-400">فروشنده: {{ site_settings.store_name|default:"دیجی تل" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="my-4 border-t border-dashed border-zitro-line"></div>
+
+                    <div id="product-cta" class="flex flex-col items-stretch gap-3 sm:flex-row">
+                        {% if is_in_cart %}
+                        <a href="{% url 'cart:cart_detail' %}"
+                           hx-get="{% url 'cart:cart_detail' %}"
+                           hx-target="#main-content-area"
+                           hx-push-url="{% url 'cart:cart_detail' %}"
+                           class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            مشاهده سبد خرید
+                        </a>
+                        {% else %}
+                        <form hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML"
+                              class="flex flex-1 items-stretch gap-3">
+                            {% csrf_token %}
+                            <div class="flex items-center overflow-hidden rounded-[10px] border border-zitro-line bg-white" data-max="{{ product.available_qty|default:1 }}">
+                                <button type="button" data-qty-step="-1" class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">−</button>
+                                <input id="qty" type="number" name="quantity" value="1" min="1" max="{{ product.available_qty|default:1 }}" inputmode="numeric"
+                                       class="h-11 w-12 border-0 p-0 text-center text-sm font-black focus:ring-0">
+                                <button type="button" data-qty-step="1" class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">+</button>
+                            </div>
+
+                            <button type="submit" {% if product.available_qty <= 0 %}disabled{% endif %}
+                                    class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-zitro-cash text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                                {% if product.available_qty > 0 %}افزودن به سبد خرید{% else %}ناموجود{% endif %}
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <a href="{% url 'home:installment' %}"
+                           class="flex h-11 items-center justify-center gap-2 rounded-[10px] bg-zitro-dark px-6 text-sm font-bold text-white transition hover:opacity-90">
+                            اعتباری قسطی
+                        </a>
+                    </div>
+                </div>
+
+                <!-- نشان‌های اعتماد در حالت موبایل (داخل لایه اورلی) -->
+                <div class="lg:hidden mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
+                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
+                    </span>
+                    <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a2 2 0 104 0m-4 0a2 2 0 114 0"></path></svg>
+                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">ارسال فوری در تهران</span>
+                    </span>
+                    <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
+                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">خرید اقساطی بدون ضامن</span>
+                    </span>
+                    <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
+                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">پشتیبانی تخصصی</span>
+                    </span>
+                </div>
             </div>
 
-            <!-- خلاصه مشخصات -->
-            {% if spec_summary %}
-                <div id="product-spec-summary" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5">
-                    <div class="mb-2 flex items-center justify-between">
-                        <h2 class="text-sm font-black text-zitro-ink">مشخصات</h2>
-                        <a href="#specs" class="text-[11px] font-bold text-blue-600 hover:underline">نمایش همه</a>
-                    </div>
-                    <div class="divide-y divide-zitro-line text-[11px]">
+            <!-- نوار دسترسی سریع مشخصات و نظرات در حالت موبایل داخل اورلی / دسکتاپ -->
+            <div id="mobile-anchor-bar" class="mobile-overlay-anchor-bar lg:col-span-12 -mx-2 px-2 sm:mx-0 sm:px-0">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold">
+                    <a href="#specs" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">مشخصات فنی</a>
+                    <a href="#description" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">توضیحات و نقد و بررسی</a>
+                    <a href="#reviews" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">نظرات</a>
+                    <a href="#similar" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">کالاهای مشابه</a>
+                </div>
+            </div>
+
+            <!-- ================= مشخصات فنی ================= -->
+            <section id="specs" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+                <div class="mb-3 flex items-center justify-between">
+                    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                        <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
+                        مشخصات فنی
+                    </h2>
+                    <span class="text-[11px] text-slate-400">{{ specifications|length }} ویژگی</span>
+                </div>
+
+                {% if specifications %}
+                    <div class="divide-y divide-zitro-line text-[11px] sm:text-xs">
                         {% for spec in spec_summary %}
-                            <div class="flex items-start gap-3 py-2">
-                                <span class="w-24 shrink-0 text-slate-500 sm:w-32">{{ spec.name }}</span>
-                                <span class="font-bold text-zitro-ink">{{ spec.value }}</span>
+                            <div class="grid grid-cols-5 gap-3 py-2.5">
+                                <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
+                                <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
                             </div>
                         {% endfor %}
                     </div>
-                </div>
-            {% endif %}
 
-            <!-- بنر خرید اقساطی -->
-            <a href="{% url 'home:installment' %}"
-               class="group flex items-center gap-3 rounded-2xl border border-orange-200 bg-gradient-to-l from-orange-50 via-amber-50 to-white p-4 transition hover:border-orange-300">
-                <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-orange-500 text-lg font-black text-white shadow-xs">٪</span>
-                <span class="min-w-0 flex-1">
-                    <span class="block text-xs font-black text-zitro-ink">خرید اقساطی بدون ضامن با اسنپ‌پی</span>
-                    <span class="block text-[11px] text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-700">{{ formatted_installment }} {% include 'includes/toman_icon.html' %}</b></span>
-                </span>
-                <svg class="w-4 h-4 shrink-0 text-orange-500 transition group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-            </a>
-
-            <!-- قیمت و خرید -->
-            <div id="product-price" class="rounded-2xl border border-zitro-line bg-white p-4 sm:p-5">
-                <div class="flex flex-wrap items-end justify-between gap-3">
-                    <div>
-                        {% if product.formatted_compare_price %}
-                            <div class="mb-1 flex items-center gap-2">
-                                <del class="text-sm font-medium text-zitro-deal">{{ product.formatted_compare_price }} {% include 'includes/toman_icon.html' %}</del>
-                                <span class="rounded-md bg-zitro-deal px-1.5 py-0.5 text-[11px] font-bold text-white">{{ product.discount_pct }}%</span>
-                            </div>
-                        {% endif %}
-                        <div class="flex items-baseline gap-1.5">
-                            <span class="text-2xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
-                            <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
+                    {% if spec_rest %}
+                        <div id="specs-more" class="collapse-panel divide-y divide-zitro-line text-[11px] sm:text-xs" data-expanded="false">
+                            {% for spec in spec_rest %}
+                                <div class="grid grid-cols-5 gap-3 py-2.5">
+                                    <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
+                                    <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% if savings %}
-                            <p class="mt-0.5 text-[11px] font-bold text-emerald-600">سود شما از این خرید: {{ formatted_savings }} {% include 'includes/toman_icon.html' %}</p>
-                        {% endif %}
-                    </div>
-
-                    <div class="text-[11px]">
-                        {% if product.available_qty > 0 %}
-                            {% if product.is_low_stock %}
-                                <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1 font-bold text-amber-700">
-                                    فقط {{ product.available_qty }} عدد باقی مانده
-                                </span>
-                            {% else %}
-                                <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
-                                    موجود در انبار ({{ product.available_qty }} عدد)
-                                </span>
-                            {% endif %}
-                        {% else %}
-                            <span class="inline-flex items-center gap-1 rounded-lg border border-rose-100 bg-rose-50 px-2 py-1 font-bold text-rose-700">
-                                ناموجود
-                            </span>
-                        {% endif %}
-                        <p class="mt-1 text-slate-400">فروشنده: {{ site_settings.store_name|default:"دیجی تل" }}</p>
-                    </div>
-                </div>
-
-                <div class="my-4 border-t border-dashed border-zitro-line"></div>
-
-                <div id="product-cta" class="flex flex-col items-stretch gap-3 sm:flex-row">
-                    {% if is_in_cart %}
-                    <a href="{% url 'cart:cart_detail' %}"
-                       hx-get="{% url 'cart:cart_detail' %}"
-                       hx-target="#main-content-area"
-                       hx-push-url="{% url 'cart:cart_detail' %}"
-                       class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                        مشاهده سبد خرید
-                    </a>
-                    {% else %}
-                    <form hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML"
-                          class="flex flex-1 items-stretch gap-3">
-                        {% csrf_token %}
-                        <div class="flex items-center overflow-hidden rounded-[10px] border border-zitro-line bg-white" data-max="{{ product.available_qty|default:1 }}">
-                            <button type="button" data-qty-step="-1" class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">−</button>
-                            <input id="qty" type="number" name="quantity" value="1" min="1" max="{{ product.available_qty|default:1 }}" inputmode="numeric"
-                                   class="h-11 w-12 border-0 p-0 text-center text-sm font-black focus:ring-0">
-                            <button type="button" data-qty-step="1" class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">+</button>
-                        </div>
-
-                        <button type="submit" {% if product.available_qty <= 0 %}disabled{% endif %}
-                                class="flex h-11 flex-1 items-center justify-center gap-2 rounded-[10px] bg-zitro-cash text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            {% if product.available_qty > 0 %}افزودن به سبد خرید{% else %}ناموجود{% endif %}
+                        <button type="button" data-collapse-toggle="#specs-more"
+                                class="mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-zitro-line py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50">
+                            <span data-more>نمایش بیشتر</span>
+                            <span data-less class="hidden">نمایش کمتر</span>
+                            <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                         </button>
-                    </form>
                     {% endif %}
+                {% else %}
+                    <p class="text-xs text-slate-400">مشخصات فنی برای این کالا ثبت نشده است.</p>
+                {% endif %}
+            </section>
 
-                    <a href="{% url 'home:installment' %}"
-                       class="flex h-11 items-center justify-center gap-2 rounded-[10px] bg-zitro-dark px-6 text-sm font-bold text-white transition hover:opacity-90">
-                        اعتباری قسطی
-                    </a>
+            <!-- ================= توضیحات ================= -->
+            <section id="description" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+                <h2 class="mb-3 flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                    <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
+                    توضیحات و نقد و بررسی
+                </h2>
+
+                <div {% if is_long_description %}id="description-more" class="collapse-panel collapse-panel--peek" data-expanded="false"{% endif %}>
+                    <div class="space-y-3 text-xs leading-relaxed text-slate-600">
+                        {% if product.short_description %}<p>{{ product.short_description }}</p>{% endif %}
+                        {% if product.description %}{{ product.description|linebreaks }}{% endif %}
+                        {% if not product.short_description and not product.description %}
+                            <p class="text-slate-400">توضیحاتی برای این کالا ثبت نشده است.</p>
+                        {% endif %}
+                    </div>
                 </div>
-            </div>
+
+                {% if is_long_description %}
+                    <button type="button" data-collapse-toggle="#description-more"
+                            class="mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-zitro-line py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50">
+                        <span data-more>نمایش بیشتر</span>
+                        <span data-less class="hidden">نمایش کمتر</span>
+                        <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                    </button>
+                {% endif %}
+            </section>
+
+            <!-- ================= نظرات ================= -->
+            <section id="reviews" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+                {% include 'products/partials/reviews.html' %}
+            </section>
+
+            <!-- ================= کالاهای مشابه ================= -->
+            <section id="similar" class="prod-anchor lg:col-span-12 mt-5">
+                <div class="mb-3 flex items-center justify-between">
+                    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                        <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
+                        کالاهای مشابه
+                    </h2>
+                    <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="text-[11px] font-bold text-blue-600 hover:underline">مشاهده بیشتر ←</a>
+                </div>
+
+                {% if related_products %}
+                    <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto no-scrollbar pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
+                        {% for related in related_products %}
+                            <div class="w-[47%] shrink-0 snap-start sm:w-[31%] lg:w-[23%]">
+                                {% include 'products/partials/product_card.html' with product=related %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-xs text-slate-400">کالای مشابهی برای این محصول ثبت نشده است.</p>
+                {% endif %}
+            </section>
         </div>
     </div>
-
-    <!-- ================= مشخصات فنی ================= -->
-    <section id="specs" class="prod-anchor mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6">
-        <div class="mb-3 flex items-center justify-between">
-            <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
-                <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
-                مشخصات فنی
-            </h2>
-            <span class="text-[11px] text-slate-400">{{ specifications|length }} ویژگی</span>
-        </div>
-
-        {% if specifications %}
-            <div class="divide-y divide-zitro-line text-[11px] sm:text-xs">
-                {% for spec in spec_summary %}
-                    <div class="grid grid-cols-5 gap-3 py-2.5">
-                        <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
-                        <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
-                    </div>
-                {% endfor %}
-            </div>
-
-            {% if spec_rest %}
-                <div id="specs-more" class="collapse-panel divide-y divide-zitro-line text-[11px] sm:text-xs" data-expanded="false">
-                    {% for spec in spec_rest %}
-                        <div class="grid grid-cols-5 gap-3 py-2.5">
-                            <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
-                            <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
-                        </div>
-                    {% endfor %}
-                </div>
-                <button type="button" data-collapse-toggle="#specs-more"
-                        class="mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-zitro-line py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50">
-                    <span data-more>نمایش بیشتر</span>
-                    <span data-less class="hidden">نمایش کمتر</span>
-                    <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                </button>
-            {% endif %}
-        {% else %}
-            <p class="text-xs text-slate-400">مشخصات فنی برای این کالا ثبت نشده است.</p>
-        {% endif %}
-    </section>
-
-    <!-- ================= توضیحات ================= -->
-    <section id="description" class="prod-anchor mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6">
-        <h2 class="mb-3 flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
-            <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
-            توضیحات و نقد و بررسی
-        </h2>
-
-        <div {% if is_long_description %}id="description-more" class="collapse-panel collapse-panel--peek" data-expanded="false"{% endif %}>
-            <div class="space-y-3 text-xs leading-relaxed text-slate-600">
-                {% if product.short_description %}<p>{{ product.short_description }}</p>{% endif %}
-                {% if product.description %}{{ product.description|linebreaks }}{% endif %}
-                {% if not product.short_description and not product.description %}
-                    <p class="text-slate-400">توضیحاتی برای این کالا ثبت نشده است.</p>
-                {% endif %}
-            </div>
-        </div>
-
-        {% if is_long_description %}
-            <button type="button" data-collapse-toggle="#description-more"
-                    class="mt-2 flex w-full items-center justify-center gap-1 rounded-xl border border-zitro-line py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-50">
-                <span data-more>نمایش بیشتر</span>
-                <span data-less class="hidden">نمایش کمتر</span>
-                <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-            </button>
-        {% endif %}
-    </section>
-
-    <!-- ================= نظرات ================= -->
-    <section id="reviews" class="prod-anchor mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6">
-        {% include 'products/partials/reviews.html' %}
-    </section>
-
-    <!-- ================= کالاهای مشابه ================= -->
-    <section id="similar" class="prod-anchor mt-5">
-        <div class="mb-3 flex items-center justify-between">
-            <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
-                <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
-                کالاهای مشابه
-            </h2>
-            <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="text-[11px] font-bold text-blue-600 hover:underline">مشاهده بیشتر ←</a>
-        </div>
-
-        {% if related_products %}
-            <div class="flex snap-x snap-mandatory gap-3 overflow-x-auto no-scrollbar pb-2 -mx-3 px-3 sm:mx-0 sm:px-0">
-                {% for related in related_products %}
-                    <div class="w-[47%] shrink-0 snap-start sm:w-[31%] lg:w-[23%]">
-                        {% include 'products/partials/product_card.html' with product=related %}
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="text-xs text-slate-400">کالای مشابهی برای این محصول ثبت نشده است.</p>
-        {% endif %}
-    </section>
 
     <div class="h-16 md:hidden"></div>
 </div>
@@ -394,7 +421,7 @@
 
 {% block extra_scripts %}
 <script>
-    // صفحه محصول: پله‌های تعداد، تعویض تصویر گالری و بخش‌های تاشو (الگوی دیجی تل)
+    // صفحه محصول: پله‌های تعداد، تعویض تصویر گالری، بخش‌های تاشو و انیمیشن لایه اورلی موبایل
     (function () {
         var box = document.querySelector('[data-max]');
         if (box) {
@@ -433,6 +460,54 @@
                 button.querySelectorAll('[data-less]').forEach(function (el) { el.classList.toggle('hidden', expanded); });
             });
         });
+
+        // تعامل کلیک روی هندل لایه اورلی موبایل برای اسکرول روان به بالا
+        var sheetHandle = document.querySelector('.mobile-sheet-handle');
+        if (sheetHandle) {
+            sheetHandle.addEventListener('click', function () {
+                var overlay = document.getElementById('product-mobile-overlay');
+                if (overlay) {
+                    overlay.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+
+        // افکت نرم مقیاس و محوشدگی تدریجی تصویر محصول ثابت هنگام حرکت لایه اورلی روی آن در موبایل
+        var gallery = document.getElementById('product-gallery');
+        if (gallery && mainImage) {
+            var ticking = false;
+            function updateMobileImageEffect() {
+                if (window.innerWidth >= 1024) {
+                    mainImage.style.transform = '';
+                    mainImage.style.opacity = '';
+                    ticking = false;
+                    return;
+                }
+                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                var galleryHeight = gallery.offsetHeight || 380;
+                var progress = Math.min(Math.max(scrollY / galleryHeight, 0), 1);
+                
+                var scale = 1 - (progress * 0.08);
+                var opacity = 1 - (progress * 0.35);
+                mainImage.style.transform = 'scale(' + scale.toFixed(3) + ')';
+                mainImage.style.opacity = opacity.toFixed(2);
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateMobileImageEffect);
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', function () {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateMobileImageEffect);
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
     })();
 </script>
 {% endblock %}

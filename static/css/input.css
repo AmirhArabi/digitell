@@ -1893,3 +1893,103 @@ body[data-drawer="open"] #dash-backdrop {
   flex: 1;
 }
 
+/* ==========================================================================
+   طراحی سکشن ثابت تصویر محصول و لایه اورلی در حالت موبایل (Mobile Sticky Image & Sheet Overlay)
+   ========================================================================== */
+.prod-anchor {
+  scroll-margin-top: 4.5rem;
+}
+
+@media (max-width: 1023px) {
+  /* سکشن تصویر محصول به صورت ثابت/چسبان در بالای صفحه موبایل */
+  .mobile-product-gallery-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    width: 100%;
+    background-color: transparent;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+    pointer-events: auto;
+  }
+
+  /* لایه اورلی شامل اطلاعات کالا، مشخصات، نظرات و کالاهای مشابه */
+  .mobile-product-overlay-sheet {
+    position: relative;
+    z-index: 20;
+    background-color: #f8fafc; /* هماهنگ با پس‌زمینه bg-slate-50 */
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+    box-shadow: 0 -12px 35px -5px rgba(15, 23, 42, 0.12), 0 -2px 6px -1px rgba(15, 23, 42, 0.04);
+    border-top: 1px solid rgba(226, 232, 240, 0.95);
+    margin-top: -1.75rem;
+    padding-top: 0.75rem;
+    padding-bottom: 2.5rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* هندل کشویی بالای لایه اورلی */
+  .mobile-sheet-handle {
+    width: 3rem;
+    height: 0.3125rem;
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+    margin: 0.25rem auto 0.75rem auto;
+  }
+
+  /* نوار چسبان دسترسی سریع درون لایه اورلی */
+  .mobile-overlay-anchor-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background-color: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    padding: 0.5rem 0.25rem;
+    margin-bottom: 0.75rem;
+    border-top-left-radius: 1.75rem;
+    border-top-right-radius: 1.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobile-product-gallery-sticky {
+    position: sticky;
+    top: 9rem; /* top-36 */
+    z-index: auto;
+    background-color: transparent;
+    will-change: auto;
+  }
+
+  .mobile-product-overlay-sheet {
+    display: contents;
+    position: static;
+    z-index: auto;
+    background-color: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .mobile-sheet-handle {
+    display: none;
+  }
+
+  .mobile-overlay-anchor-bar {
+    position: static;
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 0;
+    padding: 0;
+    margin-bottom: 0.75rem;
+    border-radius: 0;
+  }
+}
+
+
