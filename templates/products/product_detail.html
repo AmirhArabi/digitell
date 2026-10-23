@@ -24,19 +24,19 @@
         </a>
     </div>
 
-    <div class="product-detail-layout grid grid-cols-1 lg:grid-cols-12 gap-y-0 lg:gap-8 items-start">
+    <div class="product-detail-layout grid grid-cols-1 md:grid-cols-12 gap-y-0 md:gap-8 items-start">
 
-        <!-- ================= گالری تصاویر (ثابت در موبایل / ستون ۵ در دسکتاپ) ================= -->
-        <div id="product-gallery" class="mobile-product-gallery-sticky lg:col-span-5 w-full">
+        <!-- ================= گالری تصاویر (ثابت در موبایل / ستون ۵ در تبلت و دسکتاپ) ================= -->
+        <div id="product-gallery" class="mobile-product-gallery-sticky md:col-span-5 md:sticky md:top-36 w-full">
             <!-- اسلایدر تصاویر محصول در موبایل / تصویر اصلی در دسکتاپ -->
-            <div class="relative aspect-square max-h-[50vh] sm:max-h-[55vh] lg:max-h-none overflow-hidden rounded-2xl border border-zitro-line bg-white group mx-auto">
+            <div class="relative aspect-square max-h-[50vh] sm:max-h-[55vh] md:max-h-none overflow-hidden rounded-2xl border border-zitro-line bg-white group mx-auto">
                 {% if product.discount_pct > 0 %}
                     <span class="absolute top-3 right-3 z-10 rounded-md bg-zitro-deal px-2.5 py-1 text-[11px] font-black text-white shadow-xs">{{ product.discount_pct }}% تخفیف</span>
                 {% endif %}
 
                 {% if product.images.all|length > 1 %}
                     <!-- اسلایدر موبایل -->
-                    <div id="mobile-gallery-slider" class="flex snap-x snap-mandatory overflow-x-auto no-scrollbar h-full w-full lg:hidden" style="scroll-behavior:smooth;">
+                    <div id="mobile-gallery-slider" class="flex snap-x snap-mandatory overflow-x-auto no-scrollbar h-full w-full md:hidden" style="scroll-behavior:smooth;">
                         {% for img in product.images.all %}
                             <div class="snap-center shrink-0 w-full h-full flex items-center justify-center p-3">
                                 <img src="{{ img.image.url }}" alt="{{ product.title }} - تصویر {{ forloop.counter }}"
@@ -45,7 +45,7 @@
                         {% endfor %}
                     </div>
                     <!-- نقاط نشانگر اسلایدر -->
-                    <div id="slider-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 lg:hidden">
+                    <div id="slider-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 md:hidden">
                         {% for img in product.images.all %}
                             <button type="button" data-slide-dot="{{ forloop.counter0 }}"
                                     class="slider-dot h-2 w-2 rounded-full transition-all duration-300 {% if forloop.first %}bg-blue-600 scale-125{% else %}bg-slate-300{% endif %}"
@@ -55,7 +55,7 @@
                 {% endif %}
 
                 <!-- تصویر اصلی دسکتاپ -->
-                <div class="{% if product.images.all|length > 1 %}hidden lg:flex{% else %}flex{% endif %} items-center justify-center h-full w-full p-3 sm:p-6">
+                <div class="{% if product.images.all|length > 1 %}hidden md:flex{% else %}flex{% endif %} items-center justify-center h-full w-full p-3 sm:p-6">
                     {% if product.primary_image %}
                         <img id="main-product-img" src="{{ product.primary_image.image.url }}" alt="{{ product.title }}"
                              class="max-h-full max-w-full object-contain transition duration-500 group-hover:scale-105 will-change-transform">
@@ -68,7 +68,7 @@
             </div>
 
             {% if product.images.all|length > 1 %}
-                <div class="mt-2.5 hidden lg:flex items-center justify-start gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
+                <div class="mt-2.5 hidden md:flex items-center justify-start gap-2 overflow-x-auto no-scrollbar pb-1 px-1">
                     {% for img in product.images.all %}
                         <button type="button" data-gallery-thumb="{{ img.image.url }}"
                                 class="gallery-thumb h-16 w-16 shrink-0 rounded-xl border bg-white p-1 transition {% if img.is_primary %}border-blue-500{% else %}border-zitro-line hover:border-blue-400{% endif %}">
@@ -79,7 +79,7 @@
             {% endif %}
 
             <!-- نشان‌های اعتماد در حالت دسکتاپ (زیر گالری تصاویر) -->
-            <div class="mt-3 hidden lg:flex items-stretch gap-2 overflow-x-auto no-scrollbar">
+            <div class="mt-3 hidden md:flex items-stretch gap-2 overflow-x-auto no-scrollbar">
                 <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
                     <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                     <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
@@ -99,35 +99,56 @@
             </div>
         </div>
 
-        <!-- ================= لایه اورلی (در موبایل روی تصویر حرکت می‌کند / در دسکتاپ contents) ================= -->
-        <div id="product-mobile-overlay" class="mobile-product-overlay-sheet lg:contents">
+        <!-- ================= لایه اورلی (صرفاً در ویوپورت موبایل / در تبلت و دسکتاپ contents) ================= -->
+        <div id="product-mobile-overlay" class="mobile-product-overlay-sheet md:contents">
 
             <!-- دستگیره کشویی بالای لایه اورلی در موبایل -->
-            <div class="mobile-sheet-handle lg:hidden" aria-hidden="true"></div>
+            <div class="mobile-sheet-handle md:hidden" aria-hidden="true"></div>
 
-            <!-- ================= اطلاعات و خرید (ستون ۷ در دسکتاپ) ================= -->
-            <div class="lg:col-span-7 space-y-4">
+            <!-- ================= اطلاعات و خرید (ستون ۷ در دسکتاپ و تبلت) ================= -->
+            <div class="md:col-span-7 space-y-4">
 
-                <!-- برند / دسته‌بندی / امتیاز / نظرات -->
-                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-500">
-                    {% if product.brand %}
-                        <span>برند:
-                            <a href="{% url 'products:shop' %}?q={{ product.brand.name|urlencode }}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.brand.name }}</a>
-                        </span>
-                    {% endif %}
-                    <span>دسته‌بندی:
-                        <a href="{% url 'products:category_detail' slug=product.category.slug %}" class="font-bold text-slate-700 hover:text-blue-600 transition">{{ product.category.name }}</a>
-                    </span>
-                    <span class="flex items-center gap-1">امتیاز:
-                        <span class="relative inline-block leading-none" dir="ltr">
-                            <span class="text-slate-300">★★★★★</span>
-                            <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-amber-400" style="width: {{ rating_pct }}%">★★★★★</span>
-                        </span>
-                        <b class="text-slate-700">{{ rating_average }}</b>
-                    </span>
-                    <a href="#reviews" class="hover:text-blue-600 transition">
-                        نظرات: <b class="text-slate-700">{% if reviews_count %}{{ reviews_count }} نظر{% else %}بدون نظر{% endif %}</b>
-                    </a>
+                <!-- برند / دسته‌بندی / امتیاز / نظرات (مشابه طرح پیوست) -->
+                <div class="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 my-2.5">
+                    <div class="grid grid-cols-4 divide-x divide-x-reverse divide-slate-200/60 text-center">
+                        <!-- برند -->
+                        <div class="px-1 flex flex-col items-center justify-center">
+                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">برند:</span>
+                            {% if product.brand %}
+                                <a href="{% url 'products:shop' %}?q={{ product.brand.name|urlencode }}"
+                                   class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
+                                    {{ product.brand.name }}
+                                </a>
+                            {% else %}
+                                <span class="mt-1 text-[11px] sm:text-xs text-slate-400">متفرقه</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- دسته‌بندی -->
+                        <div class="px-1 flex flex-col items-center justify-center">
+                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">دسته‌بندی:</span>
+                            <a href="{% url 'products:category_detail' slug=product.category.slug %}"
+                               class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
+                                {{ product.category.name }}
+                            </a>
+                        </div>
+
+                        <!-- امتیاز -->
+                        <div class="px-1 flex flex-col items-center justify-center">
+                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">امتیاز:</span>
+                            <a href="#reviews" class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700">
+                                <span class="fa-num">{{ rating_average|default:"۵" }}</span> از <span class="fa-num">{% if reviews_count %}{{ reviews_count }}{% else %}۱{% endif %}</span> رای
+                            </a>
+                        </div>
+
+                        <!-- نظرات -->
+                        <div class="px-1 flex flex-col items-center justify-center">
+                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">نظرات:</span>
+                            <a href="#reviews" class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                (<span class="fa-num">{{ reviews_count|default:0 }}</span>) نظر
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- عنوان و نشان‌ها -->
@@ -261,7 +282,7 @@
                 </div>
 
                 <!-- نشان‌های اعتماد در حالت موبایل (داخل لایه اورلی) -->
-                <div class="lg:hidden mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar pb-1">
+                <div class="md:hidden mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar pb-1">
                     <span class="flex shrink-0 flex-col items-center gap-1.5 rounded-xl border border-zitro-line bg-white px-3 py-2.5 text-center">
                         <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                         <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
@@ -282,7 +303,7 @@
             </div>
 
             <!-- نوار دسترسی سریع مشخصات و نظرات در حالت موبایل داخل اورلی / دسکتاپ -->
-            <div id="mobile-anchor-bar" class="mobile-overlay-anchor-bar lg:col-span-12 -mx-2 px-2 sm:mx-0 sm:px-0">
+            <div id="mobile-anchor-bar" class="mobile-overlay-anchor-bar md:col-span-12 -mx-2 px-2 sm:mx-0 sm:px-0">
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-[11px] font-bold">
                     <a href="#specs" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">مشخصات فنی</a>
                     <a href="#description" class="shrink-0 rounded-xl border border-zitro-line bg-white px-3 py-1.5 text-zitro-ink hover:border-blue-400 hover:text-blue-600 transition shadow-2xs">توضیحات و نقد و بررسی</a>
@@ -292,7 +313,7 @@
             </div>
 
             <!-- ================= مشخصات فنی ================= -->
-            <section id="specs" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+            <section id="specs" class="prod-anchor md:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
                 <div class="mb-3 flex items-center justify-between">
                     <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
                         <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
@@ -334,7 +355,7 @@
             </section>
 
             <!-- ================= توضیحات ================= -->
-            <section id="description" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+            <section id="description" class="prod-anchor md:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
                 <h2 class="mb-3 flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
                     <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
                     توضیحات و نقد و بررسی
@@ -362,12 +383,12 @@
             </section>
 
             <!-- ================= نظرات ================= -->
-            <section id="reviews" class="prod-anchor lg:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
+            <section id="reviews" class="prod-anchor md:col-span-12 mt-5 rounded-2xl border border-zitro-line bg-white p-4 sm:p-6 shadow-xs">
                 {% include 'products/partials/reviews.html' %}
             </section>
 
             <!-- ================= کالاهای مشابه ================= -->
-            <section id="similar" class="prod-anchor lg:col-span-12 mt-5">
+            <section id="similar" class="prod-anchor md:col-span-12 mt-5">
                 <div class="mb-3 flex items-center justify-between">
                     <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
                         <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
@@ -585,7 +606,7 @@
                 clearInterval(autoSlideInterval);
                 autoSlideInterval = setInterval(function () {
                     if (userInteracting) return;
-                    if (window.innerWidth >= 1024) return; // فقط موبایل
+                    if (window.innerWidth >= 768) return; // فقط موبایل
                     currentSlide = (currentSlide + 1) % slideCount;
                     goToSlide(currentSlide);
                 }, 2000);
@@ -617,7 +638,7 @@
         if (gallery && sliderOrImg) {
             var ticking = false;
             function updateMobileImageEffect() {
-                if (window.innerWidth >= 1024) {
+                if (window.innerWidth >= 768) {
                     sliderOrImg.style.transform = '';
                     sliderOrImg.style.opacity = '';
                     ticking = false;

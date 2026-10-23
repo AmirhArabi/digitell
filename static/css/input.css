@@ -1908,33 +1908,47 @@ body[data-drawer="open"] #dash-backdrop {
   scroll-margin-top: 4.5rem;
 }
 
-@media (max-width: 1023px) {
-  /* سکشن تصویر محصول به صورت ثابت/چسبان در بالای صفحه موبایل */
+@media (max-width: 767px) {
+  /* سکشن تصویر محصول به صورت چسبان در بالای ویوپورت موبایل در لایه زیرین اورلی */
   .mobile-product-gallery-sticky {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 1;
     width: 100%;
     background-color: transparent;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: transform;
     pointer-events: auto;
   }
 
-  /* لایه اورلی شامل اطلاعات کالا، مشخصات، نظرات و کالاهای مشابه */
+  /* لایه اورلی موبایل: دقیقاً هم‌عرض ویوپورت موبایل (100vw) و بدون اسکرول افقی */
   .mobile-product-overlay-sheet {
     position: relative;
     z-index: 20;
-    background-color: #f8fafc; /* هماهنگ با پس‌زمینه bg-slate-50 */
-    border-top-left-radius: 1.75rem;
-    border-top-right-radius: 1.75rem;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    box-sizing: border-box;
+    background-color: #f8fafc; /* پس‌زمینه مات جهت پوشش کامل تصاویر پشتی */
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
     box-shadow: 0 -12px 35px -5px rgba(15, 23, 42, 0.12), 0 -2px 6px -1px rgba(15, 23, 42, 0.04);
     border-top: 1px solid rgba(226, 232, 240, 0.95);
-    margin-top: -1.75rem;
-    padding-top: 0.75rem;
-    padding-bottom: 2.5rem;
+    margin-top: -1.5rem;
+    padding: 0.75rem 1rem 3rem 1rem;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+  }
+
+  /* سکشن‌های داخل اورلی: تنظیم شده دقیق بدون بیرون‌زدگی و بدون اسکرول افقی */
+  .mobile-product-overlay-sheet .prod-anchor,
+  .mobile-product-overlay-sheet #product-title-block,
+  .mobile-product-overlay-sheet #product-spec-summary {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
   }
 
   /* هندل کشویی بالای لایه اورلی */
@@ -1950,15 +1964,15 @@ body[data-drawer="open"] #dash-backdrop {
   .mobile-overlay-anchor-bar {
     position: sticky;
     top: 0;
-    z-index: 30;
+    z-index: 25;
     background-color: rgba(248, 250, 252, 0.95);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     padding: 0.5rem 0.25rem;
     margin-bottom: 0.75rem;
-    border-top-left-radius: 1.75rem;
-    border-top-right-radius: 1.75rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
   }
 
   /* پنهان‌سازی بخش قیمت در موبایل (نوار خرید ثابت پایین جایگزین آن است) */
@@ -1966,43 +1980,33 @@ body[data-drawer="open"] #dash-backdrop {
     display: none !important;
   }
 
-  /* سکشن‌های داخل اورلی: تمام عرض، بدون گردی */
-  .mobile-product-overlay-sheet .prod-anchor,
-  .mobile-product-overlay-sheet #product-title-block,
-  .mobile-product-overlay-sheet #product-spec-summary {
-    border-radius: 0 !important;
-    margin-left: -0.75rem;
-    margin-right: -0.75rem;
-    width: calc(100% + 1.5rem);
-    padding: 1rem;
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-    box-shadow: none;
-  }
-
   /* هیرو سکشن ثابت در موبایل و لایه اورلی صفحه اصلی */
   .mobile-hero-gallery-sticky {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 1;
     width: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    will-change: transform;
     pointer-events: auto;
   }
 
   .mobile-hero-overlay-sheet {
     position: relative;
     z-index: 20;
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    box-sizing: border-box;
     background-color: #f8fafc;
-    border-top-left-radius: 1.75rem;
-    border-top-right-radius: 1.75rem;
+    border-top-left-radius: 1.5rem;
+    border-top-right-radius: 1.5rem;
     box-shadow: 0 -12px 35px -5px rgba(15, 23, 42, 0.12), 0 -2px 6px -1px rgba(15, 23, 42, 0.04);
     border-top: 1px solid rgba(226, 232, 240, 0.95);
-    margin-top: -1.75rem;
-    padding-top: 1rem;
+    margin-top: -1.5rem;
+    padding: 1rem 1rem 2rem 1rem;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -2015,58 +2019,62 @@ body[data-drawer="open"] #dash-backdrop {
   }
 }
 
-@media (min-width: 1024px) {
+/* در تمامی ویوپورت‌ها به جز موبایل (تبلت و دسکتاپ >= 768px): لایه اورلی کاملاً حذف و به حالت نرمال برمی‌گردد */
+@media (min-width: 768px) {
   .mobile-product-gallery-sticky {
-    position: sticky;
-    top: 9rem; /* top-36 */
+    position: static;
+    top: auto;
     z-index: auto;
     background-color: transparent;
-    will-change: auto;
+    width: 100%;
   }
 
   .mobile-product-overlay-sheet {
     display: contents;
     position: static;
     z-index: auto;
+    width: auto;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    padding: 0;
     background-color: transparent;
     border-radius: 0;
     box-shadow: none;
-    border-top: 0;
-    margin-top: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    border: none;
+    overflow-x: visible;
   }
 
   .mobile-hero-gallery-sticky {
     position: relative;
     top: auto;
     z-index: auto;
+    width: 100%;
   }
 
   .mobile-hero-overlay-sheet {
     position: relative;
     z-index: auto;
+    width: auto;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    padding: 2rem 0;
     background-color: transparent;
     border-radius: 0;
     box-shadow: none;
-    border-top: 0;
-    margin-top: 0;
-    padding-top: 0;
+    border: none;
+    overflow-x: visible;
   }
 
   .mobile-sheet-handle {
-    display: none;
+    display: none !important;
   }
 
   .mobile-overlay-anchor-bar {
-    position: static;
-    background-color: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: 0;
-    padding: 0;
-    margin-bottom: 0.75rem;
-    border-radius: 0;
+    display: none !important;
   }
 }
 
