@@ -1931,10 +1931,9 @@ body[data-drawer="open"] #dash-backdrop {
     margin-right: calc(50% - 50vw);
     box-sizing: border-box;
     background-color: #f8fafc; /* پس‌زمینه مات جهت پوشش کامل تصاویر پشتی */
-    border-top-left-radius: 1.5rem;
-    border-top-right-radius: 1.5rem;
+    border-radius: 0;
     box-shadow: 0 -12px 35px -5px rgba(15, 23, 42, 0.12), 0 -2px 6px -1px rgba(15, 23, 42, 0.04);
-    border-top: 1px solid rgba(226, 232, 240, 0.95);
+    border: none;
     margin-top: -1.5rem;
     padding: 0.75rem 1rem 3rem 1rem;
     overflow-x: hidden;
@@ -1949,6 +1948,8 @@ body[data-drawer="open"] #dash-backdrop {
     margin-left: 0;
     margin-right: 0;
     box-sizing: border-box;
+    border-radius: 0 !important;
+    border: none !important;
   }
 
   /* هندل کشویی بالای لایه اورلی */
@@ -1968,11 +1969,10 @@ body[data-drawer="open"] #dash-backdrop {
     background-color: rgba(248, 250, 252, 0.95);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    border: none;
     padding: 0.5rem 0.25rem;
     margin-bottom: 0.75rem;
-    border-top-left-radius: 1.5rem;
-    border-top-right-radius: 1.5rem;
+    border-radius: 0;
   }
 
   /* پنهان‌سازی بخش قیمت در موبایل (نوار خرید ثابت پایین جایگزین آن است) */
