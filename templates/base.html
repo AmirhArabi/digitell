@@ -254,37 +254,37 @@
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 mt-auto">
-        <!-- Feature Highlights -->
+        <!-- Feature Highlights (نمایش به صورت یک ردیف بدون بوردر) -->
         {% cache 604800 base_feature_highlights %}
-        <div class="border-b border-slate-100 py-10 bg-slate-50/70">
-            <div class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="border-b border-slate-100 py-6 sm:py-8 bg-slate-50/70">
+            <div class="max-w-[1920px] w-full mx-auto px-3 sm:px-6 md:px-8 lg:px-12">
+                <div class="grid grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
                     <!-- Feature 1: ضمانت اصالت کالا -->
-                    <div class="feature-card group">
-                        <img src="{% static 'img/features/guarantee.jpg' %}" alt="ضمانت اصالت کالا" class="feature-3d-img rounded-2xl" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-1 group-hover:text-primary-600 transition">ضمانت اصالت کالا</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">تمامی محصولات ۱۰۰٪ اورجینال با گارانتی معتبر</p>
+                    <div class="feature-card group border-0 shadow-none">
+                        <img src="{% static 'img/features/guarantee.jpg' %}" alt="ضمانت اصالت کالا" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
+                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">ضمانت اصالت کالا</h4>
+                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">تمامی محصولات ۱۰۰٪ اورجینال با گارانتی معتبر</p>
                     </div>
 
                     <!-- Feature 2: خرید اقساطی بدون ضامن -->
-                    <div class="feature-card group">
-                        <img src="{% static 'img/features/installment.jpg' %}" alt="خرید اقساطی بدون ضامن" class="feature-3d-img rounded-2xl" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-1 group-hover:text-primary-600 transition">خرید اقساطی بدون ضامن</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">پرداخت در ۴ قسط آسان بدون کارمزد با اسنپ‌پی</p>
+                    <div class="feature-card group border-0 shadow-none">
+                        <img src="{% static 'img/features/installment.jpg' %}" alt="خرید اقساطی بدون ضامن" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
+                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">خرید اقساطی بدون ضامن</h4>
+                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">پرداخت در ۴ قسط آسان بدون کارمزد با اسنپ‌پی</p>
                     </div>
 
                     <!-- Feature 3: ارسال سریع و مطمئن -->
-                    <div class="feature-card group">
-                        <img src="{% static 'img/features/delivery.jpg' %}" alt="ارسال سریع و مطمئن" class="feature-3d-img rounded-2xl" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-1 group-hover:text-primary-600 transition">ارسال سریع و مطمئن</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">تحویل فوری در تهران و پست پیشتاز سراسر کشور</p>
+                    <div class="feature-card group border-0 shadow-none">
+                        <img src="{% static 'img/features/delivery.jpg' %}" alt="ارسال سریع و مطمئن" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
+                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">ارسال سریع و مطمئن</h4>
+                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">تحویل فوری در تهران و پست پیشتاز سراسر کشور</p>
                     </div>
 
                     <!-- Feature 4: پشتیبانی تخصصی -->
-                    <div class="feature-card group">
-                        <img src="{% static 'img/features/support.svg' %}" alt="پشتیبانی تخصصی" class="feature-3d-img" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-sm sm:text-base text-slate-800 mb-1 group-hover:text-primary-600 transition">پشتیبانی تخصصی</h4>
-                        <p class="text-xs text-slate-500 leading-relaxed">مشاوره فنی رایگان و پاسخگویی سریع پیش از خرید</p>
+                    <div class="feature-card group border-0 shadow-none">
+                        <img src="{% static 'img/features/support.svg' %}" alt="پشتیبانی تخصصی" class="feature-3d-img w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
+                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">پشتیبانی تخصصی</h4>
+                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">مشاوره فنی رایگان و پاسخگویی سریع پیش از خرید</p>
                     </div>
                 </div>
             </div>
@@ -295,18 +295,18 @@
         <div class="hidden lg:block max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <!-- About Col (فروشگاه اینترنتی دیجی تل) -->
-                <div class="col-span-2 md:col-span-1 space-y-4">
+                <div class="col-span-2 md:col-span-1 space-y-4 text-right">
                     <div class="flex items-center gap-2">
                         <div
                             class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
                             D</div>
                         <span class="text-lg font-black text-slate-900">فروشگاه اینترنتی دیجی تل</span>
                     </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">
+                    <p class="text-xs text-slate-600 leading-relaxed text-right">
                         دیجی تل مرجع تخصصی خرید آنلاین و اقساطی گوشی‌های هوشمند، لپ‌تاپ، لوازم جانبی و تجهیزات گیمینگ با
                         تضمین اصالت و بهترین قیمت بازار.
                     </p>
-                    <div class="text-xs text-slate-600 space-y-1 pt-2">
+                    <div class="text-xs text-slate-600 space-y-1 pt-2 text-right">
                         <p><strong class="text-slate-800">آدرس:</strong> {{ site_settings.address }}</p>
                         <p><strong class="text-slate-800">تلفن:</strong> {{ site_settings.phone }}</p>
                         <p><strong class="text-slate-800">ایمیل:</strong> {{ site_settings.email }}</p>
@@ -314,7 +314,7 @@
                 </div>
 
                 <!-- Quick links (دسترسی سریع) -->
-                <div class="col-span-1">
+                <div class="col-span-1 text-right">
                     <h5 class="font-bold text-sm text-slate-900 mb-4">دسترسی سریع</h5>
                     <ul class="text-xs space-y-2.5 text-slate-600">
                         <li><a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition">فروشگاه و
@@ -333,7 +333,7 @@
                 </div>
 
                 <!-- Categories (دسته‌بندی‌های محبوب) -->
-                <div class="col-span-1">
+                <div class="col-span-1 text-right">
                     <h5 class="font-bold text-sm text-slate-900 mb-4">دسته‌بندی‌های محبوب</h5>
                     <ul class="text-xs space-y-2.5 text-slate-600">
                         <li><a href="{% url 'products:category_detail' slug='smartphones' %}"
@@ -349,33 +349,84 @@
                     </ul>
                 </div>
 
-                <!-- Trust Badges & Certifications (مجوزها و نمادهای اعتماد) -->
-                <div class="col-span-2 md:col-span-1">
-                    <h5 class="font-bold text-sm text-slate-900 mb-4">مجوزها و نمادهای اعتماد</h5>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div
-                            class="border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center text-center bg-white shadow-2xs">
-                            <span class="text-2xl mb-1">🛡️</span>
-                            <span class="text-[11px] font-semibold text-slate-700">اینماد الکترونیکی</span>
-                            <span class="text-[9px] text-slate-400">نماد اعتماد رسمی</span>
+                <!-- مجوزها و نمادهای اعتماد دسکتاپ -->
+                <div class="col-span-2 md:col-span-1 text-right">
+                    <h5 class="font-bold text-sm text-slate-900 mb-4">پشتیبانی و ارتباط</h5>
+                    <div class="space-y-3">
+                        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-right">
+                            <p class="text-xs text-slate-500 mb-1">شماره تماس پشتیبانی ۲۴ ساعته:</p>
+                            <a href="tel:{{ site_settings.phone|default:'02191000000' }}" class="text-base font-black text-blue-600 hover:text-blue-700 dir-ltr inline-block">
+                                {{ site_settings.phone|default:'۰۲۱-۹۱۰۰۰۰۰۰' }}
+                            </a>
                         </div>
-                        <div
-                            class="border border-slate-200 rounded-xl p-3 flex flex-col items-center justify-center text-center bg-white shadow-2xs">
-                            <span class="text-2xl mb-1">💳</span>
-                            <span class="text-[11px] font-semibold text-slate-700">سامانه ساماندهی</span>
-                            <span class="text-[9px] text-slate-400">وزارت ارشاد</span>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">
+                            پاسخگویی به سوالات و پیگیری سفارشات شما در تمام روزهای هفته حتی روزهای تعطیل.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ردیف شبکه‌های اجتماعی دسکتاپ -->
+            <div class="border-t border-slate-100 mt-10 pt-8 text-center">
+                <h4 class="text-sm font-black text-slate-800 mb-3.5">در شبکه‌های اجتماعی با ما در ارتباط باشید</h4>
+                <div class="flex items-center justify-center gap-3.5" dir="ltr">
+                    <a href="https://t.me/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="تلگرام"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z"/></svg>
+                    </a>
+                    <a href="https://x.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="توییتر"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://wa.me/989120000000" target="_blank" rel="noopener noreferrer" aria-label="واتساپ"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ردیف ۳ کارت مستقل نمادهای اعتماد و مجوزها در دسکتاپ -->
+            <div class="pt-6">
+                <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto">
+                    <!-- کارت ۱: اینماد الکترونیکی -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div class="w-14 h-14 rounded-xl bg-blue-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
+                        <h5 class="text-xs font-bold text-slate-800 leading-tight">اینماد الکترونیکی</h5>
+                        <p class="text-[10px] text-slate-400 mt-1 font-medium">وزارت صنعت و معدن</p>
+                    </div>
+
+                    <!-- کارت ۲: ساماندهی رسانه‌های دیجیتال -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div class="w-14 h-14 rounded-xl bg-amber-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <h5 class="text-xs font-bold text-slate-800 leading-tight">نشان ملی ثبت</h5>
+                        <p class="text-[10px] text-slate-400 mt-1 font-medium">وزارت فرهنگ و ارشاد</p>
+                    </div>
+
+                    <!-- کارت ۳: اتحادیه کشوری کسب‌وکارهای مجازی -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div class="w-14 h-14 rounded-xl bg-purple-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <h5 class="text-xs font-bold text-slate-800 leading-tight">اتحادیه کشوری</h5>
+                        <p class="text-[10px] text-slate-400 mt-1 font-medium">کسب‌وکار مجازی</p>
                     </div>
                 </div>
             </div>
 
             <div class="border-t border-slate-100 mt-10 pt-6 text-center text-xs text-slate-500">
-                <p>© ۲۰۲۶ تمامی حقوق مادی و معنوی این سایت متعلق به <strong>فروشگاه اینترنتی دیجی تل (digitell.ir)</strong>
-                    می‌باشد.</p>
+                <p>© ۲۰۲۶ تمامی حقوق مادی و معنوی این سایت متعلق به <strong>فروشگاه اینترنتی دیجی تل (digitell.ir)</strong> می‌باشد.</p>
             </div>
         </div>
 
-        <!-- Mobile Footer (بازنویسی کامل مطابق طرح اپلیکیشن دیجی‌کالا و برند دیجی‌تل) -->
+        <!-- Mobile Footer (بازنویسی کامل مطابق طرح، راست‌چین شده با ردیف شبکه‌های اجتماعی و نمادها) -->
         <div class="block lg:hidden px-4 pt-6 pb-20 bg-white text-slate-800">
             <!-- دکمه رفتن به بالا -->
             <div class="flex justify-center mb-5">
@@ -386,50 +437,33 @@
                 </button>
             </div>
 
-            <!-- ردیف تماس با پشتیبانی -->
+            <!-- ردیف تماس با پشتیبانی (کاملاً راست‌چین با آیکون در سمت چپ) -->
             <div class="flex items-center justify-between py-3.5 border-b border-slate-100">
-                <a href="tel:{{ site_settings.phone|default:'02191000000' }}"
-                   class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
-                    تماس
-                </a>
-                <div class="flex items-center gap-3">
-                    <div class="text-right">
-                        <h4 class="text-sm font-bold text-slate-800">تماس با پشتیبانی</h4>
-                        <p class="text-[11px] text-slate-400 font-medium">۷ روز هفته، ۲۴ ساعت</p>
-                    </div>
+                <div class="text-right">
+                    <h4 class="text-sm font-bold text-slate-800">تماس با پشتیبانی</h4>
+                    <p class="text-[11px] text-slate-400 font-medium">۷ روز هفته، ۲۴ ساعت</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="tel:{{ site_settings.phone|default:'02191000000' }}"
+                       class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
+                        تماس
+                    </a>
                     <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
                     </div>
                 </div>
             </div>
 
-            <!-- ردیف اپلیکیشن دیجی‌تل -->
-            <div class="flex items-center justify-between py-3.5 border-b border-slate-100">
-                <a href="{% url 'home:faq' %}"
-                   class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
-                    دانلود
-                </a>
-                <div class="flex items-center gap-3">
-                    <div class="text-right">
-                        <h4 class="text-sm font-bold text-slate-800">اپلیکیشن دیجی‌تل</h4>
-                        <p class="text-[11px] text-slate-400 font-medium">تجربه خرید بهتر در دیجی‌تل</p>
-                    </div>
-                    <div class="w-9 h-9 rounded-full bg-rose-600 flex items-center justify-center text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- منوهای آکاردئونی فوتر موبایل -->
+            <!-- منوهای آکاردئونی فوتر موبایل (عناوین در سمت راست و آیکون‌ها در سمت چپ) -->
             <div class="divide-y divide-slate-100 border-b border-slate-100">
                 <!-- بخش اول: با دیجی‌تل -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
                         <span>با دیجی‌تل</span>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div class="footer-accordion-content">
-                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
                             <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">اتاق خبر دیجی‌تل</a></li>
                             <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition block py-1">فروش در دیجی‌تل</a></li>
                             <li><a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های شغلی</a></li>
@@ -442,12 +476,12 @@
 
                 <!-- بخش دوم: خدمات مشتریان -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
                         <span>خدمات مشتریان</span>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div class="footer-accordion-content">
-                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
                             <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">پاسخ به پرسش‌های متداول</a></li>
                             <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه‌های بازگرداندن کالا</a></li>
                             <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">شرایط استفاده</a></li>
@@ -459,12 +493,12 @@
 
                 <!-- بخش سوم: راهنمای خرید از دیجی‌تل -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
                         <span>راهنمای خرید از دیجی‌تل</span>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div class="footer-accordion-content">
-                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
                             <li><a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition block py-1">نحوه ثبت سفارش</a></li>
                             <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه ارسال سفارش</a></li>
                             <li><a href="{% url 'accounts:deposit' %}" class="hover:text-blue-600 transition block py-1">شیوه‌های پرداخت و واریز</a></li>
@@ -475,12 +509,12 @@
 
                 <!-- بخش چهارم: شرکای تجاری -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
                         <span>شرکای تجاری</span>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div class="footer-accordion-content">
-                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
                             <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">تامین‌کنندگان و فروشندگان</a></li>
                             <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">همکاری در فروش (افیلیت)</a></li>
                             <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های تبلیغاتی</a></li>
@@ -489,10 +523,10 @@
                 </div>
             </div>
 
-            <!-- معرفی برند دیجی‌تل و متن توضیحی با بازشونده -->
-            <div class="pt-5 space-y-2">
+            <!-- معرفی برند دیجی‌تل و متن توضیحی با بازشونده (کاملاً راست‌چین) -->
+            <div class="pt-5 space-y-2 text-right">
                 <h3 class="font-bold text-sm text-slate-800 leading-snug">دیجی‌تل؛ بزرگترین فروشگاه اینترنتی کالای دیجیتال</h3>
-                <div id="footer-brand-text" class="text-xs text-slate-500 leading-relaxed overflow-hidden transition-all duration-300 max-h-12">
+                <div id="footer-brand-text" class="text-xs text-slate-500 leading-relaxed overflow-hidden transition-all duration-300 max-h-12 text-right">
                     دیجی‌تل سال‌ها است که به عنوان انتخاب اول بسیاری از خریداران اینترنتی کالای دیجیتال تبدیل شده است. خرید آنلاین و اقساطی انواع گوشی موبایل، لپ‌تاپ، ساعت هوشمند، کنسول بازی و لوازم جانبی اصل با بهترین قیمت، همراه با ضمانت بازگشت و پشتیبانی ۲۴ ساعته در دیجی‌تل میسر می‌باشد.
                 </div>
                 <button type="button" id="footer-expand-btn" onclick="toggleFooterBrandText()" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition pt-1 cursor-pointer">
@@ -501,17 +535,61 @@
                 </button>
             </div>
 
-            <!-- بنر نصب اپلیکیشن پایین فوتر موبایل مشابه دیجی‌کالا -->
-            <div class="pt-5 pb-2">
-                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
-                    <a href="{% url 'home:faq' %}" class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-bold text-slate-800 transition active:scale-95">
-                        دانلود
+            <!-- ردیف شبکه‌های اجتماعی مطابق تصویر آپلود شده -->
+            <div class="pt-6 pb-4 border-t border-slate-100 text-center">
+                <h4 class="text-sm font-black text-slate-800 mb-3.5">در شبکه‌های اجتماعی با ما در ارتباط باشید</h4>
+                <div class="flex items-center justify-center gap-3.5" dir="ltr">
+                    <!-- تلگرام -->
+                    <a href="https://t.me/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="تلگرام"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z"/></svg>
                     </a>
-                    <div class="flex items-center gap-2.5">
-                        <span class="text-xs font-bold text-slate-700">تجربه خرید بهتر در اپلیکیشن دیجی‌تل</span>
-                        <div class="w-8 h-8 rounded-full bg-rose-600 flex items-center justify-center text-white shrink-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    <!-- توییتر / X -->
+                    <a href="https://x.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="توییتر"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    </a>
+                    <!-- اینستاگرام -->
+                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                    <!-- واتساپ -->
+                    <a href="https://wa.me/989120000000" target="_blank" rel="noopener noreferrer" aria-label="واتساپ"
+                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ردیف مجوزهای وبسایت (۳ کارت مستقل) -->
+            <div class="py-5 border-t border-slate-100">
+                <div class="grid grid-cols-3 gap-2.5 max-w-md mx-auto">
+                    <!-- کارت ۱: اینماد الکترونیکی -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div class="w-11 h-11 rounded-xl bg-blue-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
+                        <h5 class="text-[11px] font-bold text-slate-800 leading-tight">اینماد الکترونیکی</h5>
+                        <p class="text-[9px] text-slate-400 mt-0.5 font-medium">وزارت صمت</p>
+                    </div>
+
+                    <!-- کارت ۲: نشان ملی ثبت ساماندهی -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div class="w-11 h-11 rounded-xl bg-amber-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                        </div>
+                        <h5 class="text-[11px] font-bold text-slate-800 leading-tight">نشان ملی ثبت</h5>
+                        <p class="text-[9px] text-slate-400 mt-0.5 font-medium">وزارت ارشاد</p>
+                    </div>
+
+                    <!-- کارت ۳: اتحادیه کشوری کسب‌وکارهای مجازی -->
+                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div class="w-11 h-11 rounded-xl bg-purple-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <h5 class="text-[11px] font-bold text-slate-800 leading-tight">اتحادیه کشوری</h5>
+                        <p class="text-[9px] text-slate-400 mt-0.5 font-medium">کسب‌وکار مجازی</p>
                     </div>
                 </div>
             </div>

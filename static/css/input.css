@@ -1212,22 +1212,22 @@ body[data-drawer="open"] #dash-backdrop {
 
 .feature-card {
   position: relative;
-  background: #ffffff;
-  border-radius: 1.25rem;
-  padding: 1.5rem 1rem;
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: transparent;
+  border-radius: 0;
+  padding: 0.75rem 0.5rem;
+  border: none !important;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: none !important;
 }
 
 .feature-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(31, 94, 178, 0.25);
-  box-shadow: 0 12px 28px -4px rgba(31, 94, 178, 0.1);
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .feature-3d-img {
