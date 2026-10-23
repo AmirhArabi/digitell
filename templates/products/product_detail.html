@@ -5,11 +5,11 @@
 {% block mobile_nav %}{% endblock %}
 
 {% block content %}
-<div class="max-w-[1920px] w-full mx-auto px-3 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 pb-24 md:pb-10">
+<div class="max-w-[1920px] w-full mx-auto px-3 sm:px-6 md:px-8 lg:px-12 py-4 md:py-6 pb-2 md:pb-4">
 
     <!-- مسیر صفحه + میانبر نظرات -->
     <div class="flex items-center justify-between gap-3 mb-3">
-        <nav class="flex items-center gap-1.5 text-[11px] text-slate-500 flex-wrap min-w-0">
+        <nav class="flex items-center gap-2 text-xs sm:text-sm text-slate-500 flex-wrap min-w-0">
             <a href="{% url 'home:index' %}" class="hover:text-blue-600 transition">خانه</a>
             <span class="text-slate-300">/</span>
             <a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition">فروشگاه</a>
@@ -20,8 +20,8 @@
             <span class="text-zitro-ink font-bold truncate max-w-[9rem] sm:max-w-xs">{{ product.title }}</span>
         </nav>
         <a href="#reviews"
-            class="hidden sm:flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-blue-600 transition shrink-0">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="hidden sm:flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-600 hover:text-blue-600 transition shrink-0">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
                 </path>
@@ -39,9 +39,7 @@
             <div
                 class="relative aspect-square max-h-[36vh] sm:max-h-[40vh] md:max-h-[340px] max-w-[280px] sm:max-w-xs md:max-w-sm overflow-hidden bg-white group mx-auto">
                 {% if product.discount_pct > 0 %}
-                <span
-                    class="absolute top-3 right-3 z-10 bg-zitro-deal px-2.5 py-1 text-[11px] font-black text-white shadow-xs">{{
-                    product.discount_pct }}% تخفیف</span>
+                <span class="absolute top-3 right-3 z-10 bg-zitro-deal px-2.5 py-1 text-xs sm:text-sm font-black text-white shadow-xs">{{ product.discount_pct }}% تخفیف</span>
                 {% endif %}
 
                 {% if product.images.all|length > 1 %}
@@ -94,42 +92,6 @@
                 {% endfor %}
             </div>
             {% endif %}
-
-            <!-- نشان‌های اعتماد در حالت دسکتاپ (زیر گالری تصاویر) -->
-            <div class="mt-3 hidden md:flex items-stretch gap-2 overflow-x-auto no-scrollbar">
-                <span class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                        </path>
-                    </svg>
-                    <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
-                </span>
-                <span class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a2 2 0 104 0m-4 0a2 2 0 114 0">
-                        </path>
-                    </svg>
-                    <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">ارسال فوری در تهران</span>
-                </span>
-                <span class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                    <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
-                        </path>
-                    </svg>
-                    <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">خرید اقساطی بدون ضامن</span>
-                </span>
-                <span class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                    <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z">
-                        </path>
-                    </svg>
-                    <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">پشتیبانی تخصصی</span>
-                </span>
-            </div>
         </div>
 
         <!-- ================= لایه اورلی (صرفاً در ویوپورت موبایل / در تبلت و دسکتاپ contents) ================= -->
@@ -142,45 +104,48 @@
             <div class="md:col-span-7 space-y-4">
 
                 <!-- برند / دسته‌بندی / امتیاز / نظرات (بدون بوردر و بدون رادیوس) -->
-                <div class="bg-slate-50/70 p-3 my-2.5 shadow-2xs">
+                <div class="bg-slate-50/70 p-3 sm:p-4 my-2.5 shadow-2xs">
                     <div class="grid grid-cols-4 divide-x divide-x-reverse divide-slate-200/60 text-center">
                         <!-- برند -->
                         <div class="px-1 flex flex-col items-center justify-center">
-                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">برند:</span>
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">برند:</span>
                             {% if product.brand %}
                             <a href="{% url 'products:shop' %}?q={{ product.brand.name|urlencode }}"
-                                class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
+                                class="mt-1 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
                                 {{ product.brand.name }}
                             </a>
                             {% else %}
-                            <span class="mt-1 text-[11px] sm:text-xs text-slate-400">متفرقه</span>
+                            <span class="mt-1 text-xs sm:text-sm text-slate-400">متفرقه</span>
                             {% endif %}
                         </div>
 
                         <!-- دسته‌بندی -->
                         <div class="px-1 flex flex-col items-center justify-center">
-                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">دسته‌بندی:</span>
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">دسته‌بندی:</span>
                             <a href="{% url 'products:category_detail' slug=product.category.slug %}"
-                                class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
+                                class="mt-1 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline truncate max-w-full">
                                 {{ product.category.name }}
                             </a>
                         </div>
 
                         <!-- امتیاز -->
                         <div class="px-1 flex flex-col items-center justify-center">
-                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">امتیاز:</span>
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">امتیاز:</span>
                             <a href="#reviews"
-                                class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700">
-                                <span class="fa-num">{{ rating_average|default:"۵" }}</span> از <span class="fa-num">{%
-                                    if reviews_count %}{{ reviews_count }}{% else %}۱{% endif %}</span> رای
+                                class="mt-1 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700">
+                                {% if reviews_count and reviews_count > 0 %}
+                                <span class="fa-num">{{ rating_average }}</span> از <span class="fa-num">{{ reviews_count }}</span> رای
+                                {% else %}
+                                <span class="text-slate-400 font-normal">ثبت نشده</span>
+                                {% endif %}
                             </a>
                         </div>
 
                         <!-- نظرات -->
                         <div class="px-1 flex flex-col items-center justify-center">
-                            <span class="text-[11px] sm:text-xs font-bold text-slate-800">نظرات:</span>
+                            <span class="text-xs sm:text-sm font-bold text-slate-800">نظرات:</span>
                             <a href="#reviews"
-                                class="mt-1 text-[11px] sm:text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                                class="mt-1 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 hover:underline">
                                 (<span class="fa-num">{{ reviews_count|default:0 }}</span>) نظر
                             </a>
                         </div>
@@ -189,33 +154,33 @@
 
                 <!-- عنوان و نشان‌ها -->
                 <div id="product-title-block" class="bg-white p-4 sm:p-5 shadow-xs">
-                    <h1 class="text-base sm:text-xl font-black leading-snug text-zitro-ink">{{ product.title }}</h1>
+                    <h1 class="text-lg sm:text-2xl font-black leading-snug text-zitro-ink">{{ product.title }}</h1>
                     {% if product.title_en %}
-                    <p dir="ltr" class="mt-1 text-left font-mono text-[11px] text-slate-400">{{ product.title_en }}</p>
+                    <p dir="ltr" class="mt-1 text-left font-mono text-xs text-slate-400">{{ product.title_en }}</p>
                     {% endif %}
 
-                    <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px]">
-                        <span class="inline-flex items-center gap-1 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="mt-3 flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                        <span
+                            class="inline-flex items-center gap-1.5 bg-emerald-500 px-2.5 py-1 font-bold text-white rounded-xl">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
                                 </path>
                             </svg>
                             کالای اصل
                         </span>
-                        <span class="inline-flex items-center gap-1 bg-slate-50 px-2 py-1 font-bold text-slate-600">
-                            <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor"
+                        <span class="inline-flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 font-bold text-slate-700">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M5 13l4 4L19 7"></path>
                             </svg>
                             {{ product.warranty }}
                         </span>
-                        <span class="font-mono text-slate-400">کد کالا: {{ product.sku }}</span>
                     </div>
 
                     {% if product.short_description %}
-                    <p class="mt-3 text-xs leading-relaxed text-slate-600">{{ product.short_description }}</p>
+                    <p class="mt-3 text-sm sm:text-base leading-relaxed text-slate-700">{{ product.short_description }}</p>
                     {% endif %}
                 </div>
 
@@ -223,13 +188,13 @@
                 {% if spec_summary %}
                 <div id="product-spec-summary" class="bg-white p-4 sm:p-5 shadow-xs">
                     <div class="mb-2 flex items-center justify-between">
-                        <h2 class="text-sm font-black text-zitro-ink">مشخصات</h2>
-                        <a href="#specs" class="text-[11px] font-bold text-blue-600 hover:underline">نمایش همه</a>
+                        <h2 class="text-base font-black text-zitro-ink">مشخصات</h2>
+                        <a href="#specs" class="text-xs sm:text-sm font-bold text-blue-600 hover:underline">نمایش همه</a>
                     </div>
-                    <div class="divide-y divide-zitro-line text-[11px]">
+                    <div class="divide-y divide-zitro-line text-xs sm:text-sm">
                         {% for spec in spec_summary %}
-                        <div class="flex items-start gap-3 py-2">
-                            <span class="w-24 shrink-0 text-slate-500 sm:w-32">{{ spec.name }}</span>
+                        <div class="flex items-start gap-3 py-2.5">
+                            <span class="w-28 shrink-0 text-slate-500 sm:w-36">{{ spec.name }}</span>
                             <span class="font-bold text-zitro-ink">{{ spec.value }}</span>
                         </div>
                         {% endfor %}
@@ -243,9 +208,8 @@
                     <span
                         class="grid h-10 w-10 shrink-0 place-items-center bg-orange-500 text-lg font-black text-white shadow-xs">٪</span>
                     <span class="min-w-0 flex-1">
-                        <span class="block text-xs font-black text-zitro-ink">خرید اقساطی بدون ضامن با اسنپ‌پی</span>
-                        <span class="block text-[11px] text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-700">{{
-                                formatted_installment }} {% include 'includes/toman_icon.html' %}</b></span>
+                        <span class="block text-sm font-black text-zitro-ink">خرید اقساطی بدون ضامن با اسنپ‌پی</span>
+                        <span class="block text-xs sm:text-sm text-slate-500">۴ قسط ماهانه، هر قسط <b class="text-slate-800 font-bold">{{ formatted_installment }} {% include 'includes/toman_icon.html' %}</b></span>
                     </span>
                     <svg class="w-4 h-4 shrink-0 text-orange-500 transition group-hover:-translate-x-1" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
@@ -260,41 +224,37 @@
                         <div>
                             {% if product.formatted_compare_price %}
                             <div class="mb-1 flex items-center gap-2">
-                                <del class="text-sm font-medium text-zitro-deal">{{ product.formatted_compare_price }}
-                                    {% include 'includes/toman_icon.html' %}</del>
-                                <span class="bg-zitro-deal px-1.5 py-0.5 text-[11px] font-bold text-white">{{
-                                    product.discount_pct }}%</span>
+                                <del class="text-sm sm:text-base font-medium text-zitro-deal">{{ product.formatted_compare_price }} {% include 'includes/toman_icon.html' %}</del>
+                                <span class="bg-zitro-deal px-2 py-0.5 text-xs sm:text-sm font-bold text-white">{{ product.discount_pct }}%</span>
                             </div>
                             {% endif %}
                             <div class="flex items-baseline gap-1.5">
-                                <span class="text-2xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
-                                <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html'
-                                    %}</span>
+                                <span class="text-2xl sm:text-3xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
+                                <span class="text-xs sm:text-sm font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
                             </div>
                             {% if savings %}
-                            <p class="mt-0.5 text-[11px] font-bold text-emerald-600">سود شما از این خرید: {{
-                                formatted_savings }} {% include 'includes/toman_icon.html' %}</p>
+                            <p class="mt-1 text-xs sm:text-sm font-bold text-emerald-600">سود شما از این خرید: {{ formatted_savings }} {% include 'includes/toman_icon.html' %}</p>
                             {% endif %}
                         </div>
 
-                        <div class="text-[11px]">
+                        <div class="text-xs sm:text-sm">
                             {% if product.available_qty > 0 %}
                             {% if product.is_low_stock %}
-                            <span class="inline-flex items-center gap-1 bg-amber-50 px-2 py-1 font-bold text-amber-700">
+                            <span class="inline-flex items-center gap-1 bg-amber-50 px-2.5 py-1 font-bold text-amber-700">
                                 فقط {{ product.available_qty }} عدد باقی مانده
                             </span>
                             {% else %}
                             <span
-                                class="inline-flex items-center gap-1 bg-emerald-50 px-2 py-1 font-bold text-emerald-700">
+                                class="inline-flex items-center gap-1 bg-emerald-50 px-2.5 py-1 font-bold text-emerald-700">
                                 موجود در انبار ({{ product.available_qty }} عدد)
                             </span>
                             {% endif %}
                             {% else %}
-                            <span class="inline-flex items-center gap-1 bg-rose-50 px-2 py-1 font-bold text-rose-700">
+                            <span class="inline-flex items-center gap-1 bg-rose-50 px-2.5 py-1 font-bold text-rose-700">
                                 ناموجود
                             </span>
                             {% endif %}
-                            <p class="mt-1 text-slate-400">فروشنده: {{ site_settings.store_name|default:"دیجی تل" }}</p>
+                            <p class="mt-1 text-slate-500">فروشنده: {{ site_settings.store_name|default:"دیجی تل" }}</p>
                         </div>
                     </div>
 
@@ -304,7 +264,7 @@
                         {% if is_in_cart %}
                         <a href="{% url 'cart:cart_detail' %}" hx-get="{% url 'cart:cart_detail' %}"
                             hx-target="#main-content-area" hx-push-url="{% url 'cart:cart_detail' %}"
-                            class="flex h-11 flex-1 items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+                            class="flex h-12 flex-1 items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-sm sm:text-base font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -318,16 +278,18 @@
                             <div class="flex items-center overflow-hidden bg-white shadow-2xs"
                                 data-max="{{ product.available_qty|default:1 }}">
                                 <button type="button" data-qty-step="-1"
-                                    class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">−</button>
+                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100">−</button>
                                 <input id="qty" type="number" name="quantity" value="1" min="1"
                                     max="{{ product.available_qty|default:1 }}" inputmode="numeric"
-                                    class="h-11 w-12 border-0 p-0 text-center text-sm font-black focus:ring-0">
+                                    class="h-12 w-12 border-0 p-0 text-center text-sm sm:text-base font-black focus:ring-0">
                                 <button type="button" data-qty-step="1"
-                                    class="h-11 w-10 text-lg text-slate-600 transition hover:bg-slate-100">+</button>
+                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100">+</button>
                             </div>
 
-                            <button type="submit" {% if product.available_qty <=0 %}disabled{% endif %}
-                                class="flex h-11 flex-1 items-center justify-center gap-2 bg-zitro-cash text-sm font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50">
+                            <button type="submit" {% if product.available_qty < 1 %} disabled {% endif %} class="flex
+                                h-12 flex-1 items-center justify-center gap-2 bg-zitro-cash text-sm sm:text-base
+                                font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99]
+                                disabled:cursor-not-allowed disabled:opacity-50">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -338,70 +300,39 @@
                         {% endif %}
 
                         <a href="{% url 'home:installment' %}"
-                            class="flex h-11 items-center justify-center gap-2 bg-zitro-dark px-6 text-sm font-bold text-white transition hover:opacity-90">
+                            class="flex h-12 items-center justify-center gap-2 bg-zitro-dark px-6 text-sm sm:text-base font-bold text-white transition hover:opacity-90">
                             اعتباری قسطی
                         </a>
                     </div>
-                </div>
-
-                <!-- نشان‌های اعتماد در حالت موبایل (داخل لایه اورلی) -->
-                <div class="md:hidden mt-3 flex items-stretch gap-2 overflow-x-auto no-scrollbar pb-1">
-                    <span
-                        class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                            </path>
-                        </svg>
-                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">تضمین اصالت کالا</span>
-                    </span>
-                    <span
-                        class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a2 2 0 104 0m-4 0a2 2 0 114 0">
-                            </path>
-                        </svg>
-                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">ارسال فوری در تهران</span>
-                    </span>
-                    <span
-                        class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                        <svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
-                            </path>
-                        </svg>
-                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">خرید اقساطی بدون
-                            ضامن</span>
-                    </span>
-                    <span
-                        class="flex shrink-0 flex-col items-center gap-1.5 bg-white px-3 py-2.5 text-center shadow-xs">
-                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z">
-                            </path>
-                        </svg>
-                        <span class="text-[10px] font-bold text-slate-600 whitespace-nowrap">پشتیبانی تخصصی</span>
-                    </span>
                 </div>
             </div>
 
 
 
+            <!-- نوار ناوبری بخش‌های محصول -->
+            <div id="mobile-anchor-bar" class="mobile-overlay-anchor-bar md:col-span-12 -mx-2 px-2 sm:mx-0 sm:px-0 mt-2">
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs sm:text-sm font-bold">
+                    <a href="#specs" class="shrink-0 bg-white px-3 py-1.5 text-zitro-ink hover:text-blue-600 transition shadow-2xs">مشخصات فنی</a>
+                    <a href="#description" class="shrink-0 bg-white px-3 py-1.5 text-zitro-ink hover:text-blue-600 transition shadow-2xs">توضیحات و نقد</a>
+                    <a href="#reviews" class="shrink-0 bg-white px-3 py-1.5 text-zitro-ink hover:text-blue-600 transition shadow-2xs">نظرات</a>
+                    <a href="#similar" class="shrink-0 bg-white px-3 py-1.5 text-zitro-ink hover:text-blue-600 transition shadow-2xs">کالاهای مشابه</a>
+                </div>
+            </div>
+
             <!-- ================= مشخصات فنی ================= -->
             <section id="specs" class="prod-anchor md:col-span-12 mt-5 bg-white p-4 sm:p-6 shadow-xs">
-                <div class="mb-3 flex items-center justify-between">
-                    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                <div class="mb-4 flex items-center justify-between">
+                    <h2 class="flex items-center gap-2 text-base font-black text-zitro-ink sm:text-lg">
                         <span class="inline-block h-5 w-1.5 bg-blue-600"></span>
                         مشخصات فنی
                     </h2>
-                    <span class="text-[11px] text-slate-400">{{ specifications|length }} ویژگی</span>
+                    <span class="text-xs sm:text-sm text-slate-400">{{ specifications|length }} ویژگی</span>
                 </div>
 
                 {% if specifications %}
-                <div class="divide-y divide-zitro-line text-[11px] sm:text-xs">
+                <div class="divide-y divide-zitro-line text-xs sm:text-sm md:text-base">
                     {% for spec in spec_summary %}
-                    <div class="grid grid-cols-5 gap-3 py-2.5">
+                    <div class="grid grid-cols-5 gap-3 py-3">
                         <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
                         <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
                     </div>
@@ -409,42 +340,42 @@
                 </div>
 
                 {% if spec_rest %}
-                <div id="specs-more" class="collapse-panel divide-y divide-zitro-line text-[11px] sm:text-xs"
+                <div id="specs-more" class="collapse-panel divide-y divide-zitro-line text-xs sm:text-sm md:text-base"
                     data-expanded="false">
                     {% for spec in spec_rest %}
-                    <div class="grid grid-cols-5 gap-3 py-2.5">
+                    <div class="grid grid-cols-5 gap-3 py-3">
                         <span class="col-span-2 text-slate-500">{{ spec.name }}</span>
                         <span class="col-span-3 font-bold text-zitro-ink">{{ spec.value }}</span>
                     </div>
                     {% endfor %}
                 </div>
                 <button type="button" data-collapse-toggle="#specs-more"
-                    class="mt-2 flex w-full items-center justify-center gap-1 bg-slate-50 py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100 shadow-2xs">
+                    class="mt-3 flex w-full items-center justify-center gap-1.5 bg-slate-50 py-2.5 text-xs sm:text-sm font-bold text-slate-600 transition hover:bg-slate-100 shadow-2xs">
                     <span data-more>نمایش بیشتر</span>
                     <span data-less class="hidden">نمایش کمتر</span>
-                    <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg data-more class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                    <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg data-less class="hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                     </svg>
                 </button>
                 {% endif %}
                 {% else %}
-                <p class="text-xs text-slate-400">مشخصات فنی برای این کالا ثبت نشده است.</p>
+                <p class="text-xs sm:text-sm text-slate-400">مشخصات فنی برای این کالا ثبت نشده است.</p>
                 {% endif %}
             </section>
 
             <!-- ================= توضیحات ================= -->
             <section id="description" class="prod-anchor md:col-span-12 mt-5 bg-white p-4 sm:p-6 shadow-xs">
-                <h2 class="mb-3 flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                <h2 class="mb-4 flex items-center gap-2 text-base font-black text-zitro-ink sm:text-lg">
                     <span class="inline-block h-5 w-1.5 bg-blue-600"></span>
                     توضیحات و نقد و بررسی
                 </h2>
 
                 <div {% if is_long_description %}id="description-more" class="collapse-panel collapse-panel--peek"
                     data-expanded="false" {% endif %}>
-                    <div class="space-y-3 text-xs leading-relaxed text-slate-600">
+                    <div class="space-y-3 text-sm sm:text-base leading-relaxed text-slate-700">
                         {% if product.short_description %}<p>{{ product.short_description }}</p>{% endif %}
                         {% if product.description %}{{ product.description|linebreaks }}{% endif %}
                         {% if not product.short_description and not product.description %}
@@ -455,13 +386,13 @@
 
                 {% if is_long_description %}
                 <button type="button" data-collapse-toggle="#description-more"
-                    class="mt-2 flex w-full items-center justify-center gap-1 bg-slate-50 py-2 text-[11px] font-bold text-slate-600 transition hover:bg-slate-100 shadow-2xs">
+                    class="mt-3 flex w-full items-center justify-center gap-1.5 bg-slate-50 py-2.5 text-xs sm:text-sm font-bold text-slate-600 transition hover:bg-slate-100 shadow-2xs">
                     <span data-more>نمایش بیشتر</span>
                     <span data-less class="hidden">نمایش کمتر</span>
-                    <svg data-more class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg data-more class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                    <svg data-less class="hidden w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg data-less class="hidden w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
                     </svg>
                 </button>
@@ -475,13 +406,13 @@
 
             <!-- ================= کالاهای مشابه ================= -->
             <section id="similar" class="prod-anchor md:col-span-12 mt-5">
-                <div class="mb-3 flex items-center justify-between">
-                    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+                <div class="mb-4 flex items-center justify-between">
+                    <h2 class="flex items-center gap-2 text-base font-black text-zitro-ink sm:text-lg">
                         <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
                         کالاهای مشابه
                     </h2>
                     <a href="{% url 'products:category_detail' slug=product.category.slug %}"
-                        class="text-[11px] font-bold text-blue-600 hover:underline">مشاهده بیشتر ←</a>
+                        class="text-xs sm:text-sm font-bold text-blue-600 hover:underline">مشاهده بیشتر ←</a>
                 </div>
 
                 {% if related_products %}
@@ -494,44 +425,26 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="text-xs text-slate-400">کالای مشابهی برای این محصول ثبت نشده است.</p>
+                <p class="text-xs sm:text-sm text-slate-400">کالای مشابهی برای این محصول ثبت نشده است.</p>
                 {% endif %}
             </section>
         </div>
     </div>
 
-    <div class="h-16 md:hidden"></div>
+    <div class="h-4 md:hidden"></div>
 </div>
 
 <!-- ================= نوار خرید ثابت موبایل ================= -->
 {% if product.available_qty > 0 %}
 <div
-    class="fixed bottom-0 left-0 right-0 z-50 border-t border-zitro-line bg-white px-3 py-2.5 shadow-[0_-6px_20px_rgba(15,23,42,0.08)] md:hidden">
-    <div class="flex items-center gap-2">
-        <div class="min-w-0">
-            {% if product.formatted_compare_price %}
-            <div class="flex items-center gap-1.5">
-                <del class="text-[11px] text-zitro-deal">{{ product.formatted_compare_price }}</del>
-                <span class="rounded bg-zitro-deal px-1 text-[10px] font-bold text-white">{{ product.discount_pct
-                    }}%</span>
-            </div>
-            {% endif %}
-            <div class="flex items-baseline gap-1">
-                <span class="text-base font-black text-zitro-ink">{{ product.formatted_price }}</span>
-                <span class="text-[10px] text-slate-500">{% include 'includes/toman_icon.html' %}</span>
-            </div>
-        </div>
-
-        <a href="{% url 'home:installment' %}"
-            class="flex h-10 shrink-0 items-center rounded-[10px] bg-zitro-dark px-3 text-[11px] font-bold text-white transition hover:opacity-90">
-            اعتباری قسطی
-        </a>
-
-        <div id="mobile-product-cta-btn" class="flex-1">
+    class="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white px-4 py-3 shadow-[0_-6px_20px_rgba(15,23,42,0.08)] md:hidden">
+    <div class="flex items-center justify-between gap-3">
+        <!-- راست: دکمه افزودن / مشاهده سبد خرید -->
+        <div id="mobile-product-cta-btn" class="flex-1 max-w-[210px]">
             {% if is_in_cart %}
             <a href="{% url 'cart:cart_detail' %}" hx-get="{% url 'cart:cart_detail' %}" hx-target="#main-content-area"
                 hx-push-url="{% url 'cart:cart_detail' %}"
-                class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-emerald-600 text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+                class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-xs sm:text-sm font-bold text-white transition hover:bg-emerald-700 active:scale-[0.99] cursor-pointer shadow-xs">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -544,7 +457,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="quantity" value="1">
                 <button type="submit"
-                    class="flex h-10 w-full items-center justify-center gap-1.5 rounded-[10px] bg-zitro-cash text-[11px] font-bold text-white transition hover:brightness-95 active:scale-[0.99]">
+                    class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-zitro-cash text-xs sm:text-sm font-bold text-white transition hover:brightness-95 active:scale-[0.99] shadow-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -553,6 +466,20 @@
                 </button>
             </form>
             {% endif %}
+        </div>
+
+        <!-- چپ: قیمت و تخفیف -->
+        <div class="flex flex-col items-end text-left shrink-0">
+            {% if product.formatted_compare_price %}
+            <div class="flex items-center gap-1.5 justify-end">
+                <span class="rounded-md bg-zitro-deal px-1.5 py-0.5 text-xs font-bold text-white">{{ product.discount_pct }}%</span>
+                <del class="text-xs text-zitro-deal">{{ product.formatted_compare_price }}</del>
+            </div>
+            {% endif %}
+            <div class="flex items-baseline gap-1 justify-end">
+                <span class="text-lg font-black text-zitro-ink">{{ product.formatted_price }}</span>
+                <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
+            </div>
         </div>
     </div>
 </div>

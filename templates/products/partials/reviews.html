@@ -1,15 +1,16 @@
 {% load humanize %}
-<div class="mb-3 flex items-center justify-between">
-    <h2 class="flex items-center gap-2 text-sm font-black text-zitro-ink sm:text-base">
+<div class="mb-4 flex items-center justify-between">
+    <h2 class="flex items-center gap-2 text-base font-black text-zitro-ink sm:text-lg">
         <span class="inline-block h-5 w-1.5 rounded-full bg-blue-600"></span>
         نظرات کاربران
     </h2>
-    <span class="text-[11px] text-slate-400">{{ reviews_count }} نظر ثبت‌شده</span>
+    <span class="text-xs sm:text-sm text-slate-500">{{ reviews_count }} نظر ثبت‌شده</span>
 </div>
 
-<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-4 {% if reviews_count and reviews_count > 0 %}lg:grid-cols-3{% endif %}">
 
-    <!-- ============ خلاصهٔ امتیاز ============ -->
+    {% if reviews_count and reviews_count > 0 %}
+    <!-- ============ خلاصهٔ امتیاز (فقط زمانی که نظری ثبت شده است) ============ -->
     <div class="bg-slate-50/60 p-4 lg:col-span-1 shadow-2xs">
         <div class="flex items-center gap-4">
             <div class="text-center">
@@ -17,37 +18,33 @@
                 <div class="mt-1 flex items-center justify-center gap-0.5 text-amber-400 text-sm" dir="ltr">
                     {% for i in rating_scale %}<span>{% if i <= rating_average %}★{% else %}<span class="text-slate-300">★</span>{% endif %}</span>{% endfor %}
                 </div>
-                <div class="mt-1 text-[10px] text-slate-400">از ۵ ستاره</div>
+                <div class="mt-1 text-xs text-slate-500">از ۵ ستاره</div>
             </div>
-            <div class="min-w-0 flex-1 space-y-1">
+            <div class="min-w-0 flex-1 space-y-1.5">
                 {% for row in rating_breakdown %}
-                    <div class="flex items-center gap-2 text-[10px] text-slate-500">
-                        <span class="w-6 shrink-0 text-left" dir="ltr">{{ row.star }} ★</span>
-                        <span class="h-1.5 flex-1 overflow-hidden bg-slate-200">
-                            <span class="block h-full bg-amber-400" style="width: {{ row.pct }}%"></span>
+                    <div class="flex items-center gap-2 text-xs text-slate-600">
+                        <span class="w-7 shrink-0 text-left font-mono" dir="ltr">{{ row.star }} ★</span>
+                        <span class="h-2 flex-1 overflow-hidden bg-slate-200 rounded-full">
+                            <span class="block h-full bg-amber-400 rounded-full" style="width: {{ row.pct }}%"></span>
                         </span>
-                        <span class="w-6 shrink-0 text-slate-400">{{ row.count }}</span>
+                        <span class="w-6 shrink-0 text-slate-500 font-mono text-left">{{ row.count }}</span>
                     </div>
                 {% endfor %}
             </div>
         </div>
-        {% if not reviews_count %}
-            <p class="mt-3 bg-white p-3 text-center text-[11px] leading-relaxed text-slate-500 shadow-2xs">
-                هنوز نظری ثبت نشده است؛ اولین نفری باشید که تجربهٔ خود را می‌نویسد.
-            </p>
-        {% endif %}
     </div>
+    {% endif %}
 
     <!-- ============ فرم ثبت نظر ============ -->
-    <div class="bg-white p-4 lg:col-span-2 shadow-2xs">
+    <div class="bg-white p-4 sm:p-5 {% if reviews_count and reviews_count > 0 %}lg:col-span-2{% else %}w-full{% endif %} shadow-2xs">
         {% if can_review %}
             {% if review_saved_message %}
-                <div class="mb-3 bg-emerald-50 px-3 py-2 text-[11px] font-bold text-emerald-700">
+                <div class="mb-3 bg-emerald-50 px-3 py-2 text-xs sm:text-sm font-bold text-emerald-700">
                     {{ review_saved_message }}
                 </div>
             {% endif %}
             {% if review_errors %}
-                <ul class="mb-3 space-y-1 bg-rose-50 px-3 py-2 text-[11px] font-bold text-rose-700">
+                <ul class="mb-3 space-y-1 bg-rose-50 px-3 py-2 text-xs sm:text-sm font-bold text-rose-700">
                     {% for error in review_errors %}<li>{{ error }}</li>{% endfor %}
                 </ul>
             {% endif %}
@@ -63,7 +60,7 @@
                 {% csrf_token %}
 
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="text-xs font-bold text-zitro-ink">
+                    <span class="text-xs sm:text-sm font-bold text-zitro-ink">
                         {% if user_review %}ویرایش نظر شما{% else %}ثبت نظر جدید{% endif %}
                     </span>
                     <div class="flex items-center gap-1" data-star-rating>
@@ -81,7 +78,7 @@
                     maxlength="150"
                     value="{{ form_title }}"
                     placeholder="عنوان نظر (اختیاری)"
-                    class="w-full bg-slate-50 p-2.5 text-xs focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
+                    class="w-full bg-slate-50 p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
                 >
 
                 <textarea
@@ -90,26 +87,26 @@
                     required
                     minlength="10"
                     placeholder="تجربهٔ خود از این کالا را بنویسید؛ کیفیت ساخت، کارایی و ارزش خرید..."
-                    class="w-full bg-slate-50 p-2.5 text-xs leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
+                    class="w-full bg-slate-50 p-2.5 text-xs sm:text-sm leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
                 >{{ form_body }}</textarea>
 
                 <div class="flex items-center justify-between gap-3">
-                    <p class="text-[10px] leading-relaxed text-slate-400">
+                    <p class="text-xs leading-relaxed text-slate-500">
                         نظر شما بلافاصله منتشر می‌شود و می‌توانید آن را ویرایش کنید.
                     </p>
                     <button type="submit"
-                            class="shrink-0 bg-zitro-dark px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90">
+                            class="shrink-0 bg-zitro-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition hover:opacity-90">
                         {% if user_review %}ذخیرهٔ ویرایش{% else %}ثبت نظر{% endif %}
                     </button>
                 </div>
             </form>
         {% else %}
             <div class="flex h-full flex-col items-center justify-center bg-slate-50/60 p-5 text-center shadow-2xs">
-                <p class="text-xs leading-relaxed text-slate-500">
+                <p class="text-xs sm:text-sm leading-relaxed text-slate-600">
                     برای ثبت امتیاز و نظر دربارهٔ این محصول ابتدا وارد حساب کاربری خود شوید.
                 </p>
                 <a href="{% url 'accounts:login' %}?next={{ product.get_absolute_url|urlencode }}"
-                   class="mt-3 inline-flex items-center gap-2 bg-zitro-dark px-4 py-2.5 text-xs font-bold text-white transition hover:opacity-90">
+                   class="mt-3 inline-flex items-center gap-2 bg-zitro-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition hover:opacity-90">
                     ورود / عضویت
                 </a>
             </div>
@@ -128,15 +125,15 @@
                     </span>
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-1.5">
-                            <span class="text-xs font-bold text-zitro-ink">{{ review.author_name }}</span>
+                            <span class="text-xs sm:text-sm font-bold text-zitro-ink">{{ review.author_name }}</span>
                             {% if review.is_verified_purchase %}
-                                <span class="inline-flex items-center gap-1 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <span class="inline-flex items-center gap-1 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                     خریدار این کالا
                                 </span>
                             {% endif %}
                         </div>
-                        <div class="mt-0.5 text-[10px] text-slate-400">{{ review.created_at|date:"Y/m/d" }}</div>
+                        <div class="mt-0.5 text-xs text-slate-400">{{ review.created_at|date:"Y/m/d" }}</div>
                     </div>
                 </div>
                 <div class="flex shrink-0 items-center gap-0.5 text-sm" dir="ltr">
@@ -144,13 +141,21 @@
                 </div>
             </div>
 
-            {% if review.title %}<h3 class="mt-2.5 text-xs font-bold text-zitro-ink">{{ review.title }}</h3>{% endif %}
-            <p class="mt-1.5 text-[11px] leading-relaxed text-slate-600">{{ review.body|linebreaksbr }}</p>
+            {% if review.title %}<h3 class="mt-2.5 text-xs sm:text-sm font-bold text-zitro-ink">{{ review.title }}</h3>{% endif %}
+            <p class="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-700">{{ review.body|linebreaksbr }}</p>
         </article>
     {% empty %}
-        <p class="bg-slate-50/60 p-4 text-center text-[11px] text-slate-400 shadow-2xs">
-            هنوز نظری برای این محصول ثبت نشده است.
-        </p>
+        <div class="bg-slate-50/70 p-8 sm:p-10 text-center flex flex-col items-center justify-center gap-3">
+            <div class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+            </div>
+            <p class="text-xs sm:text-sm font-medium text-slate-500">
+                هنوز نظری ثبت نشده است. اولین نفری باشید که تجربه خود را می‌نویسد!
+            </p>
+        </div>
     {% endfor %}
 </div>
 
