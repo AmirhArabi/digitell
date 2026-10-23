@@ -12,7 +12,7 @@
 {% block content %}
 <!-- Full-Viewport Hero Slider (Fills exact visible viewport below header) -->
 <section id="hero-slider"
-    class="relative w-full h-[calc(100svh-65px)] md:h-[calc(100vh-146px)] min-h-[30vh] sm:min-h-[300px] max-h-[800px] overflow-hidden select-none bg-slate-950 group">
+    class="mobile-hero-gallery-sticky relative w-full h-[calc(100svh-65px)] md:h-[calc(100vh-146px)] min-h-[30vh] sm:min-h-[300px] max-h-[800px] overflow-hidden select-none bg-slate-950 group">
     <!-- Slides Container -->
     <div id="slider-container" class="relative w-full h-full">
         {% for banner in hero_banners %}
@@ -82,8 +82,11 @@
     </a>
 </section>
 
-<!-- Main Store Content Container -->
-<div id="main-content" class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 space-y-12">
+<!-- Main Store Content Container (لایه‌ای که در موبایل روی هیروسکشن اسکرول می‌شود) -->
+<div id="main-content" class="mobile-hero-overlay-sheet max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8 space-y-12">
+
+    <!-- دستگیره کشویی بالای لایه اورلی در موبایل -->
+    <div class="mobile-sheet-handle lg:hidden" aria-hidden="true"></div>
 
     <!-- Categories Slider (اسلایدر افقی متحرک دسته‌بندی‌ها با نمایش حداقل ۳ کارت در ویوپورت موبایل مشابه برندهای محبوب) -->
     <section class="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 overflow-hidden shadow-xs">
@@ -745,6 +748,46 @@
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
+    })();
+
+    // افکت نرم مقیاس و محوشدگی تدریجی هیروسکشن ثابت هنگام بالا آمدن لایه اورلی در موبایل
+    (function () {
+        var hero = document.getElementById('hero-slider');
+        var sliderContainer = document.getElementById('slider-container');
+        if (hero && sliderContainer) {
+            var ticking = false;
+            function updateMobileHeroEffect() {
+                if (window.innerWidth >= 1024) {
+                    sliderContainer.style.transform = '';
+                    sliderContainer.style.opacity = '';
+                    ticking = false;
+                    return;
+                }
+                var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+                var heroHeight = hero.offsetHeight || 400;
+                var progress = Math.min(Math.max(scrollY / heroHeight, 0), 1);
+
+                var scale = 1 - (progress * 0.08);
+                var opacity = 1 - (progress * 0.35);
+                sliderContainer.style.transform = 'scale(' + scale.toFixed(3) + ')';
+                sliderContainer.style.opacity = opacity.toFixed(2);
+                ticking = false;
+            }
+
+            window.addEventListener('scroll', function () {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateMobileHeroEffect);
+                    ticking = true;
+                }
+            }, { passive: true });
+
+            window.addEventListener('resize', function () {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateMobileHeroEffect);
+                    ticking = true;
+                }
+            }, { passive: true });
+        }
     })();
 </script>
 {% endblock %}

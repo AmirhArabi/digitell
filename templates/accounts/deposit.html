@@ -69,6 +69,31 @@
             {% endif %}
 
             <div class="pay-fields">
+                <!-- مبلغ پرداخت (اولین فیلد) -->
+                <div class="pay-field">
+                    <label class="pay-label" for="deposit-amount-input">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        <span>مبلغ پرداخت</span>
+                        <span class="pay-req">*</span>
+                    </label>
+
+                    <div class="pay-amount-shell">
+                        <input type="text"
+                               inputmode="numeric"
+                               name="amount"
+                               id="deposit-amount-input"
+                               value="{{ amount_value|default:'' }}"
+                               required
+                               autocomplete="off"
+                               placeholder="مثال: ۵۰۰,۰۰۰"
+                               class="pay-input"
+                               autofocus>
+                        <span class="pay-unit">{% include 'includes/toman_icon.html' %}</span>
+                    </div>
+
+                    <p id="deposit-amount-words" class="pay-amount-hint is-empty" aria-live="polite">مبلغ را وارد فرمایید</p>
+                </div>
+
                 <!-- نام و نام خانوادگی -->
                 <div class="pay-field">
                     <label class="pay-label" for="deposit-full-name">
@@ -104,30 +129,6 @@
                            autocomplete="tel"
                            placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
                            class="pay-input">
-                </div>
-
-                <!-- مبلغ پرداخت -->
-                <div class="pay-field">
-                    <label class="pay-label" for="deposit-amount-input">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        <span>مبلغ پرداخت</span>
-                        <span class="pay-req">*</span>
-                    </label>
-
-                    <div class="pay-amount-shell">
-                        <input type="text"
-                               inputmode="numeric"
-                               name="amount"
-                               id="deposit-amount-input"
-                               value="{{ amount_value|default:'' }}"
-                               required
-                               autocomplete="off"
-                               placeholder="مثال: ۵۰۰,۰۰۰"
-                               class="pay-input">
-                        <span class="pay-unit">{% include 'includes/toman_icon.html' %}</span>
-                    </div>
-
-                    <p id="deposit-amount-words" class="pay-amount-hint is-empty" aria-live="polite">مبلغ را وارد فرمایید</p>
                 </div>
             </div>
 

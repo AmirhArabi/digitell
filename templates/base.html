@@ -291,10 +291,10 @@
         </div>
         {% endcache %}
 
-        <!-- Footer Main Links (در موبایل به جز فروشگاه اینترنتی دیجی تل مابقی به صورت ردیف‌های ۲تایی) -->
-        <div class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12">
+        <!-- Desktop Footer Links (مخصوص دسکتاپ و تبلت بزرگ) -->
+        <div class="hidden lg:block max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-12">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-                <!-- About Col (فروشگاه اینترنتی دیجی تل - تمام عرض در موبایل) -->
+                <!-- About Col (فروشگاه اینترنتی دیجی تل) -->
                 <div class="col-span-2 md:col-span-1 space-y-4">
                     <div class="flex items-center gap-2">
                         <div
@@ -313,7 +313,7 @@
                     </div>
                 </div>
 
-                <!-- Quick links (دسترسی سریع - ستون ۱ از ۲ در موبایل) -->
+                <!-- Quick links (دسترسی سریع) -->
                 <div class="col-span-1">
                     <h5 class="font-bold text-sm text-slate-900 mb-4">دسترسی سریع</h5>
                     <ul class="text-xs space-y-2.5 text-slate-600">
@@ -332,7 +332,7 @@
                     </ul>
                 </div>
 
-                <!-- Categories (دسته‌بندی‌های محبوب - ستون ۲ از ۲ در موبایل) -->
+                <!-- Categories (دسته‌بندی‌های محبوب) -->
                 <div class="col-span-1">
                     <h5 class="font-bold text-sm text-slate-900 mb-4">دسته‌بندی‌های محبوب</h5>
                     <ul class="text-xs space-y-2.5 text-slate-600">
@@ -372,6 +372,153 @@
             <div class="border-t border-slate-100 mt-10 pt-6 text-center text-xs text-slate-500">
                 <p>© ۲۰۲۶ تمامی حقوق مادی و معنوی این سایت متعلق به <strong>فروشگاه اینترنتی دیجی تل (digitell.ir)</strong>
                     می‌باشد.</p>
+            </div>
+        </div>
+
+        <!-- Mobile Footer (بازنویسی کامل مطابق طرح اپلیکیشن دیجی‌کالا و برند دیجی‌تل) -->
+        <div class="block lg:hidden px-4 pt-6 pb-20 bg-white text-slate-800">
+            <!-- دکمه رفتن به بالا -->
+            <div class="flex justify-center mb-5">
+                <button type="button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95 cursor-pointer">
+                    <span>رفتن به بالا</span>
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                </button>
+            </div>
+
+            <!-- ردیف تماس با پشتیبانی -->
+            <div class="flex items-center justify-between py-3.5 border-b border-slate-100">
+                <a href="tel:{{ site_settings.phone|default:'02191000000' }}"
+                   class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
+                    تماس
+                </a>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <h4 class="text-sm font-bold text-slate-800">تماس با پشتیبانی</h4>
+                        <p class="text-[11px] text-slate-400 font-medium">۷ روز هفته، ۲۴ ساعت</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ردیف اپلیکیشن دیجی‌تل -->
+            <div class="flex items-center justify-between py-3.5 border-b border-slate-100">
+                <a href="{% url 'home:faq' %}"
+                   class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
+                    دانلود
+                </a>
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <h4 class="text-sm font-bold text-slate-800">اپلیکیشن دیجی‌تل</h4>
+                        <p class="text-[11px] text-slate-400 font-medium">تجربه خرید بهتر در دیجی‌تل</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-full bg-rose-600 flex items-center justify-center text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- منوهای آکاردئونی فوتر موبایل -->
+            <div class="divide-y divide-slate-100 border-b border-slate-100">
+                <!-- بخش اول: با دیجی‌تل -->
+                <div class="footer-accordion-item">
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <span>با دیجی‌تل</span>
+                    </button>
+                    <div class="footer-accordion-content">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">اتاق خبر دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition block py-1">فروش در دیجی‌تل</a></li>
+                            <li><a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های شغلی</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">گزارش تخلف در دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">تماس با دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">درباره دیجی‌تل</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- بخش دوم: خدمات مشتریان -->
+                <div class="footer-accordion-item">
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <span>خدمات مشتریان</span>
+                    </button>
+                    <div class="footer-accordion-content">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">پاسخ به پرسش‌های متداول</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه‌های بازگرداندن کالا</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">شرایط استفاده</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">حریم خصوصی</a></li>
+                            <li><a href="{% url 'tickets:list' %}" class="hover:text-blue-600 transition block py-1">تیکت‌های پشتیبانی</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- بخش سوم: راهنمای خرید از دیجی‌تل -->
+                <div class="footer-accordion-item">
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <span>راهنمای خرید از دیجی‌تل</span>
+                    </button>
+                    <div class="footer-accordion-content">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                            <li><a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition block py-1">نحوه ثبت سفارش</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه ارسال سفارش</a></li>
+                            <li><a href="{% url 'accounts:deposit' %}" class="hover:text-blue-600 transition block py-1">شیوه‌های پرداخت و واریز</a></li>
+                            <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition block py-1">خرید اقساطی کالا</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- بخش چهارم: شرکای تجاری -->
+                <div class="footer-accordion-item">
+                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition" onclick="toggleFooterAccordion(this)">
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <span>شرکای تجاری</span>
+                    </button>
+                    <div class="footer-accordion-content">
+                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2">
+                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">تامین‌کنندگان و فروشندگان</a></li>
+                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">همکاری در فروش (افیلیت)</a></li>
+                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های تبلیغاتی</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- معرفی برند دیجی‌تل و متن توضیحی با بازشونده -->
+            <div class="pt-5 space-y-2">
+                <h3 class="font-bold text-sm text-slate-800 leading-snug">دیجی‌تل؛ بزرگترین فروشگاه اینترنتی کالای دیجیتال</h3>
+                <div id="footer-brand-text" class="text-xs text-slate-500 leading-relaxed overflow-hidden transition-all duration-300 max-h-12">
+                    دیجی‌تل سال‌ها است که به عنوان انتخاب اول بسیاری از خریداران اینترنتی کالای دیجیتال تبدیل شده است. خرید آنلاین و اقساطی انواع گوشی موبایل، لپ‌تاپ، ساعت هوشمند، کنسول بازی و لوازم جانبی اصل با بهترین قیمت، همراه با ضمانت بازگشت و پشتیبانی ۲۴ ساعته در دیجی‌تل میسر می‌باشد.
+                </div>
+                <button type="button" id="footer-expand-btn" onclick="toggleFooterBrandText()" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition pt-1 cursor-pointer">
+                    <span id="footer-expand-label">مشاهده بیشتر</span>
+                    <svg id="footer-expand-arrow" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+            </div>
+
+            <!-- بنر نصب اپلیکیشن پایین فوتر موبایل مشابه دیجی‌کالا -->
+            <div class="pt-5 pb-2">
+                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                    <a href="{% url 'home:faq' %}" class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-200 hover:bg-slate-300 text-xs font-bold text-slate-800 transition active:scale-95">
+                        دانلود
+                    </a>
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs font-bold text-slate-700">تجربه خرید بهتر در اپلیکیشن دیجی‌تل</span>
+                        <div class="w-8 h-8 rounded-full bg-rose-600 flex items-center justify-center text-white shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- کپی‌رایت موبایل -->
+            <div class="text-center text-[10px] text-slate-400 pt-3">
+                © ۲۰۲۶ تمامی حقوق متعلق به فروشگاه اینترنتی دیجی‌تل می‌باشد.
             </div>
         </div>
     </footer>
@@ -621,6 +768,37 @@
                     console.error('Fallback copy failed', err);
                 }
                 document.body.removeChild(textArea);
+            }
+        };
+
+        // تعاملات آکاردئون و نمایش بیشتر متن فوتر موبایل
+        window.toggleFooterAccordion = function (btn) {
+            var item = btn.closest('.footer-accordion-item');
+            if (!item) return;
+            var wasOpen = item.classList.contains('is-open');
+            document.querySelectorAll('.footer-accordion-item').forEach(function (el) {
+                el.classList.remove('is-open');
+            });
+            if (!wasOpen) {
+                item.classList.add('is-open');
+            }
+        };
+
+        window.toggleFooterBrandText = function () {
+            var textEl = document.getElementById('footer-brand-text');
+            var labelEl = document.getElementById('footer-expand-label');
+            var arrowEl = document.getElementById('footer-expand-arrow');
+            if (!textEl) return;
+            if (textEl.classList.contains('max-h-12')) {
+                textEl.classList.remove('max-h-12');
+                textEl.classList.add('max-h-96');
+                if (labelEl) labelEl.textContent = 'بستن';
+                if (arrowEl) arrowEl.classList.add('rotate-180');
+            } else {
+                textEl.classList.add('max-h-12');
+                textEl.classList.remove('max-h-96');
+                if (labelEl) labelEl.textContent = 'مشاهده بیشتر';
+                if (arrowEl) arrowEl.classList.remove('rotate-180');
             }
         };
     </script>
