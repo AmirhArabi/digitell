@@ -1,0 +1,179 @@
+<!-- هدر و نوار ناوبری اختصاصی بخش وبلاگ (مشابه ساختار وبلاگ زیترو با برند دیجی‌تل) -->
+<div class="digi-blog-header-bar w-full mb-6">
+    <!-- نوار کمپین بالای وبلاگ -->
+    <div class="bg-gradient-to-l from-primary-700 via-primary-600 to-indigo-700 text-white py-2 px-4 text-center">
+        <div class="max-w-7xl mx-auto flex items-center justify-between text-xs font-bold gap-2">
+            <span class="flex items-center gap-1.5 truncate">
+                <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black shrink-0">ویژه</span>
+                خرید اقساطی انواع گوشی موبایل بدون ضامن در ۴ قسط بدون کارمزد
+            </span>
+            <a href="{% url 'home:installment' %}" class="shrink-0 text-amber-300 hover:text-white underline text-[11px] transition">
+                شرایط اقساط &larr;
+            </a>
+        </div>
+    </div>
+
+    <!-- بار اصلی ناوبری وبلاگ -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5">
+        <div class="flex items-center justify-between gap-4">
+
+            <!-- سمت راست: لوگو و نشان مجله -->
+            <div class="flex items-center gap-3">
+                <!-- دکمه منوی همبرگری موبایل -->
+                <button type="button" onclick="toggleBlogMobileMenu()"
+                        class="md:hidden p-2 -mr-2 text-slate-700 hover:text-primary-600 rounded-xl hover:bg-slate-100 transition cursor-pointer"
+                        aria-label="باز کردن منوی دسته‌بندی‌ها">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <a href="{% url 'blog:post_list' %}" class="flex items-center gap-2 group">
+                    <div class="w-8 h-8 rounded-xl bg-primary-600 text-white font-black text-sm flex items-center justify-center shadow-sm group-hover:scale-105 transition">
+                        D
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-base sm:text-lg font-black text-slate-900 group-hover:text-primary-600 transition">وبلاگ دیجی‌تل</span>
+                        <span class="text-[10px] text-slate-400 font-medium -mt-0.5">مجله تکنولوژی و راهنمای خرید</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- مرکز (دسکتاپ): لینک دسته‌بندی‌های وبلاگ -->
+            <nav class="hidden md:flex items-center gap-1.5 lg:gap-3 text-xs font-bold text-slate-600">
+                <a href="{% url 'blog:post_list' %}"
+                   class="px-3 py-1.5 rounded-xl {% if not selected_category and not post.category %}text-primary-600 bg-primary-50{% else %}hover:text-primary-600 hover:bg-slate-50{% endif %} transition">
+                    همه مقالات
+                </a>
+                {% for cat in categories %}
+                    <a href="{% url 'blog:post_category' category_slug=cat.slug %}"
+                       class="px-3 py-1.5 rounded-xl {% if selected_category.slug == cat.slug or post.category.slug == cat.slug %}text-primary-600 bg-primary-50{% else %}hover:text-primary-600 hover:bg-slate-50{% endif %} transition">
+                        {{ cat.name }}
+                    </a>
+                {% endfor %}
+            </nav>
+
+            <!-- سمت چپ: جستجو و دکمه بازگشت به فروشگاه -->
+            <div class="flex items-center gap-2.5">
+                <!-- فرم جستجوی مقالات وبلاگ (دسکتاپ) -->
+                <form action="{% url 'blog:post_list' %}" method="GET" class="hidden sm:flex items-center relative">
+                    <input type="text" name="q" value="{{ search_query|default:'' }}"
+                           placeholder="جستجو در مقالات..."
+                           class="w-40 md:w-52 px-3 py-1.5 pr-8 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 focus:outline-none focus:border-primary-500 focus:bg-white transition">
+                    <button type="submit" class="absolute right-2.5 text-slate-400 hover:text-primary-600" aria-label="جستجو">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- دکمه ورود به فروشگاه اصلی دیجی‌تل (مشابه دکمه زیترو) -->
+                <a href="{% url 'products:shop' %}"
+                   class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-primary-600 text-white font-bold text-xs transition shadow-xs">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <span>فروشگاه دیجی‌تل</span>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- بار افقی دسته‌ها در موبایل (اسکرول لمسی سریع) -->
+        <div class="md:hidden mt-3 pt-3 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-bold pb-1">
+            <a href="{% url 'blog:post_list' %}"
+               class="px-3 py-1.5 rounded-xl whitespace-nowrap shrink-0 {% if not selected_category and not post.category %}bg-primary-600 text-white{% else %}bg-slate-100 text-slate-600{% endif %}">
+                همه مقالات
+            </a>
+            {% for cat in categories %}
+                <a href="{% url 'blog:post_category' category_slug=cat.slug %}"
+                   class="px-3 py-1.5 rounded-xl whitespace-nowrap shrink-0 {% if selected_category.slug == cat.slug or post.category.slug == cat.slug %}bg-primary-600 text-white{% else %}bg-slate-100 text-slate-600{% endif %}">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- دراور آف‌کانواس موبایل (Mobile Off-Canvas Drawer) -->
+<div id="blog-mobile-drawer" class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0">
+    <!-- پس‌زمینه نیمه‌شفاف -->
+    <div id="blog-mobile-backdrop" onclick="toggleBlogMobileMenu()" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"></div>
+
+    <!-- پنل منو -->
+    <div id="blog-mobile-panel" class="absolute top-0 right-0 bottom-0 w-4/5 max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto">
+        <div class="space-y-6">
+            <!-- لوگو و بستن -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-primary-600 text-white font-black text-sm flex items-center justify-center">
+                        D
+                    </div>
+                    <span class="font-black text-base text-slate-900">وبلاگ دیجی‌تل</span>
+                </div>
+                <button type="button" onclick="toggleBlogMobileMenu()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 bg-slate-50" aria-label="بستن منو">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- جستجو در موبایل -->
+            <form action="{% url 'blog:post_list' %}" method="GET" class="relative">
+                <input type="text" name="q" value="{{ search_query|default:'' }}"
+                       placeholder="جستجو در مقالات..."
+                       class="w-full px-4 py-2.5 pr-10 rounded-xl border border-slate-200 bg-slate-50 text-xs text-slate-800 focus:outline-none focus:border-primary-500 focus:bg-white transition">
+                <button type="submit" class="absolute right-3 top-2.5 text-slate-400" aria-label="جستجو">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </form>
+
+            <!-- دسته‌بندی‌ها -->
+            <div>
+                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">دسته‌بندی‌های مقالات</h5>
+                <nav class="flex flex-col gap-1 text-sm font-bold text-slate-700">
+                    <a href="{% url 'blog:post_list' %}" class="py-2 px-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-between">
+                        <span>همه مقالات</span>
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </a>
+                    {% for cat in categories %}
+                        <a href="{% url 'blog:post_category' category_slug=cat.slug %}"
+                           class="py-2 px-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-between">
+                            <span>{{ cat.name }}</span>
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </a>
+                    {% endfor %}
+                </nav>
+            </div>
+        </div>
+
+        <div class="pt-6 border-t border-slate-100">
+            <a href="{% url 'products:shop' %}" class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs shadow-md shadow-primary-500/20 transition">
+                <span>ورود به فروشگاه دیجی‌تل</span>
+                &larr;
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleBlogMobileMenu() {
+        const drawer = document.getElementById('blog-mobile-drawer');
+        const panel = document.getElementById('blog-mobile-panel');
+        if (!drawer || !panel) return;
+        const isOpen = !drawer.classList.contains('pointer-events-none');
+        if (isOpen) {
+            drawer.classList.add('opacity-0');
+            drawer.classList.add('pointer-events-none');
+            panel.classList.add('translate-x-full');
+            document.body.style.overflow = '';
+        } else {
+            drawer.classList.remove('pointer-events-none');
+            drawer.classList.remove('opacity-0');
+            panel.classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+</script>

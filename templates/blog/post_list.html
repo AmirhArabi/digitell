@@ -1,51 +1,52 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}وبلاگ و اخبار تکنولوژی | فروشگاه دیجی تل{% endblock %}
+{% block title %}{% if selected_category %}{{ selected_category.name }} | {% endif %}وبلاگ و راهنمای خرید | فروشگاه دیجی‌تل{% endblock %}
 
 {% block content %}
-<div class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 py-8">
+<div class="w-full bg-slate-50/60 pb-16">
 
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">مجله تکنولوژی و راهنمای خرید دیجی تل</h1>
-            <p class="text-xs text-slate-500">آخرین اخبار گوشی‌های موبایل، مقایسه تبلت‌ها و راهنمای خرید اقساطی</p>
-        </div>
+    <!-- نوار ناوبری اختصاصی وبلاگ دیجی‌تل (مشابه زیترو) -->
+    {% include 'blog/partials/blog_header.html' %}
 
-        <!-- Categories bar (بدون بارگذاری مجدد صفحه) -->
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs font-bold">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black text-slate-900 mb-1">
+                    {% if selected_category %}
+                        مقالات دسته: {{ selected_category.name }}
+                    {% elif search_query %}
+                        نتایج جستجو برای: «{{ search_query }}»
+                    {% else %}
+                        مجله تکنولوژی و راهنمای خرید دیجی‌تل
+                    {% endif %}
+                </h1>
+                <p class="text-xs text-slate-500">
+                    آخرین اخبار گوشی‌های موبایل، مقایسه‌های تخصصی و راهنمای خرید اقساطی
+                </p>
+            </div>
+
+            {% if search_query or selected_category %}
             <a href="{% url 'blog:post_list' %}"
-               hx-get="{% url 'blog:post_list' %}"
-               hx-target="#post-list"
-               hx-swap="outerHTML"
-               hx-push-url="true"
-               hx-indicator="#posts-loading"
-               class="px-3 py-1.5 rounded-xl {% if not selected_category %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
-                همه مقالات
+               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:text-primary-600 hover:border-primary-300 transition">
+                <span>نمایش همه مقالات</span>
+                &larr;
             </a>
-            {% for c in categories %}
-                <a href="{% url 'blog:post_category' category_slug=c.slug %}"
-                   hx-get="{% url 'blog:post_category' category_slug=c.slug %}"
-                   hx-target="#post-list"
-                   hx-swap="outerHTML"
-                   hx-push-url="true"
-                   hx-indicator="#posts-loading"
-                   class="px-3 py-1.5 rounded-xl {% if selected_category.slug == c.slug %}bg-blue-600 text-white{% else %}bg-slate-100 text-slate-600 hover:bg-slate-200{% endif %} transition">
-                    {{ c.name }}
-                </a>
-            {% endfor %}
+            {% endif %}
         </div>
+
+        <!-- نشانگر بارگذاری HTMX -->
+        <div id="posts-loading"
+             class="htmx-indicator pointer-events-none fixed bottom-24 left-1/2 z-[55] -translate-x-1/2 md:bottom-8">
+            <span class="flex items-center gap-2 rounded-full border border-primary-100 bg-white px-4 py-2 text-[11px] font-bold text-primary-600 shadow-lg">
+                <svg class="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
+                در حال بارگذاری مقالات...
+            </span>
+        </div>
+
+        {% include 'blog/partials/post_grid.html' %}
+
     </div>
-
-    <!-- نشانگر بارگذاری HTMX -->
-    <div id="posts-loading"
-         class="htmx-indicator pointer-events-none fixed bottom-24 left-1/2 z-[55] -translate-x-1/2 md:bottom-8">
-        <span class="flex items-center gap-2 rounded-full border border-blue-100 bg-white px-4 py-2 text-[11px] font-bold text-blue-600 shadow-lg">
-            <svg class="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg>
-            در حال بارگذاری مقالات...
-        </span>
-    </div>
-
-    {% include 'blog/partials/post_grid.html' %}
-
 </div>
 {% endblock %}

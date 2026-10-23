@@ -1,78 +1,418 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ post.title }} | وبلاگ دیجی تل{% endblock %}
+{% block title %}{{ post.title }} | وبلاگ دیجی‌تل{% endblock %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+<div class="w-full bg-slate-50/60 pb-16">
 
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-slate-500 mb-6 flex-wrap">
-        <a href="{% url 'home:index' %}" class="hover:text-blue-600 transition">خانه</a>
-        <span>/</span>
-        <a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition">وبلاگ</a>
-        {% if post.category %}
-            <span>/</span>
-            <a href="{% url 'blog:post_category' category_slug=post.category.slug %}" class="hover:text-blue-600 transition">{{ post.category.name }}</a>
-        {% endif %}
-        <span>/</span>
-        <span class="text-slate-800 font-bold truncate max-w-xs">{{ post.title }}</span>
-    </nav>
+    <!-- نوار ناوبری اختصاصی وبلاگ دیجی‌تل -->
+    {% include 'blog/partials/blog_header.html' %}
 
-    <!-- Post Article Card -->
-    <article class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs mb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
 
-        <!-- Cover Image -->
+        <!-- تصویر شاخص مقاله (Hero Cover) -->
         {% if post.cover_image %}
-        <div class="w-full aspect-[3/1] overflow-hidden bg-slate-100">
+        <div class="w-full max-w-5xl mx-auto mb-6 sm:mb-8 overflow-hidden rounded-2xl sm:rounded-3xl shadow-xs border border-slate-200/80 bg-slate-100 aspect-[16/9] sm:aspect-[2/1]">
             <img src="{{ post.cover_image.url }}" alt="{{ post.title }}"
                  class="w-full h-full object-cover">
         </div>
         {% endif %}
 
-        <div class="p-8 sm:p-12">
-        <div class="space-y-4 mb-8 pb-6 border-b border-slate-100">
+        <!-- ناوبری مسیر (Breadcrumb) -->
+        <nav class="max-w-5xl mx-auto flex items-center gap-2 text-xs text-slate-500 mb-4 flex-wrap" aria-label="مسیر صفحه">
+            <a href="{% url 'home:index' %}" class="hover:text-primary-600 transition">خانه</a>
+            <span class="text-slate-300">/</span>
+            <a href="{% url 'blog:post_list' %}" class="hover:text-primary-600 transition">وبلاگ</a>
             {% if post.category %}
-                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md inline-block">
-                    {{ post.category.name }}
-                </span>
+                <span class="text-slate-300">/</span>
+                <a href="{% url 'blog:post_category' category_slug=post.category.slug %}" class="hover:text-primary-600 transition">{{ post.category.name }}</a>
             {% endif %}
+            <span class="text-slate-300">/</span>
+            <span class="text-slate-800 font-bold truncate max-w-xs sm:max-w-md">{{ post.title }}</span>
+        </nav>
 
-            <h1 class="text-xl sm:text-3xl font-black text-slate-900 leading-tight">
-                {{ post.title }}
-            </h1>
+        <!-- ساختار دو ستونه: محتوای اصلی (۸ ستون) + ستون کناری چسبان (۴ ستون) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-            <div class="flex items-center gap-4 text-xs text-slate-400">
-                <span>نویسنده: تحریریه دیجی تل</span>
-                <span>•</span>
-                <span>زمان مطالعه: ۴ دقیقه</span>
-                <span>•</span>
-                <span>بازدید: {{ post.views_count }}</span>
-            </div>
+            <!-- ستون اصلی مقاله (۸ ستون) -->
+            <article class="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 sm:p-8 md:p-10 shadow-xs">
+
+                <!-- سربرگ و اطلاعات فراداده مقاله -->
+                <header class="mb-6 pb-6 border-b border-slate-100">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 leading-snug sm:leading-tight mb-5">
+                        {{ post.title }}
+                    </h1>
+
+                    <div class="flex flex-wrap items-center justify-between gap-4 text-xs text-slate-500">
+                        <!-- باکس نویسنده -->
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
+                                D
+                            </div>
+                            <div>
+                                <span class="font-bold text-slate-900 block">{{ post.author.get_full_name|default:"تحریریه دیجی‌تل" }}</span>
+                                <span class="text-[10px] text-slate-400">کارشناس فناوری و بازار</span>
+                            </div>
+                        </div>
+
+                        <!-- مشخصات و اطلاعات تکمیلی (مشابه آیتم‌های زیترو) -->
+                        <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs">
+                            {% if post.category %}
+                                <a href="{% url 'blog:post_category' category_slug=post.category.slug %}"
+                                   class="inline-flex items-center gap-1.5 text-primary-600 bg-primary-50 hover:bg-primary-100 px-2.5 py-1 rounded-lg font-bold transition">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                    </svg>
+                                    {{ post.category.name }}
+                                </a>
+                            {% endif %}
+
+                            <span class="inline-flex items-center gap-1.5 text-slate-500">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ post.persian_date|default:"۲۴ مهر ۱۴۰۵" }}
+                            </span>
+
+                            <span class="inline-flex items-center gap-1.5 text-slate-500">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                {{ post.reading_time }}
+                            </span>
+
+                            <a href="#comments-section" class="inline-flex items-center gap-1.5 text-slate-500 hover:text-primary-600 transition">
+                                <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                </svg>
+                                {% if comments %}{{ comments|length }} دیدگاه{% else %}بدون نظر{% endif %}
+                            </a>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- باکس پاسخ سریع / خلاصه مقاله (مشابه .zitro-answer) -->
+                {% if post.excerpt %}
+                <div class="digi-answer">
+                    <p class="m-0">
+                        <strong class="font-black text-primary-700">خلاصه:</strong>
+                        {{ post.excerpt }}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- بدنه و محتوای اصلی مقاله -->
+                <div class="digi-post-body text-slate-700 text-sm sm:text-base leading-loose space-y-5">
+                    {{ post.content|linebreaks }}
+                </div>
+
+                <!-- ویجت محصولات مرتبط درون مقاله (شبکه ۳ ستونه مشابه zrp-grid زیترو) -->
+                {% if in_article_products %}
+                <aside class="zrp-container zrp-grid my-8" aria-label="محصولات مرتبط در دیجی‌تل">
+                    <div class="zrp-head">
+                        <span class="zrp-title">محصولات مرتبط در فروشگاه دیجی‌تل</span>
+                        <a href="{% url 'products:shop' %}" class="zrp-more-link">مشاهده همه &larr;</a>
+                    </div>
+                    <div class="zrp-track">
+                        {% for prod in in_article_products %}
+                        <a href="{{ prod.get_absolute_url }}" class="zrp-card group">
+                            <span class="zrp-img-wrap">
+                                {% if prod.primary_image %}
+                                    <img src="{{ prod.primary_image.image.url }}" alt="{{ prod.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300">📱</div>
+                                {% endif %}
+                                {% if prod.discount_pct %}
+                                    <span class="zrp-discount-badge">{{ prod.discount_pct }}٪</span>
+                                {% endif %}
+                            </span>
+                            <span class="zrp-body">
+                                <span class="zrp-item-title group-hover:text-primary-600 transition">{{ prod.title }}</span>
+                                <span class="zrp-price-box">
+                                    {% if prod.compare_at_price and prod.compare_at_price > prod.price %}
+                                        <del>{{ prod.compare_at_price|floatformat:0 }}</del>
+                                    {% endif %}
+                                    <b>{{ prod.formatted_price }} <small>تومان</small></b>
+                                </span>
+                            </span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </aside>
+                {% endif %}
+
+                <!-- آکاردئون سوالات متداول (FAQ Accordion مشابه .zitro-faq) -->
+                <div class="my-8">
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        سوالات متداول کاربران
+                    </h3>
+                    <div class="digi-faq">
+                        <details open>
+                            <summary>
+                                <h3>شرایط خرید اقساطی گوشی در دیجی‌تل چیست؟</h3>
+                                <span class="faq-arrow-icon">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </span>
+                            </summary>
+                            <div class="faq-content">
+                                در روش اعتبار چهارقسطه (اسنپ‌پی)، بدون نیاز به ضامن یا چک می‌توانید تا سقف ۳۰ میلیون تومان اعتبار آنی دریافت کنید و هزینه را در ۴ قسط ماهانه بپردازید. برای مبالغ بالاتر تا ۲۰۰ میلیون تومان نیز طرح‌های اعتباری با چک صیادی فعال است.
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>
+                                <h3>آیا کالاهای فروشگاه دیجی‌تل شامل گارانتی اصالت هستند؟</h3>
+                                <span class="faq-arrow-icon">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </span>
+                            </summary>
+                            <div class="faq-content">
+                                بله، تمامی گوشی‌ها، لپ‌تاپ‌ها و کالاهای دیجیتال با تضمین رجیستری و گارانتی معتبر شرکتی ۱۸ ماهه به همراه ضمانت ۷ روزه بازگشت کالا عرضه می‌شوند.
+                            </div>
+                        </details>
+
+                        <details>
+                            <summary>
+                                <h3>اگر مبلغ سفارش از سقف اعتبار اقساطی بیشتر باشد چه باید کرد؟</h3>
+                                <span class="faq-arrow-icon">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                </span>
+                            </summary>
+                            <div class="faq-content">
+                                در فرآیند ثبت سفارش، سقف اعتبار از مبلغ کل کسر شده و مابه‌التفاوت آن را می‌توانید به آسانی از طریق کارت‌های عضو شتاب به صورت نقدی در درگاه پرداخت آنلاین تسویه نمایید.
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <!-- باکس پیشنهاد ویژه و CTA (مشابه .zitro-cta) -->
+                <div class="digi-cta-box flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-black text-sm sm:text-base text-slate-900">قصد خرید جدیدترین کالاهای دیجیتال را دارید؟</h4>
+                        <p class="text-xs text-slate-600 mt-1">
+                            مشاهده قیمت روز و مقایسه طرح‌های خرید اقساطی در فروشگاه تخصصی دیجی‌تل
+                        </p>
+                    </div>
+                    <a href="{% url 'products:shop' %}"
+                       class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs shrink-0 shadow-md shadow-primary-500/20 transition active:scale-95">
+                        ورود به فروشگاه &larr;
+                    </a>
+                </div>
+
+                <!-- اسلایدر افقی محصولات انتهای مقاله (مشابه .zrp-row زیترو) -->
+                {% if bottom_products %}
+                <aside class="zrp-container my-8" aria-label="خرید از دیجی‌تل">
+                    <div class="zrp-head">
+                        <span class="zrp-title">خرید گوشی و کالای دیجیتال از دیجی‌تل</span>
+                        <div class="flex items-center gap-3">
+                            <a href="{% url 'products:shop' %}" class="zrp-more-link">مشاهده همه &larr;</a>
+                            <div class="zrp-nav">
+                                <button type="button" onclick="scrollZrpTrack('zrp-bottom-track', -200)" class="zrp-nav-btn" aria-label="قبلی">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                                <button type="button" onclick="scrollZrpTrack('zrp-bottom-track', 200)" class="zrp-nav-btn" aria-label="بعدی">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="zrp-bottom-track" class="zrp-track">
+                        {% for prod in bottom_products %}
+                        <a href="{{ prod.get_absolute_url }}" class="zrp-card group">
+                            <span class="zrp-img-wrap">
+                                {% if prod.primary_image %}
+                                    <img src="{{ prod.primary_image.image.url }}" alt="{{ prod.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-slate-300">📱</div>
+                                {% endif %}
+                                {% if prod.discount_pct %}
+                                    <span class="zrp-discount-badge">{{ prod.discount_pct }}٪</span>
+                                {% endif %}
+                            </span>
+                            <span class="zrp-item-title group-hover:text-primary-600 transition">{{ prod.title }}</span>
+                            <span class="zrp-price-box">
+                                {% if prod.compare_at_price and prod.compare_at_price > prod.price %}
+                                    <del>{{ prod.compare_at_price|floatformat:0 }}</del>
+                                {% endif %}
+                                <b>{{ prod.formatted_price }} <small>تومان</small></b>
+                            </span>
+                            <span class="zrp-cta-btn">خرید نقد و اقساط</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </aside>
+                {% endif %}
+
+                <!-- کارت‌های مقاله قبلی و بعدی (مشابه elementor-post-navigation) -->
+                <div class="digi-post-nav">
+                    {% if previous_post %}
+                    <a href="{{ previous_post.get_absolute_url }}" class="digi-post-nav-card group">
+                        <span class="digi-post-nav-icon-wrap group-hover:bg-primary-600 group-hover:text-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                            <span class="digi-post-nav-label">مقاله قبلی</span>
+                            <span class="digi-post-nav-title group-hover:text-primary-600 transition">{{ previous_post.title }}</span>
+                        </div>
+                    </a>
+                    {% else %}
+                    <div class="hidden sm:block"></div>
+                    {% endif %}
+
+                    {% if next_post %}
+                    <a href="{{ next_post.get_absolute_url }}" class="digi-post-nav-card group">
+                        <div class="min-w-0 flex-1 text-right">
+                            <span class="digi-post-nav-label">مقاله بعدی</span>
+                            <span class="digi-post-nav-title group-hover:text-primary-600 transition">{{ next_post.title }}</span>
+                        </div>
+                        <span class="digi-post-nav-icon-wrap group-hover:bg-primary-600 group-hover:text-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                        </span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- بخش دیدگاه‌ها و نظرات کاربران -->
+                {% include 'blog/partials/comments_section.html' %}
+
+            </article>
+
+            <!-- ستون جانبی چسبان (Sticky Sidebar - ۴ ستون در دسکتاپ) -->
+            <aside class="lg:col-span-4 space-y-6 lg:sticky lg:top-24">
+
+                <!-- ویجت مقالات اخیر (مشابه elementor-posts سایدبار زیترو) -->
+                <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                    <h4 class="font-black text-sm text-slate-900 pb-3 mb-4 border-b border-slate-100 flex items-center justify-between">
+                        <span>جدیدترین مقالات دیجی‌تل</span>
+                        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                        </svg>
+                    </h4>
+
+                    <div class="space-y-4">
+                        {% for r_post in recent_posts %}
+                        <article class="flex items-center gap-3 group">
+                            <a href="{{ r_post.get_absolute_url }}" class="shrink-0 w-20 h-14 rounded-xl overflow-hidden bg-slate-100 border border-slate-100">
+                                {% if r_post.cover_image %}
+                                    <img src="{{ r_post.cover_image.url }}" alt="{{ r_post.title }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                {% else %}
+                                    <div class="w-full h-full flex items-center justify-center text-xs text-slate-300">📰</div>
+                                {% endif %}
+                            </a>
+                            <div class="min-w-0 flex-1">
+                                <h5 class="text-xs font-bold text-slate-800 leading-snug line-clamp-2 group-hover:text-primary-600 transition">
+                                    <a href="{{ r_post.get_absolute_url }}">{{ r_post.title }}</a>
+                                </h5>
+                                <span class="text-[10px] text-slate-400 mt-1 block">{{ r_post.persian_date }}</span>
+                            </div>
+                        </article>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- ویجت تبلیغاتی خرید اقساطی -->
+                <div class="rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-800 text-white p-6 shadow-md relative overflow-hidden">
+                    <div class="relative z-10 space-y-3">
+                        <span class="inline-block bg-white/20 backdrop-blur-xs text-white text-[10px] font-black px-2.5 py-1 rounded-md">
+                            تسهیلات ویژه دیجی‌تل
+                        </span>
+                        <h4 class="text-lg font-black leading-snug">خرید اقساطی انواع گوشی و لپ‌تاپ</h4>
+                        <p class="text-xs text-primary-100 leading-relaxed">
+                            بدون نیاز به چک و ضامن، در ۴ قسط بدون کارمزد با تحویل فوری در سراسر کشور.
+                        </p>
+                        <a href="{% url 'home:installment' %}"
+                           class="mt-2 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-primary-700 font-black text-xs hover:bg-primary-50 transition shadow-sm">
+                            <span>محاسبه و دریافت اقساط</span>
+                            &larr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ویجت دسته‌بندی‌های وبلاگ -->
+                <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 shadow-xs">
+                    <h4 class="font-black text-sm text-slate-900 pb-3 mb-3 border-b border-slate-100">
+                        دسته‌بندی‌های مقالات
+                    </h4>
+                    <div class="flex flex-col gap-1 text-xs font-bold text-slate-600">
+                        {% for cat in categories %}
+                        <a href="{% url 'blog:post_category' category_slug=cat.slug %}"
+                           class="py-2 px-3 rounded-xl hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-between">
+                            <span>{{ cat.name }}</span>
+                            <span class="text-[11px] text-slate-400 font-medium">مشاهده &larr;</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </aside>
+
         </div>
 
-        {% if post.excerpt %}
-            <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed mb-8">
-                {{ post.excerpt }}
+        <!-- بخش مطالب مرتبط انتهای صفحه (مشابه loop-carousel زیترو) -->
+        {% if related_posts %}
+        <section class="mt-14 pt-10 border-t border-slate-200" aria-label="مطالب مرتبط">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-lg sm:text-xl font-black text-slate-900">مطالب مرتبط</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">مقالات پیشنهادی تحریریه برای مطالعه بیشتر</p>
+                </div>
+                <a href="{% url 'blog:post_list' %}" class="text-xs font-bold text-primary-600 hover:text-primary-700 transition">
+                    مشاهده آرشیو مقالات &larr;
+                </a>
             </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {% for r in related_posts %}
+                <article class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs hover:border-primary-200 hover:shadow-lg transition duration-200 group flex flex-col justify-between">
+                    <div>
+                        <div class="aspect-[16/10] overflow-hidden bg-slate-100">
+                            {% if r.cover_image %}
+                                <img src="{{ r.cover_image.url }}" alt="{{ r.title }}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-3xl text-slate-300">📰</div>
+                            {% endif %}
+                        </div>
+                        <div class="p-4 sm:p-5">
+                            {% if r.category %}
+                                <span class="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-md inline-block mb-2">
+                                    {{ r.category.name }}
+                                </span>
+                            {% endif %}
+                            <h4 class="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-primary-600 transition line-clamp-2 leading-snug mb-2">
+                                <a href="{{ r.get_absolute_url }}">{{ r.title }}</a>
+                            </h4>
+                            <p class="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
+                                {{ r.excerpt }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="px-4 sm:px-5 pb-4 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>{{ r.persian_date }}</span>
+                        <a href="{{ r.get_absolute_url }}" class="font-bold text-primary-600 hover:underline">
+                            مطالعه &larr;
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
         {% endif %}
 
-        <!-- Content -->
-        <div class="prose max-w-none text-slate-700 text-sm leading-loose space-y-4">
-            <p>{{ post.content|linebreaks }}</p>
-        </div>
-
-        <!-- Share / Store CTA -->
-        <div class="mt-12 p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-                <h4 class="font-bold text-sm text-slate-800">قصد خرید جدیدترین کالاهای دیجیتال را دارید؟</h4>
-                <p class="text-xs text-slate-500 mt-1">مشاهده قیمت روز و خرید اقساطی در فروشگاه دیجی تل</p>
-            </div>
-            <a href="{% url 'products:shop' %}" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition shrink-0">
-                ورود به فروشگاه &larr;
-            </a>
-        </div>
-        </div>
-    </article>
-
+    </div>
 </div>
+
+<script>
+    function scrollZrpTrack(trackId, offset) {
+        const track = document.getElementById(trackId);
+        if (track) {
+            track.scrollBy({ left: offset, behavior: 'smooth' });
+        }
+    }
+</script>
 {% endblock %}

@@ -2214,3 +2214,481 @@ body[data-drawer="open"] #dash-backdrop {
 .insurance-bottom-sheet.is-open .sheet-panel {
   transform: translateY(0);
 }
+
+/* ===========================================================================
+   بخش وبلاگ دیجی‌تل (Digitell Blog Design System)
+   برگرفته از ساختار زیترو با حفظ برندینگ و پالت رنگی دیجی‌تل (#1F5EB2)
+   بهینه‌سازی ویژه برای ویوپورت موبایل و تبلت
+   =========================================================================== */
+
+/* باکس پاسخ سریع / خلاصه مقاله (مشابه .zitro-answer) */
+.digi-answer {
+  border-right: 4px solid var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  padding: 1rem 1.25rem;
+  border-radius: 0.875rem;
+  margin: 1.25rem 0;
+  line-height: 2;
+  color: #1e293b;
+  font-size: 0.9375rem;
+}
+
+/* باکس CTA درون مقاله (مشابه .zitro-cta) */
+.digi-cta-box {
+  border-right: 4px solid var(--color-accent-amber);
+  background-color: #fffbeb;
+  padding: 1.125rem 1.25rem;
+  border-radius: 0.875rem;
+  margin: 1.5rem 0;
+  line-height: 1.9;
+  color: #334155;
+  font-size: 0.9375rem;
+}
+
+/* جداول مقایسه‌ای درون محتوا با قابلیت اسکرول نرم لمسی در موبایل */
+.digi-blog-table-wrapper {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  box-shadow: inset -10px 0 8px -8px rgba(0, 0, 0, 0.08);
+}
+
+.digi-blog-table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  text-align: right;
+}
+
+.digi-blog-table-wrapper th,
+.digi-blog-table-wrapper td {
+  padding: 0.75rem 1rem;
+  border: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.digi-blog-table-wrapper th {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .digi-blog-table-wrapper th,
+  .digi-blog-table-wrapper td {
+    min-width: 112px;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* آکاردئون سوالات متداول (FAQ Accordion - details/summary مشابه .zitro-faq) */
+.digi-faq {
+  margin: 1.25rem 0 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.digi-faq details {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.digi-faq details[open] {
+  border-color: var(--color-primary-200);
+  background-color: #fafcff;
+  box-shadow: 0 4px 12px -2px rgba(31, 94, 178, 0.06);
+}
+
+.digi-faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  user-select: none;
+}
+
+.digi-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.digi-faq summary h3 {
+  margin: 0 !important;
+  font-size: 0.9375rem !important;
+  line-height: 1.7 !important;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.digi-faq .faq-arrow-icon {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background-color: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-600);
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1), background-color 0.2s;
+}
+
+.digi-faq details[open] .faq-arrow-icon {
+  transform: rotate(180deg);
+  background-color: var(--color-primary-100);
+}
+
+.digi-faq .faq-content {
+  padding: 0 1.125rem 1rem;
+  color: #475569;
+  line-height: 1.9;
+  font-size: 0.875rem;
+  border-top: 1px dashed #f1f5f9;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+}
+
+/* ویجت محصولات مرتبط درون مقاله (Zitro Related Products - .zrp) */
+.zrp-container {
+  margin: 1.75rem 0;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  background-color: #fafbfc;
+  direction: rtl;
+}
+
+.zrp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.875rem;
+}
+
+.zrp-title {
+  font-weight: 800;
+  font-size: 0.9375rem;
+  color: #0f172a;
+}
+
+.zrp-more-link {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  transition: color 0.15s;
+}
+
+.zrp-more-link:hover {
+  color: var(--color-primary-700);
+}
+
+.zrp-nav {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.zrp-nav-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.zrp-nav-btn:hover {
+  border-color: var(--color-primary-600);
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+}
+
+.zrp-track {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.25rem;
+}
+
+.zrp-track::-webkit-scrollbar {
+  display: none;
+}
+
+.zrp-card {
+  flex: 0 0 185px;
+  width: 185px;
+  max-width: 185px;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 0.625rem;
+  color: #334155;
+  text-decoration: none;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.zrp-card:hover {
+  box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+  border-color: var(--color-primary-300);
+  transform: translateY(-2px);
+}
+
+.zrp-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #f8fafc;
+}
+
+.zrp-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.zrp-discount-badge {
+  position: absolute;
+  top: 0.375rem;
+  left: 0.375rem;
+  background-color: #e11d48;
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  border-radius: 0.375rem;
+  padding: 0.125rem 0.375rem;
+}
+
+.zrp-item-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.6;
+  height: 3.2em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.zrp-price-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-height: 2.5rem;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.zrp-price-box del {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+.zrp-price-box b {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.zrp-price-box small {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: #64748b;
+  margin-right: 0.25rem;
+}
+
+.zrp-cta-btn {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  border: 1px solid var(--color-primary-200);
+  border-radius: 0.5rem;
+  padding: 0.375rem 0;
+  background-color: var(--color-primary-50);
+  transition: all 0.15s;
+}
+
+.zrp-card:hover .zrp-cta-btn {
+  background-color: var(--color-primary-600);
+  color: #ffffff;
+  border-color: var(--color-primary-600);
+}
+
+@media (max-width: 767px) {
+  .zrp-container {
+    padding: 0.75rem;
+    margin: 1.25rem 0;
+  }
+  .zrp-card {
+    flex-basis: 145px;
+    width: 145px;
+    max-width: 145px;
+    padding: 0.5rem;
+  }
+  .zrp-nav {
+    display: none;
+  }
+  .zrp-item-title {
+    font-size: 0.75rem;
+  }
+  .zrp-price-box b {
+    font-size: 0.8125rem;
+  }
+}
+
+/* شبکه ۳ ستونه محصولات میانه مقاله (.zrp-grid) */
+.zrp-grid .zrp-track {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  overflow: visible;
+}
+
+.zrp-grid .zrp-card {
+  width: auto;
+  max-width: none;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.zrp-grid .zrp-img-wrap {
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 0;
+}
+
+.zrp-grid .zrp-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.zrp-grid .zrp-item-title {
+  height: auto;
+  margin-bottom: 0.25rem;
+}
+
+.zrp-grid .zrp-cta-btn,
+.zrp-grid .zrp-price-box del {
+  display: none;
+}
+
+.zrp-grid .zrp-price-box {
+  align-items: flex-start;
+  min-height: 0;
+}
+
+@media (max-width: 767px) {
+  .zrp-grid .zrp-track {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .zrp-grid .zrp-card {
+    flex-basis: auto;
+    width: auto;
+    max-width: none;
+  }
+  .zrp-grid .zrp-img-wrap {
+    flex: 0 0 60px;
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* کارت‌های ناوبری قبلی / بعدی مقاله (مشابه elementor-post-navigation) */
+.digi-post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+@media (max-width: 767px) {
+  .digi-post-nav {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.digi-post-nav-card {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.125rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.digi-post-nav-card:hover {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-200);
+}
+
+.digi-post-nav-icon-wrap {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary-600);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.digi-post-nav-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  display: block;
+}
+
+.digi-post-nav-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: #1e293b;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
