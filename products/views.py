@@ -549,12 +549,16 @@ def product_detail_view(request, pk, slug):
     cart = _get_or_create_cart(request)
     is_in_cart = cart.items.filter(product=product).exists()
 
+    insurance_fee = round(product.price * 0.023)
+
     context = {
         'product': product,
         'is_in_cart': is_in_cart,
         'related_products': related_products,
         'installment_amount': installment_amount,
         'formatted_installment': f"{installment_amount:,}",
+        'insurance_fee': insurance_fee,
+        'formatted_insurance_fee': f"{insurance_fee:,}",
         'specifications': specifications,
         'spec_summary': specifications[:6],
         'spec_rest': specifications[6:],

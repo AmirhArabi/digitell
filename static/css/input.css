@@ -144,6 +144,7 @@ body {
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: none;
@@ -164,6 +165,7 @@ body {
     opacity: 0;
     transform: translateY(-10px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: none;
@@ -358,11 +360,25 @@ body[data-sidebar="collapsed"] {
 }
 
 /* ورود پله‌ای آیتم‌های زیرمنو */
-.side-sub[data-open="true"] .side-subitem:nth-child(1) { transition-delay: 0.02s; }
-.side-sub[data-open="true"] .side-subitem:nth-child(2) { transition-delay: 0.05s; }
-.side-sub[data-open="true"] .side-subitem:nth-child(3) { transition-delay: 0.08s; }
-.side-sub[data-open="true"] .side-subitem:nth-child(4) { transition-delay: 0.11s; }
-.side-sub[data-open="true"] .side-subitem:nth-child(5) { transition-delay: 0.14s; }
+.side-sub[data-open="true"] .side-subitem:nth-child(1) {
+  transition-delay: 0.02s;
+}
+
+.side-sub[data-open="true"] .side-subitem:nth-child(2) {
+  transition-delay: 0.05s;
+}
+
+.side-sub[data-open="true"] .side-subitem:nth-child(3) {
+  transition-delay: 0.08s;
+}
+
+.side-sub[data-open="true"] .side-subitem:nth-child(4) {
+  transition-delay: 0.11s;
+}
+
+.side-sub[data-open="true"] .side-subitem:nth-child(5) {
+  transition-delay: 0.14s;
+}
 
 .side-subitem:hover {
   background-color: #f1f5f9;
@@ -478,6 +494,7 @@ body[data-drawer="open"] #dash-backdrop {
 
 /* کشو فقط در اندازهٔ موبایل معنا دارد */
 @media (min-width: 1024px) {
+
   #dash-drawer,
   #dash-backdrop {
     display: none !important;
@@ -485,6 +502,7 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   #dash-sidebar,
   #dash-drawer,
   #dash-backdrop,
@@ -501,6 +519,7 @@ body[data-drawer="open"] #dash-backdrop {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -532,13 +551,16 @@ body[data-drawer="open"] #dash-backdrop {
 .digi-logo {
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
 .digi-logo:hover {
   transform: scale(1.03);
 }
+
 .digi-logo-img {
   transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   height: 2.75rem;
 }
+
 .digi-header.is-scrolled .digi-logo-img {
   height: 2.25rem;
 }
@@ -548,8 +570,9 @@ body[data-drawer="open"] #dash-backdrop {
   overflow: hidden;
   max-width: 10rem;
   transition: max-width 0.4s cubic-bezier(0.32, 0.72, 0, 1),
-              opacity 0.3s ease;
+    opacity 0.3s ease;
 }
+
 .digi-header.is-scrolled .digi-brand-text {
   max-width: 0;
   opacity: 0;
@@ -567,6 +590,7 @@ body[data-drawer="open"] #dash-backdrop {
   transition: all 0.25s cubic-bezier(0.32, 0.72, 0, 1);
   overflow: hidden;
 }
+
 .digi-header-btn::before {
   content: '';
   position: absolute;
@@ -576,16 +600,20 @@ body[data-drawer="open"] #dash-backdrop {
   opacity: 0;
   transition: opacity 0.25s ease;
 }
+
 .digi-header-btn:hover::before {
   opacity: 1;
 }
+
 .digi-header-btn:hover {
   color: var(--color-primary-600);
   transform: translateY(-1px);
 }
+
 .digi-header-btn:active {
   transform: translateY(0) scale(0.97);
 }
+
 .digi-header-btn svg,
 .digi-header-btn img {
   position: relative;
@@ -596,7 +624,8 @@ body[data-drawer="open"] #dash-backdrop {
 .digi-cart-badge {
   position: absolute;
   top: -0.25rem;
-  left: -0.25rem; /* RTL aware via inset */
+  left: -0.25rem;
+  /* RTL aware via inset */
   inset-inline-start: auto;
   inset-inline-end: -0.25rem;
   min-width: 1.125rem;
@@ -614,10 +643,19 @@ body[data-drawer="open"] #dash-backdrop {
   box-shadow: 0 2px 6px rgba(225, 29, 72, 0.3);
   animation: badge-pop 0.3s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
 @keyframes badge-pop {
-  0% { transform: scale(0); }
-  60% { transform: scale(1.15); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* --- نوار دسته‌بندی: ثابت در بالای هیروسکشن و غیرشناور --- */
@@ -681,6 +719,7 @@ body[data-drawer="open"] #dash-backdrop {
   transform-origin: center;
   transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
 .digi-cat-link:hover::after,
 .digi-cat-link.is-active::after {
   transform: scaleX(1);
@@ -703,8 +742,9 @@ body[data-drawer="open"] #dash-backdrop {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.35s cubic-bezier(0.32, 0.72, 0, 1),
-              visibility 0.35s;
+    visibility 0.35s;
 }
+
 .search-overlay.is-open {
   opacity: 1;
   visibility: visible;
@@ -725,6 +765,7 @@ body[data-drawer="open"] #dash-backdrop {
   transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
   overflow: hidden;
 }
+
 .search-overlay.is-open .search-popup {
   transform: scale(1) translateY(0);
   opacity: 1;
@@ -742,6 +783,7 @@ body[data-drawer="open"] #dash-backdrop {
   color: var(--color-secondary-950);
   direction: rtl;
 }
+
 .search-popup-input::placeholder {
   color: var(--color-secondary-400);
 }
@@ -760,6 +802,7 @@ body[data-drawer="open"] #dash-backdrop {
   transition: background-color 0.15s ease;
   cursor: pointer;
 }
+
 .search-result-item:hover {
   background-color: var(--color-primary-50);
 }
@@ -824,10 +867,12 @@ body[data-drawer="open"] #dash-backdrop {
   transition: color 0.2s ease;
   position: relative;
 }
+
 .digi-mobile-nav-item.is-active,
 .digi-mobile-nav-item:hover {
   color: var(--color-primary-600);
 }
+
 .digi-mobile-nav-item.is-active::before {
   content: '';
   position: absolute;
@@ -856,8 +901,9 @@ body[data-drawer="open"] #dash-backdrop {
   align-items: center;
   justify-content: center;
   transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1),
-              box-shadow 0.3s ease;
+    box-shadow 0.3s ease;
 }
+
 .digi-footer-feature-icon:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(31, 94, 178, 0.12);
@@ -865,9 +911,15 @@ body[data-drawer="open"] #dash-backdrop {
 
 /* --- Shimmer Loading برای جستجو --- */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
+
 .search-shimmer {
   background: linear-gradient(90deg, var(--color-secondary-100) 25%, var(--color-secondary-50) 50%, var(--color-secondary-100) 75%);
   background-size: 200% 100%;
@@ -923,10 +975,10 @@ body[data-drawer="open"] #dash-backdrop {
   overflow: hidden;
   white-space: nowrap;
   transition: max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #appbar-logo-side {
@@ -939,6 +991,7 @@ body[data-drawer="open"] #dash-backdrop {
 
 /* وقتی سرچ فعال می‌شود، فقط در موبایل آیتم‌های دو طرف جمع می‌شوند */
 @media (max-width: 767.98px) {
+
   .is-search-active #appbar-logo-side,
   .is-search-active #appbar-actions-side {
     max-width: 0 !important;
@@ -971,8 +1024,8 @@ body[data-drawer="open"] #dash-backdrop {
   border: 1px solid transparent;
   padding: 0 0.75rem;
   transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
@@ -1001,9 +1054,9 @@ body[data-drawer="open"] #dash-backdrop {
   flex-shrink: 0;
   color: #475569;
   transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.2s ease;
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.2s ease;
 }
 
 .appbar-search-back-btn:hover {
@@ -1026,8 +1079,8 @@ body[data-drawer="open"] #dash-backdrop {
   color: #64748b;
   margin-left: 0.5rem;
   transition: max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              margin 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
@@ -1159,6 +1212,7 @@ body[data-drawer="open"] #dash-backdrop {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1172,6 +1226,7 @@ body[data-drawer="open"] #dash-backdrop {
   0% {
     transform: translateX(0);
   }
+
   100% {
     transform: translateX(50%);
   }
@@ -1202,9 +1257,12 @@ body[data-drawer="open"] #dash-backdrop {
    کارت‌های سه‌بعدی انیمیشنی (Feature Highlights)
    =========================================================================== */
 @keyframes float-gentle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   50% {
     transform: translateY(-8px) rotate(1.5deg);
   }
@@ -1244,9 +1302,11 @@ body[data-drawer="open"] #dash-backdrop {
 .feature-card:nth-child(2) .feature-3d-img {
   animation-delay: -1s;
 }
+
 .feature-card:nth-child(3) .feature-3d-img {
   animation-delay: -2s;
 }
+
 .feature-card:nth-child(4) .feature-3d-img {
   animation-delay: -3s;
 }
@@ -1343,8 +1403,13 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 @keyframes modalBackdropFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes modalScaleIn {
@@ -1352,6 +1417,7 @@ body[data-drawer="open"] #dash-backdrop {
     opacity: 0;
     transform: scale(0.92) translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -1415,6 +1481,7 @@ body[data-drawer="open"] #dash-backdrop {
   .pay-page {
     padding: 3rem 1.5rem 4.5rem;
   }
+
   .pay-shell {
     padding: 2.5rem 2.75rem 1.75rem;
     border-radius: 1.75rem;
@@ -1909,6 +1976,7 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 @media (max-width: 767px) {
+
   /* سکشن تصویر محصول به صورت چسبان در بالای ویوپورت موبایل در لایه زیرین اورلی */
   .mobile-product-gallery-sticky {
     position: sticky;
@@ -1930,11 +1998,11 @@ body[data-drawer="open"] #dash-backdrop {
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     box-sizing: border-box;
-    background-color: #f8fafc; /* پس‌زمینه مات جهت پوشش کامل تصاویر پشتی */
+    background-color: #f8fafc;
+    /* پس‌زمینه مات جهت پوشش کامل تصاویر پشتی */
     border-radius: 0;
-    box-shadow: 0 -12px 35px -5px rgba(15, 23, 42, 0.12), 0 -2px 6px -1px rgba(15, 23, 42, 0.04);
-    border: none;
-    margin-top: -1.5rem;
+    border-top: 3px solid #0f48cd;
+    margin-top: 1.5rem;
     padding: 0.75rem 1rem 3rem 1rem;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -2085,15 +2153,64 @@ body[data-drawer="open"] #dash-backdrop {
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
   opacity: 0;
 }
+
 .footer-accordion-item.is-open .footer-accordion-content {
   max-height: 500px;
   opacity: 1;
 }
+
 .footer-accordion-item .footer-accordion-arrow {
   transition: transform 0.3s ease;
 }
+
 .footer-accordion-item.is-open .footer-accordion-arrow {
   transform: rotate(180deg);
 }
 
+/* باتم شیت دیالوگ بیمه کالا */
+.insurance-bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  visibility: hidden;
+  transition: visibility 0.3s ease;
+}
 
+.insurance-bottom-sheet.is-open {
+  visibility: visible;
+}
+
+.insurance-bottom-sheet .sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.insurance-bottom-sheet.is-open .sheet-backdrop {
+  opacity: 1;
+}
+
+.insurance-bottom-sheet .sheet-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #ffffff;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.1), 0 -8px 10px -6px rgba(0, 0, 0, 0.1);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.insurance-bottom-sheet.is-open .sheet-panel {
+  transform: translateY(0);
+}

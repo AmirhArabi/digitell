@@ -238,6 +238,23 @@ class ProductPageDesignTests(TestCase):
         cta = html.split('id="product-cta"')[1].split('id="specs"')[0]
         self.assertNotIn('افزودن به سبد خرید', cta)
 
+    def test_warranty_and_insurance_section_and_bottom_sheet(self):
+        html = self.html()
+        # بخش گارانتی و بیمه
+        self.assertIn('id="product-warranty-insurance"', html)
+        self.assertIn(self.product.warranty, html)
+        self.assertIn('بیمه سرقت و خسارات - سامان', html)
+        self.assertIn('id="open-insurance-sheet"', html)
+        # محاسبه ۲.۳ درصد بیمه (1899000 * 0.023 = 43677)
+        expected_fee = f"{round(self.product.price * 0.023):,}"
+        self.assertIn(expected_fee, html)
+        # باتم شیت دیالوگ توضیحات بیمه
+        self.assertIn('id="insurance-bottom-sheet"', html)
+        self.assertIn('id="close-insurance-sheet-btn"', html)
+        self.assertIn('پوشش‌های بیمه تجهیزات دیجیتال سامان', html)
+        # موقعیت قرارگیری قبل از خلاصه مشخصات
+        self.assertLess(html.index('id="product-warranty-insurance"'), html.index('id="product-spec-summary"'))
+
     # ------------------------------------------------------------------
     # بخش‌های تاشو و کاروسل
     # ------------------------------------------------------------------

@@ -184,6 +184,64 @@
                     {% endif %}
                 </div>
 
+                <!-- ================= گارانتی و بیمه کالا ================= -->
+                <div id="product-warranty-insurance" class="bg-white p-4 sm:p-5 shadow-xs">
+                    <!-- عنوان و کارت گارانتی -->
+                    <div class="mb-4">
+                        <div class="mb-2 text-xs sm:text-sm font-bold text-slate-800">گارانتی</div>
+                        <div class="flex items-center justify-between rounded-2xl border-2 border-[#f97316] bg-[#fff9f4] p-3.5 sm:p-4">
+                            <div class="flex items-center gap-2.5">
+                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-white shadow-2xs">
+                                    <svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </span>
+                                <span class="text-xs sm:text-sm font-bold text-slate-800">{{ product.warranty|default:"گارانتی ۱۸ ماهه شرکتی" }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- عنوان و کارت بیمه (انتخابی با افزودن ۲.۳ درصد به قیمت) -->
+                    <div>
+                        <div class="mb-2 text-xs sm:text-sm font-bold text-slate-800">بیمه</div>
+                        <label id="insurance-card" for="insurance-checkbox"
+                            class="group relative flex flex-col justify-between gap-3 rounded-2xl border-2 border-[#f97316] bg-[#fff9f4] p-3.5 sm:p-4 transition-all duration-200 cursor-pointer select-none">
+                            <input type="checkbox" id="insurance-checkbox" checked class="sr-only">
+
+                            <!-- ردیف بالا: آیکون چک‌باکس دایره‌ای و نام بیمه -->
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5">
+                                    <span id="insurance-check-circle"
+                                        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-white shadow-2xs transition">
+                                        <svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </span>
+                                    <span class="text-xs sm:text-sm font-bold text-slate-800">بیمه سرقت و خسارات - سامان</span>
+                                </div>
+                            </div>
+
+                            <!-- ردیف پایین: لینک توضیحات (راست) و مبلغ ۲.۳٪ (چپ) -->
+                            <div class="flex items-center justify-between pt-1">
+                                <!-- دکمه باز کردن Bottom Sheet توضیحات -->
+                                <button type="button" id="open-insurance-sheet"
+                                    class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#f97316] transition cursor-pointer">
+                                    <span>توضیحات</span>
+                                    <svg class="w-3.5 h-3.5 rotate-180 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- مبلغ محاسبه‌شده ۲.۳ درصد بیمه کالا -->
+                                <div class="flex items-center gap-1.5 text-zitro-ink">
+                                    <span id="insurance-fee-val" class="text-sm sm:text-base font-black fa-num">{{ formatted_insurance_fee }}</span>
+                                    <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- خلاصه مشخصات -->
                 {% if spec_summary %}
                 <div id="product-spec-summary" class="bg-white p-4 sm:p-5 shadow-xs">
@@ -229,7 +287,7 @@
                             </div>
                             {% endif %}
                             <div class="flex items-baseline gap-1.5">
-                                <span class="text-2xl sm:text-3xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
+                                <span id="product-final-price" data-base-price="{{ product.price }}" data-insurance-fee="{{ insurance_fee }}" class="text-2xl sm:text-3xl font-black text-zitro-ink">{{ product.formatted_price }}</span>
                                 <span class="text-xs sm:text-sm font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
                             </div>
                             {% if savings %}
@@ -275,6 +333,7 @@
                         <form hx-post="{% url 'cart:cart_add' product.id %}" hx-target="#cart-badge" hx-swap="outerHTML"
                             class="flex flex-1 items-stretch gap-3">
                             {% csrf_token %}
+                            <input type="hidden" name="has_insurance" class="insurance-form-field" value="1">
                             <div class="flex items-center overflow-hidden bg-white shadow-2xs"
                                 data-max="{{ product.available_qty|default:1 }}">
                                 <button type="button" data-qty-step="-1"
@@ -456,6 +515,7 @@
                 hx-swap="outerHTML">
                 {% csrf_token %}
                 <input type="hidden" name="quantity" value="1">
+                <input type="hidden" name="has_insurance" class="insurance-form-field" value="1">
                 <button type="submit"
                     class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-zitro-cash text-xs sm:text-sm font-bold text-white transition hover:brightness-95 active:scale-[0.99] shadow-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,13 +537,153 @@
             </div>
             {% endif %}
             <div class="flex items-baseline gap-1 justify-end">
-                <span class="text-lg font-black text-zitro-ink">{{ product.formatted_price }}</span>
+                <span id="mobile-product-price" data-base-price="{{ product.price }}" data-insurance-fee="{{ insurance_fee }}" class="text-lg font-black text-zitro-ink">{{ product.formatted_price }}</span>
                 <span class="text-xs font-bold text-slate-500">{% include 'includes/toman_icon.html' %}</span>
             </div>
         </div>
     </div>
 </div>
 {% endif %}
+
+<!-- ================= باتم شیت دیالوگ توضیحات پوشش بیمه سامان ================= -->
+<div id="insurance-bottom-sheet" class="insurance-bottom-sheet">
+    <!-- پس‌زمینه نیمه‌شفاف تار (Backdrop) -->
+    <div id="insurance-sheet-backdrop" class="sheet-backdrop"></div>
+
+    <!-- پنل باتم شیت متحرک -->
+    <div id="insurance-sheet-panel" class="sheet-panel max-w-2xl mx-auto">
+        <!-- دستگیره کشویی بالای باتم شیت -->
+        <div class="pt-3 pb-1 flex justify-center shrink-0">
+            <div class="h-1.5 w-12 rounded-full bg-slate-300"></div>
+        </div>
+
+        <!-- هدر باتم شیت -->
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-3.5 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </span>
+                <div>
+                    <h3 class="text-sm sm:text-base font-black text-zitro-ink">پوشش‌های بیمه تجهیزات دیجیتال سامان</h3>
+                    <p class="text-xs text-slate-500 line-clamp-1">{{ product.title }}</p>
+                </div>
+            </div>
+            <button type="button" id="close-insurance-sheet-x"
+                class="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
+                aria-label="بستن">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- بدنه باتم شیت (اسکرول‌خور) -->
+        <div class="overflow-y-auto px-5 py-4 space-y-4 text-xs sm:text-sm">
+            <!-- بنر معرفی -->
+            <div class="rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 p-4 border border-orange-100">
+                <div class="flex items-center gap-2 font-bold text-orange-950 mb-1">
+                    <svg class="w-4 h-4 text-orange-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>تضمین آرامش خیال با بیمه سامان</span>
+                </div>
+                <p class="leading-relaxed text-slate-700">
+                    با انتخاب بیمه، دستگاه شما به مدت یک سال کامل در برابر حوادث غیرمترقبه تحت پوشش قرار می‌گیرد و در صورت بروز خسارت یا سرقت، بخش عمده هزینه‌ها توسط شرکت بیمه سامان جبران خواهد شد.
+                </p>
+            </div>
+
+            <!-- لیست پوشش‌ها -->
+            <div class="space-y-3">
+                <!-- مورد ۱: سرقت -->
+                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-slate-800">سرقت کلی و جزئی (با شکست حرز)</h4>
+                        <p class="mt-0.5 text-slate-600 leading-relaxed text-xs">
+                            پوشش سرقت از منزل، محل کار یا خودرو با ارائه گزارش مراجع قضایی و انتظامی تا سقف ۸۵٪ ارزش روز کالا.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- مورد ۲: شکستگی و سقوط -->
+                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-slate-800">شکستگی تاچ، ال‌سی‌دی و ضربه فیزیکی</h4>
+                        <p class="mt-0.5 text-slate-600 leading-relaxed text-xs">
+                            جبران خسارات ناشی از سقوط و ضربات فیزیکی تصادفی که تحت پوشش گارانتی معمول کارخانه قرار نمی‌گیرند.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- مورد ۳: آبدیدگی -->
+                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-slate-800">آب‌دیدگی و نفوذ مایعات</h4>
+                        <p class="mt-0.5 text-slate-600 leading-relaxed text-xs">
+                            پوشش آسیب‌های ناشی از نفوذ رطوبت، آب و مایعات به قطعات و بردهای حساس الکترونیکی دستگاه.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- مورد ۴: نوسانات برق و آتش‌سوزی -->
+                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-yellow-100 text-yellow-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-slate-800">نوسانات برق، صاعقه و آتش‌سوزی</h4>
+                        <p class="mt-0.5 text-slate-600 leading-relaxed text-xs">
+                            جبران خسارات سوختگی قطعات در اثر اتصال کوتاه، شوک الکتریکی، آتش‌سوزی و صاعقه.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شرایط و تعرفه -->
+            <div class="rounded-xl bg-slate-100 p-3.5 text-slate-600 space-y-1.5 text-xs">
+                <div class="flex items-center justify-between">
+                    <span>هزینه بیمه (۲.۳٪ از قیمت محصول):</span>
+                    <span class="font-bold text-slate-900 fa-num">{{ formatted_insurance_fee }} تومان</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>مدت اعتبار بیمه‌نامه:</span>
+                    <span class="font-bold text-slate-900">۱۲ ماه شمسی</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>شرکت بیمه‌گر:</span>
+                    <span class="font-bold text-slate-900">بیمه سامان (سهامی عام)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- فوتر باتم شیت با دکمه بستن / جمع کردن -->
+        <div class="border-t border-slate-100 bg-slate-50 p-4 shrink-0">
+            <button type="button" id="close-insurance-sheet-btn"
+                class="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#f97316] py-3 px-6 text-sm sm:text-base font-bold text-white shadow-xs transition hover:bg-orange-600 active:scale-[0.99] cursor-pointer">
+                بستن و بازگشت
+            </button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_scripts %}
@@ -709,6 +909,117 @@
                 }
             }, { passive: true });
         }
+
+        // ========== مدیریت بیمه کالا و باتم شیت دیالوگ ==========
+        var insuranceCheckbox = document.getElementById('insurance-checkbox');
+        var insuranceCard = document.getElementById('insurance-card');
+        var insuranceCircle = document.getElementById('insurance-check-circle');
+        var openSheetBtn = document.getElementById('open-insurance-sheet');
+        var closeSheetBtn = document.getElementById('close-insurance-sheet-btn');
+        var closeSheetX = document.getElementById('close-insurance-sheet-x');
+        var sheetBackdrop = document.getElementById('insurance-sheet-backdrop');
+        var bottomSheet = document.getElementById('insurance-bottom-sheet');
+        var priceEl = document.getElementById('product-final-price');
+        var mobilePriceEl = document.getElementById('mobile-product-price');
+        var insuranceInputs = document.querySelectorAll('.insurance-form-field');
+
+        function formatPriceNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function updateInsuranceState() {
+            if (!insuranceCheckbox) return;
+            var isChecked = insuranceCheckbox.checked;
+
+            if (insuranceInputs) {
+                insuranceInputs.forEach(function (inp) {
+                    inp.value = isChecked ? '1' : '0';
+                });
+            }
+
+            if (insuranceCard) {
+                if (isChecked) {
+                    insuranceCard.classList.remove('border-slate-200', 'bg-white');
+                    insuranceCard.classList.add('border-[#f97316]', 'bg-[#fff9f4]');
+                } else {
+                    insuranceCard.classList.remove('border-[#f97316]', 'bg-[#fff9f4]');
+                    insuranceCard.classList.add('border-slate-200', 'bg-white');
+                }
+            }
+
+            if (insuranceCircle) {
+                if (isChecked) {
+                    insuranceCircle.classList.remove('border-2', 'border-slate-300', 'bg-white');
+                    insuranceCircle.classList.add('bg-[#f97316]', 'text-white');
+                    insuranceCircle.innerHTML = '<svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>';
+                } else {
+                    insuranceCircle.classList.remove('bg-[#f97316]', 'text-white');
+                    insuranceCircle.classList.add('border-2', 'border-slate-300', 'bg-white');
+                    insuranceCircle.innerHTML = '';
+                }
+            }
+
+            // به‌روزرسانی قیمت نمایش‌داده‌شده با احتساب ۲.۳ درصد بیمه
+            if (priceEl) {
+                var basePrice = parseInt(priceEl.dataset.basePrice, 10) || 0;
+                var fee = parseInt(priceEl.dataset.insuranceFee, 10) || 0;
+                var finalVal = isChecked ? (basePrice + fee) : basePrice;
+                priceEl.textContent = formatPriceNumber(finalVal);
+            }
+
+            if (mobilePriceEl) {
+                var basePriceMob = parseInt(mobilePriceEl.dataset.basePrice, 10) || 0;
+                var feeMob = parseInt(mobilePriceEl.dataset.insuranceFee, 10) || 0;
+                var finalValMob = isChecked ? (basePriceMob + feeMob) : basePriceMob;
+                mobilePriceEl.textContent = formatPriceNumber(finalValMob);
+            }
+        }
+
+        if (insuranceCheckbox) {
+            insuranceCheckbox.addEventListener('change', updateInsuranceState);
+            updateInsuranceState();
+        }
+
+        function openBottomSheet(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (bottomSheet) {
+                bottomSheet.classList.add('is-open');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeBottomSheet(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            if (bottomSheet) {
+                bottomSheet.classList.remove('is-open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        if (openSheetBtn) {
+            openSheetBtn.addEventListener('click', openBottomSheet);
+        }
+        if (closeSheetBtn) {
+            closeSheetBtn.addEventListener('click', closeBottomSheet);
+        }
+        if (closeSheetX) {
+            closeSheetX.addEventListener('click', closeBottomSheet);
+        }
+        if (sheetBackdrop) {
+            sheetBackdrop.addEventListener('click', closeBottomSheet);
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && bottomSheet && bottomSheet.classList.contains('is-open')) {
+                closeBottomSheet();
+            }
+        });
     })();
 </script>
 {% endblock %}

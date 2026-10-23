@@ -304,6 +304,15 @@ class Product(models.Model):
             return f"{self.compare_at_price:,}"
         return None
 
+    @property
+    def insurance_fee(self):
+        """مبلغ بیمه کالا بر مبنای ۲.۳ درصد از قیمت فروش محصول (گردشده به تومان)."""
+        return round(self.price * 0.023)
+
+    @property
+    def formatted_insurance_fee(self):
+        return f"{self.insurance_fee:,}"
+
     def get_absolute_url(self):
         return reverse('products:product_detail', kwargs={'pk': self.pk, 'slug': self.slug})
 
