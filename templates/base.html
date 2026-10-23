@@ -31,61 +31,70 @@
             <div id="appbar-main-row" class="appbar-main-row">
 
                 <!-- Logo & Brand (Right side in RTL) -->
-                <div id="appbar-logo-side" class="appbar-collapsible-item md:max-w-none flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <div id="appbar-logo-side"
+                    class="appbar-collapsible-item md:max-w-none flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <!-- Mobile Hamburger Menu Button (Before Logo) - فقط در صورت لاگین بودن کاربر نمایش داده می‌شود -->
                     {% if user.is_authenticated %}
-                    <button type="button"
-                            id="header-mobile-hamburger-btn"
-                            onclick="if(typeof openMobileMenu === 'function'){openMobileMenu();}else{window.location.href='{% url 'accounts:profile' %}';}"
-                            class="lg:hidden p-1.5 -mr-1 text-slate-700 hover:text-blue-600 rounded-xl hover:bg-slate-100 transition active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
-                            title="منوی حساب کاربری"
-                            aria-label="باز کردن منو">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    <button type="button" id="header-mobile-hamburger-btn"
+                        onclick="if(typeof openMobileMenu === 'function'){openMobileMenu();}else{window.location.href='{% url 'accounts:profile' %}';}"
+                        class="lg:hidden p-1.5 -mr-1 text-slate-700 hover:text-blue-600 rounded-xl hover:bg-slate-100 transition active:scale-95 shrink-0 flex items-center justify-center cursor-pointer"
+                        title="منوی حساب کاربری" aria-label="باز کردن منو">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
                     </button>
                     {% endif %}
                     <a href="{% url 'home:index' %}" class="flex items-center group py-0.5" title="دیجی‌تل">
-                        <img src="{% static 'img/logo-digi.webp' %}" alt="دیجی‌تل" class="h-7 sm:h-8 md:h-9 lg:h-10 w-auto object-contain transition-all duration-300">
+                        <img src="{% static 'img/logo-digi.webp' %}" alt="دیجی‌تل"
+                            class="h-7 sm:h-8 md:h-9 lg:h-10 w-auto object-contain transition-all duration-300">
                     </a>
                 </div>
 
                 <!-- Search Box (Center, expands full width on click with animation) -->
-                <div id="appbar-search-wrapper" class="appbar-search-wrapper max-w-[15rem] xs:max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-2 sm:mx-4 md:mx-6 lg:mx-8">
-                    <form id="appbar-search-form" action="{% url 'products:shop' %}" method="GET" class="relative w-full" role="search">
+                <div id="appbar-search-wrapper"
+                    class="appbar-search-wrapper max-w-[15rem] xs:max-w-xs sm:max-w-md md:max-w-xl lg:max-w-2xl xl:max-w-3xl mx-2 sm:mx-4 md:mx-6 lg:mx-8">
+                    <form id="appbar-search-form" action="{% url 'products:shop' %}" method="GET"
+                        class="relative w-full" role="search">
                         <div id="appbar-search-box" class="appbar-search-box">
-                            
+
                             <!-- Return / Back Arrow Button (points right in RTL, smooth slide/fade in when search is active) -->
-                            <button type="button" id="appbar-search-back-btn" class="appbar-search-back-btn" title="بازگشت" aria-label="بستن جستجو">
-                                <svg class="w-5 h-5"><use href="#icon-arrow-right"/></svg>
+                            <button type="button" id="appbar-search-back-btn" class="appbar-search-back-btn"
+                                title="بازگشت" aria-label="بستن جستجو">
+                                <svg class="w-5 h-5">
+                                    <use href="#icon-arrow-right" />
+                                </svg>
                             </button>
 
                             <!-- Magnifier Icon (as in media/appbar.png, placed to the right of text in RTL) -->
                             <div id="appbar-search-icon" class="appbar-search-icon">
-                                <svg class="w-4 h-4 sm:w-5 sm:h-5"><use href="#icon-search"/></svg>
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5">
+                                    <use href="#icon-search" />
+                                </svg>
                             </div>
 
                             <!-- Search Input Field -->
-                            <input type="text"
-                                   name="q"
-                                   id="appbar-search-input"
-                                   autocomplete="off"
-                                   placeholder="جستجوی محصول یا دسته بندی"
-                                   class="appbar-search-input"
-                                   hx-get="{% url 'products:live_search' %}"
-                                   hx-trigger="keyup changed delay:250ms, search"
-                                   hx-target="#appbar-search-results"
-                                   hx-indicator="#appbar-search-spinner"
-                            >
+                            <input type="text" name="q" id="appbar-search-input" autocomplete="off"
+                                placeholder="جستجوی محصول یا دسته بندی" class="appbar-search-input"
+                                hx-get="{% url 'products:live_search' %}" hx-trigger="keyup changed delay:250ms, search"
+                                hx-target="#appbar-search-results" hx-indicator="#appbar-search-spinner">
 
                             <!-- Clear Input Button -->
-                            <button type="button" id="appbar-search-clear-btn" class="appbar-search-clear-btn hidden" title="پاک کردن متن" aria-label="پاک کردن">
-                                <svg class="w-3.5 h-3.5"><use href="#icon-x"/></svg>
+                            <button type="button" id="appbar-search-clear-btn" class="appbar-search-clear-btn hidden"
+                                title="پاک کردن متن" aria-label="پاک کردن">
+                                <svg class="w-3.5 h-3.5">
+                                    <use href="#icon-x" />
+                                </svg>
                             </button>
 
                             <!-- HTMX Loading Spinner -->
                             <div id="appbar-search-spinner" class="htmx-indicator shrink-0 mr-1.5 text-primary-600">
                                 <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                             </div>
                         </div>
@@ -102,26 +111,36 @@
                     <div class="flex items-center gap-1 sm:gap-2">
 
                         {% if user.is_authenticated and user.is_staff %}
-                        <a href="{% url 'dashboard:overview' %}" class="appbar-action-btn hidden md:inline-flex" title="پنل مدیریت">
-                            <svg class="w-5 h-5"><use href="#icon-dashboard"/></svg>
+                        <a href="{% url 'dashboard:overview' %}" class="appbar-action-btn hidden md:inline-flex"
+                            title="پنل مدیریت">
+                            <svg class="w-5 h-5">
+                                <use href="#icon-dashboard" />
+                            </svg>
                         </a>
                         {% endif %}
 
                         <!-- Profile Link (matches media/appbar.png outline user icon) -->
                         {% if user.is_authenticated %}
-                        <a href="{% url 'accounts:profile' %}" class="appbar-action-btn" title="{{ user.first_name|default:user.username }}">
-                            <svg class="w-6 h-6"><use href="#icon-user"/></svg>
+                        <a href="{% url 'accounts:profile' %}" class="appbar-action-btn"
+                            title="{{ user.first_name|default:user.username }}">
+                            <svg class="w-6 h-6">
+                                <use href="#icon-user" />
+                            </svg>
                         </a>
                         {% else %}
                         <a href="{% url 'accounts:login' %}" class="appbar-action-btn" title="ورود / ثبت‌نام">
-                            <svg class="w-6 h-6"><use href="#icon-user"/></svg>
+                            <svg class="w-6 h-6">
+                                <use href="#icon-user" />
+                            </svg>
                         </a>
                         {% endif %}
 
                         <!-- Shopping Cart (matches media/appbar.png trolley with green badge) -->
                         <a href="{% url 'cart:cart_detail' %}" class="appbar-action-btn relative" title="سبد خرید">
-                            <svg class="w-6 h-6"><use href="#icon-cart"/></svg>
-                            <span id="cart-badge" class="appbar-cart-badge fa-num">{{ global_cart_count|default:0 }}</span>
+                            <svg class="w-6 h-6">
+                                <use href="#icon-cart" />
+                            </svg>
+                            <span id="cart-badge" class="appbar-cart-badge fa-num {% if not global_cart_count or global_cart_count <= 0 %}hidden{% endif %}">{% if global_cart_count > 0 %}{{ global_cart_count }}{% endif %}</span>
                         </a>
                     </div>
                 </div>
@@ -134,47 +153,72 @@
     </header>
 
     <!-- Category Navigation: Static at the top of the hero section -->
-    <nav id="digi-catbar" class="digi-catbar border-b border-slate-200/80 bg-white px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 digi-catbar-static">
+    <nav id="digi-catbar"
+        class="digi-catbar border-b border-slate-200/80 bg-white px-4 sm:px-6 md:px-8 lg:px-12 transition-all duration-300 digi-catbar-static">
         <div
             class="w-full max-w-[1920px] mx-auto flex items-center justify-between text-xs font-semibold overflow-x-auto no-scrollbar py-2">
             <div class="flex items-center gap-5 whitespace-nowrap">
                 <a href="{% url 'products:category_list' %}"
                     class="digi-cat-link flex items-center gap-1.5 text-primary-600 hover:text-primary-700">
-                    <svg class="w-4 h-4"><use href="#icon-grid"/></svg>
+                    <svg class="w-4 h-4">
+                        <use href="#icon-grid" />
+                    </svg>
                     دسته‌بندی‌ها
                 </a>
                 <a href="{% url 'products:shop' %}"
                     class="digi-cat-link flex items-center gap-1.5 text-secondary-600 hover:text-primary-600">
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-shop-bag"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-shop-bag" />
+                    </svg>
                     <span>همه کالاها</span>
                 </a>
                 {% for cat in nav_categories %}
                 <a href="{% url 'products:category_detail' slug=cat.slug %}"
                     class="digi-cat-link flex items-center gap-1.5 text-secondary-600 hover:text-primary-600">
                     {% if cat.slug == 'smartphones' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-smartphone"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-smartphone" />
+                    </svg>
                     {% elif cat.slug == 'tablets' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-tablet"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-tablet" />
+                    </svg>
                     {% elif cat.slug == 'laptops' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-laptop"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-laptop" />
+                    </svg>
                     {% elif cat.slug == 'smartwatches' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-smartwatch"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-smartwatch" />
+                    </svg>
                     {% elif cat.slug == 'gaming' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-gaming"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-gaming" />
+                    </svg>
                     {% elif cat.slug == 'headphones' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-headphones"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-headphones" />
+                    </svg>
                     {% elif cat.slug == 'speakers' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-speakers"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-speakers" />
+                    </svg>
                     {% elif cat.slug == 'accessories' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-accessories"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-accessories" />
+                    </svg>
                     {% elif cat.slug == 'storage' %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-storage"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-storage" />
+                    </svg>
                     {% elif cat.icon_svg %}
                     <span class="inline-flex shrink-0 [&>svg]:w-4 [&>svg]:h-4">
                         {{ cat.icon_svg|safe }}
                     </span>
                     {% else %}
-                    <svg class="w-4 h-4 shrink-0"><use href="#icon-grid"/></svg>
+                    <svg class="w-4 h-4 shrink-0">
+                        <use href="#icon-grid" />
+                    </svg>
                     {% endif %}
                     <span>{{ cat.name }}</span>
                 </a>
@@ -182,7 +226,9 @@
             </div>
             <a href="{% url 'products:shop' %}?special=1"
                 class="digi-cat-link flex items-center gap-1 text-accent-rose font-bold whitespace-nowrap">
-                <svg class="w-3.5 h-3.5"><use href="#icon-fire"/></svg>
+                <svg class="w-3.5 h-3.5">
+                    <use href="#icon-fire" />
+                </svg>
                 تخفیف‌ها
             </a>
         </div>
@@ -214,17 +260,23 @@
     <div
         class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 py-2 px-3 flex items-center justify-around z-40 shadow-lg">
         <a href="{% url 'home:index' %}" class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
-            <svg class="w-5 h-5"><use href="#icon-home"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-home" />
+            </svg>
             <span class="text-[10px] font-medium">خانه</span>
         </a>
         <a href="{% url 'products:category_list' %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
-            <svg class="w-5 h-5"><use href="#icon-menu"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-menu" />
+            </svg>
             <span class="text-[10px] font-medium">دسته‌بندی</span>
         </a>
         <a href="{% url 'cart:cart_detail' %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600 relative">
-            <svg class="w-5 h-5"><use href="#icon-bag"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-bag" />
+            </svg>
             <span class="text-[10px] font-medium">سبد خرید</span>
             {% if global_cart_count > 0 %}
             <span
@@ -236,17 +288,23 @@
         <!-- دکمه انتقال به فرم واریز وجه -->
         <a href="{% url 'accounts:deposit' %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
-            <svg class="w-5 h-5"><use href="#icon-wallet"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-wallet" />
+            </svg>
             <span class="text-[10px] font-medium">واریز وجه</span>
         </a>
         <a href="{% url 'blog:post_list' %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
-            <svg class="w-5 h-5"><use href="#icon-blog"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-blog" />
+            </svg>
             <span class="text-[10px] font-medium">بلاگ</span>
         </a>
         <a href="{% if user.is_authenticated %}{% url 'accounts:profile' %}{% else %}{% url 'accounts:login' %}{% endif %}"
             class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
-            <svg class="w-5 h-5"><use href="#icon-user"/></svg>
+            <svg class="w-5 h-5">
+                <use href="#icon-user" />
+            </svg>
             <span class="text-[10px] font-medium">حساب</span>
         </a>
     </div>
@@ -255,36 +313,60 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 mt-auto">
         <!-- Feature Highlights (نمایش به صورت یک ردیف بدون بوردر) -->
-        {% cache 604800 base_feature_highlights %}
+        {% cache 604800 base_feature_highlights_v2 %}
         <div class="border-b border-slate-100 py-6 sm:py-8 bg-slate-50/70">
             <div class="max-w-[1920px] w-full mx-auto px-3 sm:px-6 md:px-8 lg:px-12">
                 <div class="grid grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
                     <!-- Feature 1: ضمانت اصالت کالا -->
                     <div class="feature-card group border-0 shadow-none">
-                        <img src="{% static 'img/features/guarantee.jpg' %}" alt="ضمانت اصالت کالا" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">ضمانت اصالت کالا</h4>
-                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">تمامی محصولات ۱۰۰٪ اورجینال با گارانتی معتبر</p>
+                        <img src="{% static 'img/features/guarantee.jpg' %}" alt="ضمانت اصالت کالا"
+                            class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
+                            loading="lazy" decoding="async" width="128" height="128">
+                        <h4
+                            class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">
+                            ضمانت اصالت کالا</h4>
+                        <p
+                            class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">
+                            تمامی محصولات ۱۰۰٪ اورجینال با گارانتی معتبر</p>
                     </div>
 
                     <!-- Feature 2: خرید اقساطی بدون ضامن -->
                     <div class="feature-card group border-0 shadow-none">
-                        <img src="{% static 'img/features/installment.jpg' %}" alt="خرید اقساطی بدون ضامن" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">خرید اقساطی بدون ضامن</h4>
-                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">پرداخت در ۴ قسط آسان بدون کارمزد با اسنپ‌پی</p>
+                        <img src="{% static 'img/features/installment.jpg' %}" alt="خرید اقساطی بدون ضامن"
+                            class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
+                            loading="lazy" decoding="async" width="128" height="128">
+                        <h4
+                            class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">
+                            خرید اقساطی بدون ضامن</h4>
+                        <p
+                            class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">
+                            پرداخت در ۴ قسط آسان بدون کارمزد با اسنپ‌پی</p>
                     </div>
 
                     <!-- Feature 3: ارسال سریع و مطمئن -->
                     <div class="feature-card group border-0 shadow-none">
-                        <img src="{% static 'img/features/delivery.jpg' %}" alt="ارسال سریع و مطمئن" class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">ارسال سریع و مطمئن</h4>
-                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">تحویل فوری در تهران و پست پیشتاز سراسر کشور</p>
+                        <img src="{% static 'img/features/delivery.jpg' %}" alt="ارسال سریع و مطمئن"
+                            class="feature-3d-img rounded-xl sm:rounded-2xl w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20"
+                            loading="lazy" decoding="async" width="128" height="128">
+                        <h4
+                            class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">
+                            ارسال سریع و مطمئن</h4>
+                        <p
+                            class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">
+                            تحویل فوری در تهران و پست پیشتاز سراسر کشور</p>
                     </div>
 
                     <!-- Feature 4: پشتیبانی تخصصی -->
                     <div class="feature-card group border-0 shadow-none">
-                        <img src="{% static 'img/features/support.svg' %}" alt="پشتیبانی تخصصی" class="feature-3d-img w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy" decoding="async" width="128" height="128">
-                        <h4 class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">پشتیبانی تخصصی</h4>
-                        <p class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">مشاوره فنی رایگان و پاسخگویی سریع پیش از خرید</p>
+                        <img src="{% static 'img/features/support.svg' %}" alt="پشتیبانی تخصصی"
+                            class="feature-3d-img w-10 h-10 sm:w-16 sm:h-16 lg:w-20 lg:h-20" loading="lazy"
+                            decoding="async" width="128" height="128">
+                        <h4
+                            class="font-bold text-[11px] sm:text-xs md:text-sm lg:text-base text-slate-800 mb-0.5 sm:mb-1 group-hover:text-primary-600 transition text-center truncate max-w-full">
+                            پشتیبانی تخصصی</h4>
+                        <p
+                            class="text-[9px] sm:text-[11px] lg:text-xs text-slate-500 leading-tight text-center line-clamp-1 sm:line-clamp-2">
+                            مشاوره فنی رایگان و پاسخگویی سریع پیش از خرید</p>
                     </div>
                 </div>
             </div>
@@ -355,7 +437,8 @@
                     <div class="space-y-3">
                         <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 text-right">
                             <p class="text-xs text-slate-500 mb-1">شماره تماس پشتیبانی ۲۴ ساعته:</p>
-                            <a href="tel:{{ site_settings.phone|default:'02191000000' }}" class="text-base font-black text-blue-600 hover:text-blue-700 dir-ltr inline-block">
+                            <a href="tel:{{ site_settings.phone|default:'02191000000' }}"
+                                class="text-base font-black text-blue-600 hover:text-blue-700 dir-ltr inline-block">
                                 {{ site_settings.phone|default:'۰۲۱-۹۱۰۰۰۰۰۰' }}
                             </a>
                         </div>
@@ -371,20 +454,35 @@
                 <h4 class="text-sm font-black text-slate-800 mb-3.5">در شبکه‌های اجتماعی با ما در ارتباط باشید</h4>
                 <div class="flex items-center justify-center gap-3.5" dir="ltr">
                     <a href="https://t.me/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="تلگرام"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z" />
+                        </svg>
                     </a>
                     <a href="https://x.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="توییتر"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
                     </a>
-                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer"
+                        aria-label="اینستاگرام"
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
                     </a>
                     <a href="https://wa.me/989120000000" target="_blank" rel="noopener noreferrer" aria-label="واتساپ"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z" />
+                        </svg>
                     </a>
                 </div>
             </div>
@@ -393,27 +491,42 @@
             <div class="pt-6">
                 <div class="grid grid-cols-3 gap-4 max-w-xl mx-auto">
                     <!-- کارت ۱: اینماد الکترونیکی -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
-                        <div class="w-14 h-14 rounded-xl bg-blue-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-blue-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
                         </div>
                         <h5 class="text-xs font-bold text-slate-800 leading-tight">اینماد الکترونیکی</h5>
                         <p class="text-[10px] text-slate-400 mt-1 font-medium">وزارت صنعت و معدن</p>
                     </div>
 
                     <!-- کارت ۲: ساماندهی رسانه‌های دیجیتال -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
-                        <div class="w-14 h-14 rounded-xl bg-amber-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-amber-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
                         </div>
                         <h5 class="text-xs font-bold text-slate-800 leading-tight">نشان ملی ثبت</h5>
                         <p class="text-[10px] text-slate-400 mt-1 font-medium">وزارت فرهنگ و ارشاد</p>
                     </div>
 
                     <!-- کارت ۳: اتحادیه کشوری کسب‌وکارهای مجازی -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
-                        <div class="w-14 h-14 rounded-xl bg-purple-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-xs hover:border-blue-400 hover:shadow-md transition duration-200 group">
+                        <div
+                            class="w-14 h-14 rounded-xl bg-purple-50/80 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
                         </div>
                         <h5 class="text-xs font-bold text-slate-800 leading-tight">اتحادیه کشوری</h5>
                         <p class="text-[10px] text-slate-400 mt-1 font-medium">کسب‌وکار مجازی</p>
@@ -422,7 +535,8 @@
             </div>
 
             <div class="border-t border-slate-100 mt-10 pt-6 text-center text-xs text-slate-500">
-                <p>© ۲۰۲۶ تمامی حقوق مادی و معنوی این سایت متعلق به <strong>فروشگاه اینترنتی دیجی تل (digitell.ir)</strong> می‌باشد.</p>
+                <p>© ۲۰۲۶ تمامی حقوق مادی و معنوی این سایت متعلق به <strong>فروشگاه اینترنتی دیجی تل
+                        (digitell.ir)</strong> می‌باشد.</p>
             </div>
         </div>
 
@@ -431,9 +545,11 @@
             <!-- دکمه رفتن به بالا -->
             <div class="flex justify-center mb-5">
                 <button type="button" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
-                        class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95 cursor-pointer">
+                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95 cursor-pointer">
                     <span>رفتن به بالا</span>
-                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                    <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+                    </svg>
                 </button>
             </div>
 
@@ -445,11 +561,14 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <a href="tel:{{ site_settings.phone|default:'02191000000' }}"
-                       class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
+                        class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition active:scale-95">
                         تماس
                     </a>
                     <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-700">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -458,66 +577,81 @@
             <div class="divide-y divide-slate-100 border-b border-slate-100">
                 <!-- بخش اول: با دیجی‌تل -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
+                    <button type="button"
+                        class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer"
+                        onclick="toggleFooterAccordion(this)">
                         <span>با دیجی‌تل</span>
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
                     <div class="footer-accordion-content">
                         <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
-                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">اتاق خبر دیجی‌تل</a></li>
-                            <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition block py-1">فروش در دیجی‌تل</a></li>
-                            <li><a href="{% url 'blog:post_list' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های شغلی</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">گزارش تخلف در دیجی‌تل</a></li>
-                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">تماس با دیجی‌تل</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">درباره دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:contact' %}"
+                                    class="hover:text-blue-600 transition block py-1">اتاق خبر دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:installment' %}"
+                                    class="hover:text-blue-600 transition block py-1">فروش در دیجی‌تل</a></li>
+                            <li><a href="{% url 'blog:post_list' %}"
+                                    class="hover:text-blue-600 transition block py-1">فرصت‌های شغلی</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">گزارش
+                                    تخلف در دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:contact' %}"
+                                    class="hover:text-blue-600 transition block py-1">تماس با دیجی‌تل</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">درباره
+                                    دیجی‌تل</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <!-- بخش دوم: خدمات مشتریان -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
+                    <button type="button"
+                        class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer"
+                        onclick="toggleFooterAccordion(this)">
                         <span>خدمات مشتریان</span>
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
                     <div class="footer-accordion-content">
                         <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">پاسخ به پرسش‌های متداول</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه‌های بازگرداندن کالا</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">شرایط استفاده</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">حریم خصوصی</a></li>
-                            <li><a href="{% url 'tickets:list' %}" class="hover:text-blue-600 transition block py-1">تیکت‌های پشتیبانی</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">پاسخ به
+                                    پرسش‌های متداول</a></li>
+                            <li><a href="{% url 'home:faq' %}"
+                                    class="hover:text-blue-600 transition block py-1">رویه‌های بازگرداندن کالا</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">شرایط
+                                    استفاده</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">حریم
+                                    خصوصی</a></li>
+                            <li><a href="{% url 'tickets:list' %}"
+                                    class="hover:text-blue-600 transition block py-1">تیکت‌های پشتیبانی</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <!-- بخش سوم: راهنمای خرید از دیجی‌تل -->
                 <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
+                    <button type="button"
+                        class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer"
+                        onclick="toggleFooterAccordion(this)">
                         <span>راهنمای خرید از دیجی‌تل</span>
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </button>
                     <div class="footer-accordion-content">
                         <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
-                            <li><a href="{% url 'products:shop' %}" class="hover:text-blue-600 transition block py-1">نحوه ثبت سفارش</a></li>
-                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه ارسال سفارش</a></li>
-                            <li><a href="{% url 'accounts:deposit' %}" class="hover:text-blue-600 transition block py-1">شیوه‌های پرداخت و واریز</a></li>
-                            <li><a href="{% url 'home:installment' %}" class="hover:text-blue-600 transition block py-1">خرید اقساطی کالا</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- بخش چهارم: شرکای تجاری -->
-                <div class="footer-accordion-item">
-                    <button type="button" class="w-full flex items-center justify-between py-3.5 text-right font-bold text-sm text-slate-800 transition cursor-pointer" onclick="toggleFooterAccordion(this)">
-                        <span>شرکای تجاری</span>
-                        <svg class="footer-accordion-arrow w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div class="footer-accordion-content">
-                        <ul class="text-xs space-y-2.5 text-slate-600 pb-3 pr-2 text-right">
-                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">تامین‌کنندگان و فروشندگان</a></li>
-                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">همکاری در فروش (افیلیت)</a></li>
-                            <li><a href="{% url 'home:contact' %}" class="hover:text-blue-600 transition block py-1">فرصت‌های تبلیغاتی</a></li>
+                            <li><a href="{% url 'products:shop' %}"
+                                    class="hover:text-blue-600 transition block py-1">نحوه ثبت سفارش</a></li>
+                            <li><a href="{% url 'home:faq' %}" class="hover:text-blue-600 transition block py-1">رویه
+                                    ارسال سفارش</a></li>
+                            <li><a href="{% url 'accounts:deposit' %}"
+                                    class="hover:text-blue-600 transition block py-1">شیوه‌های پرداخت و واریز</a></li>
+                            <li><a href="{% url 'home:installment' %}"
+                                    class="hover:text-blue-600 transition block py-1">خرید اقساطی کالا</a></li>
                         </ul>
                     </div>
                 </div>
@@ -525,13 +659,21 @@
 
             <!-- معرفی برند دیجی‌تل و متن توضیحی با بازشونده (کاملاً راست‌چین) -->
             <div class="pt-5 space-y-2 text-right">
-                <h3 class="font-bold text-sm text-slate-800 leading-snug">دیجی‌تل؛ بزرگترین فروشگاه اینترنتی کالای دیجیتال</h3>
-                <div id="footer-brand-text" class="text-xs text-slate-500 leading-relaxed overflow-hidden transition-all duration-300 max-h-12 text-right">
-                    دیجی‌تل سال‌ها است که به عنوان انتخاب اول بسیاری از خریداران اینترنتی کالای دیجیتال تبدیل شده است. خرید آنلاین و اقساطی انواع گوشی موبایل، لپ‌تاپ، ساعت هوشمند، کنسول بازی و لوازم جانبی اصل با بهترین قیمت، همراه با ضمانت بازگشت و پشتیبانی ۲۴ ساعته در دیجی‌تل میسر می‌باشد.
+                <h3 class="font-bold text-sm text-slate-800 leading-snug">دیجی‌تل؛ بزرگترین فروشگاه اینترنتی کالای
+                    دیجیتال</h3>
+                <div id="footer-brand-text"
+                    class="text-xs text-slate-500 leading-relaxed overflow-hidden transition-all duration-300 max-h-12 text-right">
+                    دیجی‌تل سال‌ها است که به عنوان انتخاب اول بسیاری از خریداران اینترنتی کالای دیجیتال تبدیل شده است.
+                    خرید آنلاین و اقساطی انواع گوشی موبایل، لپ‌تاپ، ساعت هوشمند، کنسول بازی و لوازم جانبی اصل با بهترین
+                    قیمت، همراه با ضمانت بازگشت و پشتیبانی ۲۴ ساعته در دیجی‌تل میسر می‌باشد.
                 </div>
-                <button type="button" id="footer-expand-btn" onclick="toggleFooterBrandText()" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition pt-1 cursor-pointer">
+                <button type="button" id="footer-expand-btn" onclick="toggleFooterBrandText()"
+                    class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition pt-1 cursor-pointer">
                     <span id="footer-expand-label">مشاهده بیشتر</span>
-                    <svg id="footer-expand-arrow" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    <svg id="footer-expand-arrow" class="w-3.5 h-3.5 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
                 </button>
             </div>
 
@@ -541,23 +683,38 @@
                 <div class="flex items-center justify-center gap-3.5" dir="ltr">
                     <!-- تلگرام -->
                     <a href="https://t.me/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="تلگرام"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-blue-50 hover:border-blue-300 text-slate-600 hover:text-blue-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.93-1.28 4.88-2.12 5.86-2.54 2.79-1.16 3.37-1.36 3.75-1.36.08 0 .28.02.4.12.1.08.13.2.14.28-.01.07-.01.21-.03.36z" />
+                        </svg>
                     </a>
                     <!-- توییتر / X -->
                     <a href="https://x.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="توییتر"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-sky-50 hover:border-sky-300 text-slate-600 hover:text-sky-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
                     </a>
                     <!-- اینستاگرام -->
-                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    <a href="https://instagram.com/digitell_ir" target="_blank" rel="noopener noreferrer"
+                        aria-label="اینستاگرام"
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-pink-50 hover:border-pink-300 text-slate-600 hover:text-pink-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
                     </a>
                     <!-- واتساپ -->
                     <a href="https://wa.me/989120000000" target="_blank" rel="noopener noreferrer" aria-label="واتساپ"
-                       class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z"/></svg>
+                        class="w-10 h-10 rounded-full border border-slate-200/90 bg-white hover:bg-emerald-50 hover:border-emerald-300 text-slate-600 hover:text-emerald-600 flex items-center justify-center transition shadow-2xs">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.04c-.24.68-1.2 1.25-1.66 1.33-.44.08-1 .11-1.62-.09-.39-.13-.89-.29-1.54-.57-2.73-1.18-4.52-3.95-4.66-4.13-.14-.19-1.11-1.48-1.11-2.82 0-1.34.7-2 .95-2.27.25-.27.55-.34.73-.34.18 0 .36 0 .52.01.17.01.4-.06.63.48.24.55.8 1.96.87 2.1.07.14.12.31.02.5-.1.19-.15.31-.3.49-.15.18-.31.4-.44.54-.15.15-.3.31-.13.61.17.29.77 1.27 1.65 2.05 1.13 1.01 2.09 1.32 2.38 1.47.3.14.47.12.65-.08.18-.21.76-.88.96-1.18.2-.3.4-.25.68-.15.27.1 1.73.82 2.03.97.3.15.5.22.57.34.07.13.07.75-.17 1.43z" />
+                        </svg>
                     </a>
                 </div>
             </div>
@@ -566,27 +723,42 @@
             <div class="py-5 border-t border-slate-100">
                 <div class="grid grid-cols-3 gap-2.5 max-w-md mx-auto">
                     <!-- کارت ۱: اینماد الکترونیکی -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
-                        <div class="w-11 h-11 rounded-xl bg-blue-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div
+                            class="w-11 h-11 rounded-xl bg-blue-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
                         </div>
                         <h5 class="text-[11px] font-bold text-slate-800 leading-tight">اینماد الکترونیکی</h5>
                         <p class="text-[9px] text-slate-400 mt-0.5 font-medium">وزارت صمت</p>
                     </div>
 
                     <!-- کارت ۲: نشان ملی ثبت ساماندهی -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
-                        <div class="w-11 h-11 rounded-xl bg-amber-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
-                            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div
+                            class="w-11 h-11 rounded-xl bg-amber-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
                         </div>
                         <h5 class="text-[11px] font-bold text-slate-800 leading-tight">نشان ملی ثبت</h5>
                         <p class="text-[9px] text-slate-400 mt-0.5 font-medium">وزارت ارشاد</p>
                     </div>
 
                     <!-- کارت ۳: اتحادیه کشوری کسب‌وکارهای مجازی -->
-                    <div class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
-                        <div class="w-11 h-11 rounded-xl bg-purple-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
-                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <div
+                        class="bg-white border border-slate-200/90 rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-2xs hover:border-blue-400 hover:shadow-xs transition duration-200 group">
+                        <div
+                            class="w-11 h-11 rounded-xl bg-purple-50/80 flex items-center justify-center mb-1.5 group-hover:scale-105 transition-transform">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
                         </div>
                         <h5 class="text-[11px] font-bold text-slate-800 leading-tight">اتحادیه کشوری</h5>
                         <p class="text-[9px] text-slate-400 mt-0.5 font-medium">کسب‌وکار مجازی</p>
@@ -882,8 +1054,11 @@
     </script>
 
     <!-- Floating Back to Top Button -->
-    <button id="back-to-top-btn" type="button" class="back-to-top-btn" aria-label="بازگشت به بالای صفحه" title="بازگشت به بالای صفحه">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    <button id="back-to-top-btn" type="button" class="back-to-top-btn" aria-label="بازگشت به بالای صفحه"
+        title="بازگشت به بالای صفحه">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" />
+        </svg>
     </button>
 
     <!-- Add to Cart Modal Root Container -->

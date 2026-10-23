@@ -1,6 +1,6 @@
 {% load static %}
 <!-- Cart badge update -->
-<span id="cart-badge" class="appbar-cart-badge fa-num">{{ global_cart_count|default:0 }}</span>
+<span id="cart-badge" class="appbar-cart-badge fa-num {% if not global_cart_count or global_cart_count <= 0 %}hidden{% endif %}">{% if global_cart_count > 0 %}{{ global_cart_count }}{% endif %}</span>
 
 <!-- OOB Modal Popup based on user template -->
 <div id="cart-modal-container" hx-swap-oob="innerHTML">

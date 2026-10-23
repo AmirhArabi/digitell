@@ -1,3 +1,1 @@
-<span id="cart-badge" class="absolute -top-1.5 -left-1.5 min-w-[20px] h-5 px-1 rounded-full bg-orange-500 text-white text-[11px] font-bold flex items-center justify-center shadow-xs animate-bounce">
-    {{ global_cart_count|default:0 }}
-</span>
+<span id="cart-badge" class="appbar-cart-badge fa-num {% if not global_cart_count or global_cart_count <= 0 %}hidden{% endif %}">{% if global_cart_count > 0 %}{{ global_cart_count }}{% endif %}</span>
