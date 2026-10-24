@@ -9,18 +9,18 @@
     <!-- نوار ناوبری اختصاصی وبلاگ دیجی‌تل -->
     {% include 'blog/partials/blog_header.html' %}
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="max-w-[1920px] w-full mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16">
 
-        <!-- تصویر شاخص مقاله (Hero Cover) -->
+        <!-- تصویر شاخص مقاله (Hero Cover) با نسبت تصویر ایده‌آل در دسکتاپ و موبایل -->
         {% if post.cover_image %}
-        <div class="w-full max-w-5xl mx-auto mb-6 sm:mb-8 overflow-hidden rounded-2xl sm:rounded-3xl shadow-xs border border-slate-200/80 bg-slate-100 aspect-[16/9] sm:aspect-[2/1]">
+        <div class="w-full max-w-5xl xl:max-w-6xl mx-auto mb-6 sm:mb-8 overflow-hidden rounded-2xl sm:rounded-3xl shadow-xs border border-slate-200/80 bg-slate-100 aspect-[16/9] sm:aspect-[2/1] lg:aspect-[21/9] max-h-[500px]">
             <img src="{{ post.cover_image.url }}" alt="{{ post.title }}"
                  class="w-full h-full object-cover">
         </div>
         {% endif %}
 
         <!-- ناوبری مسیر (Breadcrumb) -->
-        <nav class="max-w-5xl mx-auto flex items-center gap-2 text-xs text-slate-500 mb-4 flex-wrap" aria-label="مسیر صفحه">
+        <nav class="max-w-7xl xl:max-w-[1520px] mx-auto flex items-center gap-2 text-xs text-slate-500 mb-5 flex-wrap" aria-label="مسیر صفحه">
             <a href="{% url 'home:index' %}" class="hover:text-primary-600 transition">خانه</a>
             <span class="text-slate-300">/</span>
             <a href="{% url 'blog:post_list' %}" class="hover:text-primary-600 transition">وبلاگ</a>
@@ -29,18 +29,18 @@
                 <a href="{% url 'blog:post_category' category_slug=post.category.slug %}" class="hover:text-primary-600 transition">{{ post.category.name }}</a>
             {% endif %}
             <span class="text-slate-300">/</span>
-            <span class="text-slate-800 font-bold truncate max-w-xs sm:max-w-md">{{ post.title }}</span>
+            <span class="text-slate-800 font-bold truncate max-w-xs sm:max-w-md lg:max-w-xl">{{ post.title }}</span>
         </nav>
 
-        <!-- ساختار دو ستونه: محتوای اصلی (۸ ستون) + ستون کناری چسبان (۴ ستون) -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- ساختار دو ستونه: محتوای اصلی (۸ ستون) + ستون کناری چسبان (۴ ستون) متناسب با عرض دسکتاپ -->
+        <div class="max-w-7xl xl:max-w-[1520px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 xl:gap-12 items-start">
 
-            <!-- ستون اصلی مقاله (۸ ستون) -->
-            <article class="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 sm:p-8 md:p-10 shadow-xs">
+            <!-- ستون اصلی مقاله (۸ ستون در دسکتاپ با پدینگ بزرگ‌تر و چیدمان لوکس) -->
+            <article class="lg:col-span-8 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-5 sm:p-8 md:p-10 lg:p-12 shadow-xs">
 
                 <!-- سربرگ و اطلاعات فراداده مقاله -->
-                <header class="mb-6 pb-6 border-b border-slate-100">
-                    <h1 class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 leading-snug sm:leading-tight mb-5">
+                <header class="mb-6 sm:mb-8 pb-6 border-b border-slate-100">
+                    <h1 class="text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-black text-slate-900 leading-snug sm:leading-tight mb-5">
                         {{ post.title }}
                     </h1>
 
@@ -355,7 +355,7 @@
 
         <!-- بخش مطالب مرتبط انتهای صفحه (مشابه loop-carousel زیترو) -->
         {% if related_posts %}
-        <section class="mt-14 pt-10 border-t border-slate-200" aria-label="مطالب مرتبط">
+        <section class="max-w-7xl xl:max-w-[1520px] mx-auto mt-14 pt-10 border-t border-slate-200" aria-label="مطالب مرتبط">
             <div class="flex items-center justify-between mb-6">
                 <div>
                     <h3 class="text-lg sm:text-xl font-black text-slate-900">مطالب مرتبط</h3>

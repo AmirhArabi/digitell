@@ -29,38 +29,146 @@
   font-display: swap;
 }
 
+:root {
+  /* Brand Colors */
+  --color-primary: #223C79;
+  --color-primary-dark: #162957;
+  --color-primary-light: #3156A3;
+  --color-primary-soft: #E8EEFA;
+
+  /* Accent Colors */
+  --color-accent: #D8B56A;
+  --color-accent-hover: #C5A052;
+
+  /* Background Colors */
+  --color-background: #F5F7FC;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F0F4FB;
+
+  /* Text Colors */
+  --color-text-primary: #25324B;
+  --color-text-secondary: #69758C;
+  --color-text-inverse: #FFFFFF;
+
+  /* Border Colors */
+  --color-border: #DCE3EF;
+  --color-border-focus: #3156A3;
+
+  /* Status Colors */
+  --color-success: #21845A;
+  --color-success-bg: #E8F5EE;
+
+  --color-warning: #B7791F;
+  --color-warning-bg: #FFF5DF;
+
+  --color-danger: #C03945;
+  --color-danger-bg: #FCEBED;
+
+  --color-info: #3156A3;
+  --color-info-bg: #E8EEFA;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 6px rgba(22, 41, 87, 0.06);
+  --shadow-md: 0 6px 18px rgba(22, 41, 87, 0.10);
+  --shadow-lg: 0 12px 32px rgba(22, 41, 87, 0.14);
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Typography */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
 @theme {
-  /* --- پالت رنگی اصلی: مبتنی بر #1F5EB2 --- */
-  --color-primary-50: #EFF5FB;
-  --color-primary-100: #D9E8F6;
-  --color-primary-200: #B3D1ED;
-  --color-primary-300: #7DB2DF;
-  --color-primary-400: #4A91D1;
-  --color-primary-500: #2874BA;
-  --color-primary-600: #1F5EB2;
-  --color-primary-700: #1A4F96;
-  --color-primary-800: #153F78;
-  --color-primary-900: #102F5A;
-  --color-primary-950: #0A1D38;
+  /* --- پالت رنگی اصلی برند: مبتنی بر #223C79 --- */
+  --color-primary: #223C79;
+  --color-primary-dark: #162957;
+  --color-primary-light: #3156A3;
+  --color-primary-soft: #E8EEFA;
 
-  /* --- پالت رنگی فرعی: مبتنی بر #535458 --- */
-  --color-secondary-50: #F5F5F6;
-  --color-secondary-100: #E8E8EA;
-  --color-secondary-200: #D1D1D4;
-  --color-secondary-300: #ABABAF;
-  --color-secondary-400: #858589;
-  --color-secondary-500: #6A6A6E;
-  --color-secondary-600: #535458;
-  --color-secondary-700: #45454A;
-  --color-secondary-800: #38383D;
-  --color-secondary-900: #2B2B30;
-  --color-secondary-950: #1A1A1E;
+  --color-primary-50: #F5F7FC;
+  --color-primary-100: #E8EEFA;
+  --color-primary-200: #DCE3EF;
+  --color-primary-300: #B8C7E0;
+  --color-primary-400: #557EBF;
+  --color-primary-500: #3156A3;
+  --color-primary-600: #223C79;
+  --color-primary-700: #1C3266;
+  --color-primary-800: #162957;
+  --color-primary-900: #101E42;
+  --color-primary-950: #0B142D;
 
-  /* --- رنگ‌های مکمل و اکسنت --- */
+  /* --- رنگ‌های اکسنت --- */
+  --color-accent: #D8B56A;
+  --color-accent-hover: #C5A052;
+  --color-accent-amber: #D8B56A;
+  --color-amber-300: #EAD093;
+  --color-amber-400: #D8B56A;
+  --color-amber-500: #C5A052;
   --color-accent-teal: #0EA5A5;
-  --color-accent-amber: #F59E0B;
-  --color-accent-rose: #E11D48;
-  --color-accent-emerald: #059669;
+  --color-accent-rose: #C03945;
+  --color-accent-emerald: #21845A;
+
+  /* --- رنگ‌های پس‌زمینه و سطوح --- */
+  --color-background: #F5F7FC;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F0F4FB;
+
+  /* --- رنگ‌های متن --- */
+  --color-text-primary: #25324B;
+  --color-text-secondary: #69758C;
+  --color-text-inverse: #FFFFFF;
+
+  /* --- رنگ‌های حاشیه --- */
+  --color-border: #DCE3EF;
+  --color-border-focus: #3156A3;
+
+  /* --- رنگ‌های وضعیت --- */
+  --color-success: #21845A;
+  --color-success-bg: #E8F5EE;
+  --color-warning: #B7791F;
+  --color-warning-bg: #FFF5DF;
+  --color-danger: #C03945;
+  --color-danger-bg: #FCEBED;
+  --color-info: #3156A3;
+  --color-info-bg: #E8EEFA;
+
+  /* --- تطبیق کلاس‌های blue پیش‌فرض تیل‌ویند با پالت جدید برند دیجی‌تل --- */
+  --color-blue-50: #F5F7FC;
+  --color-blue-100: #E8EEFA;
+  --color-blue-200: #DCE3EF;
+  --color-blue-300: #B8C7E0;
+  --color-blue-400: #557EBF;
+  --color-blue-500: #3156A3;
+  --color-blue-600: #223C79;
+  --color-blue-700: #162957;
+  --color-blue-800: #101E42;
+  --color-blue-900: #0B142D;
+  --color-blue-950: #050B19;
+
+  /* --- پالت رنگی فرعی سازگار با سرمه‌ای --- */
+  --color-secondary-50: #F5F7FC;
+  --color-secondary-100: #E8EEFA;
+  --color-secondary-200: #DCE3EF;
+  --color-secondary-300: #B8C7E0;
+  --color-secondary-400: #69758C;
+  --color-secondary-500: #525D73;
+  --color-secondary-600: #3D485E;
+  --color-secondary-700: #2E384C;
+  --color-secondary-800: #25324B;
+  --color-secondary-900: #1A2438;
+  --color-secondary-950: #0F1726;
 
   /* فونت اصلی سایت: YekanBakh نسخهٔ ارقام فارسی */
   --font-sans: "YekanBakhFaNum", "YekanBakh", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -68,12 +176,24 @@
   --font-yekan: "YekanBakh", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-yekan-fa-num: "YekanBakhFaNum", "YekanBakh", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* --- پالت صفحه محصول --- */
-  --color-zitro-ink: #1A1A1E;
-  --color-zitro-line: #E8E8EA;
-  --color-zitro-deal: #E11D48;
-  --color-zitro-cash: #059669;
-  --color-zitro-dark: #2B2B30;
+  /* --- پالت صفحه محصول منطبق با رنگ‌های جدید --- */
+  --color-zitro-ink: #25324B;
+  --color-zitro-line: #DCE3EF;
+  --color-zitro-deal: #C03945;
+  --color-zitro-cash: #223C79;
+  --color-zitro-dark: #162957;
+
+  /* --- سایه‌ها --- */
+  --shadow-sm: 0 2px 6px rgba(22, 41, 87, 0.06);
+  --shadow-md: 0 6px 18px rgba(22, 41, 87, 0.10);
+  --shadow-lg: 0 12px 32px rgba(22, 41, 87, 0.14);
+
+  /* --- شعاع گوشه‌ها --- */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
 }
 
 /* ---------------------------------------------------------------------------
@@ -128,8 +248,8 @@ body {
   font-family: var(--font-vazir);
   direction: rtl;
   text-align: right;
-  background-color: #f8fafc;
-  color: #1e293b;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
 }
 
 /* ---------------------------------------------------------------------------
@@ -245,13 +365,13 @@ body[data-sidebar="collapsed"] {
 }
 
 .side-item:focus-visible {
-  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline: 2px solid rgba(49, 86, 163, 0.45);
   outline-offset: 2px;
 }
 
 .side-item.is-active {
-  background-color: #eff6ff;
-  color: #1d4ed8;
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -264,7 +384,7 @@ body[data-sidebar="collapsed"] {
   width: 3px;
   height: 1.25rem;
   border-radius: 9999px;
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   transform: translateY(-50%);
 }
 
@@ -756,10 +876,8 @@ body[data-drawer="open"] #dash-backdrop {
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 1.25rem;
-  border: 1px solid rgba(31, 94, 178, 0.12);
-  box-shadow:
-    0 4px 6px rgba(31, 94, 178, 0.04),
-    0 24px 64px rgba(10, 29, 56, 0.16);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
   transform: scale(0.94) translateY(-10px);
   opacity: 0;
   transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
@@ -853,8 +971,8 @@ body[data-drawer="open"] #dash-backdrop {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border-top: 1px solid rgba(31, 94, 178, 0.08);
-  box-shadow: 0 -4px 24px rgba(10, 29, 56, 0.06);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 24px rgba(22, 41, 87, 0.08);
 }
 
 .digi-mobile-nav-item {
@@ -889,8 +1007,8 @@ body[data-drawer="open"] #dash-backdrop {
    فوتر مدرن
    =========================================================================== */
 .digi-footer {
-  background: linear-gradient(180deg, #F5F5F6 0%, #ffffff 100%);
-  border-top: 1px solid var(--color-secondary-100);
+  background: linear-gradient(180deg, var(--color-surface-hover) 0%, var(--color-surface) 100%);
+  border-top: 1px solid var(--color-border);
 }
 
 .digi-footer-feature-icon {
@@ -906,7 +1024,7 @@ body[data-drawer="open"] #dash-backdrop {
 
 .digi-footer-feature-icon:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(31, 94, 178, 0.12);
+  box-shadow: 0 4px 16px rgba(22, 41, 87, 0.12);
 }
 
 /* --- Shimmer Loading برای جستجو --- */
@@ -1034,9 +1152,9 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 .is-search-active .appbar-search-box {
-  background-color: #ffffff;
-  border-color: rgba(31, 94, 178, 0.35);
-  box-shadow: 0 4px 20px rgba(31, 94, 178, 0.08), 0 0 0 3px rgba(31, 94, 178, 0.1);
+  background-color: var(--color-surface);
+  border-color: var(--color-border-focus);
+  box-shadow: 0 4px 20px rgba(22, 41, 87, 0.08), 0 0 0 3px rgba(49, 86, 163, 0.15);
   cursor: text;
 }
 
@@ -1327,10 +1445,10 @@ body[data-drawer="open"] #dash-backdrop {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 9999px;
-  background-color: #ffffff;
-  color: #1F5EB2;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1357,10 +1475,10 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 .back-to-top-btn:hover {
-  background-color: #1F5EB2;
-  color: #ffffff;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   transform: translateY(-3px) scale(1.06);
-  box-shadow: 0 8px 24px rgba(31, 94, 178, 0.28);
+  box-shadow: 0 8px 24px rgba(22, 41, 87, 0.28);
 }
 
 .back-to-top-btn:active {
@@ -1434,9 +1552,9 @@ body[data-drawer="open"] #dash-backdrop {
   min-height: 78vh;
   padding: 2.25rem 0.875rem 3.5rem;
   background:
-    radial-gradient(60rem 32rem at 8% -12%, #eaf2fb 0%, rgba(234, 242, 251, 0) 62%),
-    radial-gradient(46rem 26rem at 104% 108%, #e9f2fa 0%, rgba(233, 242, 250, 0) 58%),
-    #f7fafd;
+    radial-gradient(60rem 32rem at 8% -12%, var(--color-primary-soft) 0%, rgba(232, 238, 250, 0) 62%),
+    radial-gradient(46rem 26rem at 104% 108%, var(--color-surface-hover) 0%, rgba(240, 244, 251, 0) 58%),
+    var(--color-background);
   overflow: hidden;
 }
 
@@ -1445,7 +1563,7 @@ body[data-drawer="open"] #dash-backdrop {
   content: "";
   position: absolute;
   border-radius: 9999px;
-  border: 1px solid rgba(31, 94, 178, 0.08);
+  border: 1px solid var(--color-border);
   pointer-events: none;
 }
 
@@ -1469,11 +1587,10 @@ body[data-drawer="open"] #dash-backdrop {
   width: 100%;
   max-width: 33rem;
   margin: 0 auto;
-  background: #ffffff;
-  border: 1px solid #e7eef6;
-  border-radius: 1.5rem;
-  box-shadow: 0 30px 70px -42px rgba(15, 42, 80, 0.4),
-    0 2px 8px rgba(15, 42, 80, 0.03);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   padding: 1.75rem 1.125rem 1.25rem;
 }
 
@@ -1705,21 +1822,21 @@ body[data-drawer="open"] #dash-backdrop {
   height: 0.875rem;
   flex: none;
   margin-top: 0.1875rem;
-  color: #1f5eb2;
+  color: var(--color-primary);
 }
 
 .pay-lock-note strong {
   font-weight: 800;
-  color: #153f78;
+  color: var(--color-primary-dark);
 }
 
 /* --- جعبهٔ نکات مهم ------------------------------------------------------- */
 .pay-note {
   margin-top: 1.375rem;
   padding: 1rem;
-  background: #eff6fd;
-  border: 1px solid #d3e6f8;
-  border-radius: 1rem;
+  background: var(--color-primary-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 @media (min-width: 640px) {
@@ -1733,7 +1850,7 @@ body[data-drawer="open"] #dash-backdrop {
   align-items: center;
   gap: 0.4375rem;
   margin-bottom: 0.5rem;
-  color: #1a4f96;
+  color: var(--color-primary-light);
   font-size: 0.75rem;
   font-weight: 800;
 }
@@ -1748,7 +1865,7 @@ body[data-drawer="open"] #dash-backdrop {
   font-size: 0.6875rem;
   font-weight: 500;
   line-height: 2;
-  color: #5d7291;
+  color: var(--color-text-secondary);
   text-align: right;
 }
 
@@ -1761,16 +1878,16 @@ body[data-drawer="open"] #dash-backdrop {
   width: 100%;
   height: 3.25rem;
   margin-top: 1.375rem;
-  border-radius: 0.875rem;
-  background: #1f5eb2;
-  color: #ffffff;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
   font-family: inherit;
   font-size: 0.875rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 14px 26px -14px rgba(31, 94, 178, 0.85);
-  transition: background-color 0.2s ease, transform 0.2s ease,
-    box-shadow 0.2s ease;
+  box-shadow: 0 14px 26px -14px rgba(22, 41, 87, 0.85);
+  transition: background-color var(--transition-normal), transform var(--transition-normal),
+    box-shadow var(--transition-normal);
 }
 
 .pay-submit svg {
@@ -1780,8 +1897,8 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 .pay-submit:hover {
-  background: #1a4f96;
-  box-shadow: 0 18px 30px -14px rgba(31, 94, 178, 0.9);
+  background: var(--color-primary-dark);
+  box-shadow: 0 18px 30px -14px rgba(22, 41, 87, 0.9);
 }
 
 .pay-submit:hover svg {
@@ -1804,7 +1921,7 @@ body[data-drawer="open"] #dash-backdrop {
   justify-content: center;
   gap: 0.375rem;
   margin-top: 0.9375rem;
-  color: #8595a9;
+  color: var(--color-text-secondary);
   font-size: 0.6875rem;
   font-weight: 500;
 }
@@ -1822,10 +1939,10 @@ body[data-drawer="open"] #dash-backdrop {
   gap: 0.875rem;
   margin-top: 1.5rem;
   padding-top: 1.125rem;
-  border-top: 1px solid #edf2f8;
+  border-top: 1px solid var(--color-border);
   font-size: 0.6875rem;
   font-weight: 500;
-  color: #8595a9;
+  color: var(--color-text-secondary);
 }
 
 .pay-footer a {
@@ -1833,13 +1950,13 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 .pay-footer a:hover {
-  color: #1f5eb2;
+  color: var(--color-primary);
 }
 
 .pay-footer .pay-sep {
   width: 1px;
   height: 0.75rem;
-  background: #dfe7f0;
+  background: var(--color-border);
 }
 
 .pay-copyright {
@@ -2217,31 +2334,31 @@ body[data-drawer="open"] #dash-backdrop {
 
 /* ===========================================================================
    بخش وبلاگ دیجی‌تل (Digitell Blog Design System)
-   برگرفته از ساختار زیترو با حفظ برندینگ و پالت رنگی دیجی‌تل (#1F5EB2)
+   برگرفته از ساختار زیترو با حفظ برندینگ و پالت رنگی جدید دیجی‌تل (#223C79)
    بهینه‌سازی ویژه برای ویوپورت موبایل و تبلت
    =========================================================================== */
 
 /* باکس پاسخ سریع / خلاصه مقاله (مشابه .zitro-answer) */
 .digi-answer {
-  border-right: 4px solid var(--color-primary-600);
-  background-color: var(--color-primary-50);
+  border-right: 4px solid var(--color-primary);
+  background-color: var(--color-primary-soft);
   padding: 1rem 1.25rem;
-  border-radius: 0.875rem;
+  border-radius: var(--radius-md);
   margin: 1.25rem 0;
   line-height: 2;
-  color: #1e293b;
+  color: var(--color-text-primary);
   font-size: 0.9375rem;
 }
 
 /* باکس CTA درون مقاله (مشابه .zitro-cta) */
 .digi-cta-box {
-  border-right: 4px solid var(--color-accent-amber);
-  background-color: #fffbeb;
+  border-right: 4px solid var(--color-accent);
+  background-color: #FFFDF5;
   padding: 1.125rem 1.25rem;
-  border-radius: 0.875rem;
+  border-radius: var(--radius-md);
   margin: 1.5rem 0;
   line-height: 1.9;
-  color: #334155;
+  color: var(--color-text-primary);
   font-size: 0.9375rem;
 }
 
@@ -2304,9 +2421,9 @@ body[data-drawer="open"] #dash-backdrop {
 }
 
 .digi-faq details[open] {
-  border-color: var(--color-primary-200);
-  background-color: #fafcff;
-  box-shadow: 0 4px 12px -2px rgba(31, 94, 178, 0.06);
+  border-color: var(--color-border-focus);
+  background-color: var(--color-surface-hover);
+  box-shadow: var(--shadow-sm);
 }
 
 .digi-faq summary {
@@ -2691,4 +2808,91 @@ body[data-drawer="open"] #dash-backdrop {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+}
+
+/* تایپوگرافی و چیدمان محتوای مقاله در دسکتاپ و موبایل */
+.digi-post-body h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.6;
+  margin-top: 2rem;
+  margin-bottom: 0.875rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.digi-post-body h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  line-height: 1.6;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.digi-post-body h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.digi-post-body p {
+  line-height: 2.1;
+  color: #334155;
+  margin-bottom: 1.25rem;
+}
+
+.digi-post-body ul {
+  list-style-type: disc;
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1.25rem;
+  line-height: 2;
+}
+
+.digi-post-body ol {
+  list-style-type: decimal;
+  padding-inline-start: 1.5rem;
+  margin-bottom: 1.25rem;
+  line-height: 2;
+}
+
+.digi-post-body li {
+  margin-bottom: 0.5rem;
+  color: #334155;
+}
+
+.digi-post-body strong {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.digi-post-body blockquote {
+  border-right: 4px solid var(--color-primary-500);
+  background-color: var(--color-primary-50);
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  color: #1e293b;
+  font-style: normal;
+}
+
+@media (min-width: 1024px) {
+  .digi-post-body {
+    font-size: 1.0625rem;
+  }
+  .digi-post-body h2 {
+    font-size: 1.5rem;
+    margin-top: 2.75rem;
+  }
+  .digi-post-body h3 {
+    font-size: 1.25rem;
+    margin-top: 2rem;
+  }
+  .digi-post-body p {
+    line-height: 2.25;
+    margin-bottom: 1.5rem;
+  }
 }
