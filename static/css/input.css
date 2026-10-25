@@ -2896,3 +2896,34 @@ body[data-drawer="open"] #dash-backdrop {
     margin-bottom: 1.5rem;
   }
 }
+
+/* ===========================================================================
+   استایل‌های اختصاصی صفحه دسته‌بندی‌ها به سبک زیترو (Zitro Categories)
+   =========================================================================== */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.category-sidebar-tab.is-active {
+  background-color: #ffffff;
+  color: #2563eb;
+  font-weight: 700;
+  opacity: 1;
+  filter: grayscale(0);
+}
+
+.category-sidebar-tab.is-active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  background-color: #2563eb;
+  border-top-left-radius: 9999px;
+  border-bottom-left-radius: 9999px;
+}

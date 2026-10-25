@@ -266,7 +266,7 @@
             <span class="text-[10px] font-medium">خانه</span>
         </a>
         <a href="{% url 'products:category_list' %}"
-            class="flex flex-col items-center gap-1 text-slate-600 hover:text-blue-600">
+            class="flex flex-col items-center gap-1 {% if request.resolver_match.url_name == 'category_list' %}text-blue-600 font-bold{% else %}text-slate-600 hover:text-blue-600{% endif %}">
             <svg class="w-5 h-5">
                 <use href="#icon-menu" />
             </svg>

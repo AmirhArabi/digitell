@@ -211,7 +211,7 @@ def _facet_attributes(selected_category):
 # کاتالوگ
 # ---------------------------------------------------------------------------
 def shop_view(request, slug=None, category_slug=None):
-    category_slug = slug or category_slug
+    category_slug = slug or category_slug or request.GET.get('category')
     base = Product.objects.filter(is_active=True)
     selected_category = None
 
@@ -409,40 +409,91 @@ def shop_view(request, slug=None, category_slug=None):
 
 
 def category_index_view(request):
-    """صفحهٔ مشاهدهٔ همهٔ دسته‌بندی‌ها همراه با زیردسته‌ها و تعداد کالا."""
+    """صفحهٔ مشاهدهٔ همهٔ دسته‌بندی‌ها همراه با برندهای هر دسته، زیردسته‌ها و فیلتر سریع محصولات."""
     categories = list(
         Category.objects.filter(is_active=True, parent__isnull=True)
         .annotate(num_products=Count('products', filter=Q(products__is_active=True)))
         .order_by('order', 'name')
     )
-    children = (
+    children = list(
         Category.objects.filter(is_active=True, parent__in=categories)
         .annotate(num_products=Count('products', filter=Q(products__is_active=True)))
         .order_by('order', 'name')
     )
     child_map = {}
+    cat_to_parent = {c.pk: c.pk for c in categories}
     for child in children:
         child_map.setdefault(child.parent_id, []).append(child)
+        cat_to_parent[child.pk] = child.parent_id
 
-    blocks = []
-    for category in categories:
-        kids = child_map.get(category.pk, [])
-        blocks.append({
-            'category': category,
-            'children': kids,
-            'total_products': category.num_products + sum(kid.num_products for kid in kids),
-        })
+    # استخراج برندهای مرتبط با هر دسته اصلی از روی محصولات فعال موجود در آن دسته
+    product_brand_counts = (
+        Product.objects.filter(
+            is_active=True,
+            category_id__in=list(cat_to_parent.keys()),
+            brand__isnull=False,
+            brand__is_active=True
+        )
+        .values('category_id', 'brand_id')
+        .annotate(count=Count('id'))
+    )
 
-    brands = (
+    parent_brand_counts = {}
+    for item in product_brand_counts:
+        parent_id = cat_to_parent.get(item['category_id'])
+        if parent_id:
+            parent_brand_counts.setdefault(parent_id, {})[item['brand_id']] = (
+                parent_brand_counts.get(parent_id, {}).get(item['brand_id'], 0) + item['count']
+            )
+
+    all_brands = list(
         Brand.objects.filter(is_active=True)
         .annotate(num_products=Count('products', filter=Q(products__is_active=True)))
         .order_by('-num_products', 'order', 'name')
     )
+    all_brands_dict = {b.pk: b for b in all_brands}
+
+    blocks = []
+    for category in categories:
+        kids = child_map.get(category.pk, [])
+        brand_counts_for_cat = parent_brand_counts.get(category.pk, {})
+
+        cat_brands = []
+        for brand_id, cnt in sorted(brand_counts_for_cat.items(), key=lambda x: -x[1]):
+            b_obj = all_brands_dict.get(brand_id)
+            if b_obj:
+                cat_brands.append({
+                    'brand': b_obj,
+                    'count': cnt,
+                    'filter_url': f"{category.get_absolute_url()}?brand={b_obj.slug}",
+                })
+
+        # اگر برای این دسته برندی با محصول ثبت نشده، برندهای برتر عمومی به عنوان پیشنهاد نمایش داده می‌شوند
+        if not cat_brands:
+            for b_obj in all_brands[:6]:
+                cat_brands.append({
+                    'brand': b_obj,
+                    'count': 0,
+                    'filter_url': f"{category.get_absolute_url()}?brand={b_obj.slug}",
+                    'is_fallback': True,
+                })
+
+        blocks.append({
+            'category': category,
+            'children': kids,
+            'brands': cat_brands,
+            'total_products': category.num_products + sum(kid.num_products for kid in kids),
+        })
+
+    active_category_slug = request.GET.get('c')
+    if not any(b['category'].slug == active_category_slug for b in blocks):
+        active_category_slug = blocks[0]['category'].slug if blocks else ''
 
     return render(request, 'products/categories.html', {
         'category_blocks': blocks,
-        'brands': brands,
+        'brands': all_brands,
         'total_categories': len(categories),
+        'active_category_slug': active_category_slug,
     })
 
 

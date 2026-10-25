@@ -490,6 +490,15 @@ class CatalogFilterTests(TestCase):
         self.assertContains(response, self.category.name)
         self.assertContains(response, 'خرید بر اساس برند')
         self.assertContains(response, 'سامسونگ')
+        # بررسی وجود لینک فیلتر برند برای آن دسته
+        expected_filter = f"{self.category.get_absolute_url()}?brand={self.samsung.slug}"
+        self.assertContains(response, expected_filter)
+
+        # بررسی فیلتر شدن کاتالوگ با پارامترهای دسته و برند
+        shop_resp = self.client.get(self.category.get_absolute_url(), {'brand': 'samsung'})
+        self.assertEqual(shop_resp.status_code, 200)
+        self.assertContains(shop_resp, 'مدل S24')
+        self.assertNotContains(shop_resp, 'iPhone 15')
 
     def test_filter_sidebar_lists_fields_before_their_rows(self):
         content = self.client.get(reverse('products:shop')).content.decode()
