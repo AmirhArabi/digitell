@@ -243,7 +243,7 @@
         }
     }
 
-    global.ZitroCharts = {
+    global.DigitellCharts = global.ZitroCharts = {
         boot: boot,
         render: render,
         num: num,

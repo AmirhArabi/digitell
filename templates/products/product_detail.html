@@ -189,9 +189,9 @@
                     <!-- عنوان و کارت گارانتی -->
                     <div class="mb-4">
                         <div class="mb-2 text-xs sm:text-sm font-bold text-slate-800">گارانتی</div>
-                        <div class="flex items-center justify-between rounded-2xl border-2 border-[#f97316] bg-[#fff9f4] p-3.5 sm:p-4">
+                        <div class="flex items-center justify-between rounded-2xl border border-primary/25 bg-primary-soft/40 p-3.5 sm:p-4 shadow-2xs">
                             <div class="flex items-center gap-2.5">
-                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-white shadow-2xs">
+                                <span class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-2xs">
                                     <svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                                     </svg>
@@ -205,14 +205,14 @@
                     <div>
                         <div class="mb-2 text-xs sm:text-sm font-bold text-slate-800">بیمه</div>
                         <label id="insurance-card" for="insurance-checkbox"
-                            class="group relative flex flex-col justify-between gap-3 rounded-2xl border-2 border-[#f97316] bg-[#fff9f4] p-3.5 sm:p-4 transition-all duration-200 cursor-pointer select-none">
+                            class="group relative flex flex-col justify-between gap-3 rounded-2xl border-2 border-primary bg-primary-soft/40 p-3.5 sm:p-4 transition-all duration-200 cursor-pointer select-none shadow-2xs">
                             <input type="checkbox" id="insurance-checkbox" checked class="sr-only">
 
                             <!-- ردیف بالا: آیکون چک‌باکس دایره‌ای و نام بیمه -->
                             <div class="flex items-center justify-between gap-2">
                                 <div class="flex items-center gap-2.5">
                                     <span id="insurance-check-circle"
-                                        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#f97316] text-white shadow-2xs transition">
+                                        class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-2xs transition">
                                         <svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -225,7 +225,7 @@
                             <div class="flex items-center justify-between pt-1">
                                 <!-- دکمه باز کردن Bottom Sheet توضیحات -->
                                 <button type="button" id="open-insurance-sheet"
-                                    class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-slate-700 hover:text-[#f97316] transition cursor-pointer">
+                                    class="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-primary hover:text-primary-dark transition cursor-pointer">
                                     <span>توضیحات</span>
                                     <svg class="w-3.5 h-3.5 rotate-180 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path>
@@ -322,7 +322,7 @@
                         {% if is_in_cart %}
                         <a href="{% url 'cart:cart_detail' %}" hx-get="{% url 'cart:cart_detail' %}"
                             hx-target="#main-content-area" hx-push-url="{% url 'cart:cart_detail' %}"
-                            class="flex h-12 flex-1 items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-sm sm:text-base font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99] cursor-pointer">
+                            class="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-dark text-sm sm:text-base font-bold text-white shadow-md shadow-primary/20 transition duration-200 active:scale-[0.99] cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -334,21 +334,21 @@
                             class="flex flex-1 items-stretch gap-3">
                             {% csrf_token %}
                             <input type="hidden" name="has_insurance" class="insurance-form-field" value="1">
-                            <div class="flex items-center overflow-hidden bg-white shadow-2xs"
+                            <div class="flex items-center overflow-hidden bg-white border border-slate-200 rounded-xl shadow-2xs"
                                 data-max="{{ product.available_qty|default:1 }}">
                                 <button type="button" data-qty-step="-1"
-                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100">−</button>
+                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100 cursor-pointer">−</button>
                                 <input id="qty" type="number" name="quantity" value="1" min="1"
                                     max="{{ product.available_qty|default:1 }}" inputmode="numeric"
                                     class="h-12 w-12 border-0 p-0 text-center text-sm sm:text-base font-black focus:ring-0">
                                 <button type="button" data-qty-step="1"
-                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100">+</button>
+                                    class="h-12 w-10 text-lg text-slate-600 transition hover:bg-slate-100 cursor-pointer">+</button>
                             </div>
 
                             <button type="submit" {% if product.available_qty < 1 %} disabled {% endif %} class="flex
-                                h-12 flex-1 items-center justify-center gap-2 bg-zitro-cash text-sm sm:text-base
-                                font-bold text-white shadow-xs transition hover:brightness-95 active:scale-[0.99]
-                                disabled:cursor-not-allowed disabled:opacity-50">
+                                h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-primary bg-zitro-cash hover:bg-primary-dark text-sm sm:text-base
+                                font-bold text-white shadow-md shadow-primary/20 transition duration-200 active:scale-[0.99]
+                                disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -359,7 +359,7 @@
                         {% endif %}
 
                         <a href="{% url 'home:installment' %}"
-                            class="flex h-12 items-center justify-center gap-2 bg-zitro-dark px-6 text-sm sm:text-base font-bold text-white transition hover:opacity-90">
+                            class="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-dark bg-zitro-dark hover:bg-primary px-6 text-sm sm:text-base font-bold text-white transition duration-200 shadow-sm shadow-primary/10">
                             اعتباری قسطی
                         </a>
                     </div>
@@ -503,7 +503,7 @@
             {% if is_in_cart %}
             <a href="{% url 'cart:cart_detail' %}" hx-get="{% url 'cart:cart_detail' %}" hx-target="#main-content-area"
                 hx-push-url="{% url 'cart:cart_detail' %}"
-                class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-600 text-xs sm:text-sm font-bold text-white transition hover:bg-emerald-700 active:scale-[0.99] cursor-pointer shadow-xs">
+                class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary-dark text-xs sm:text-sm font-bold text-white transition duration-200 active:scale-[0.99] cursor-pointer shadow-md shadow-primary/20">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -517,7 +517,7 @@
                 <input type="hidden" name="quantity" value="1">
                 <input type="hidden" name="has_insurance" class="insurance-form-field" value="1">
                 <button type="submit"
-                    class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-zitro-cash text-xs sm:text-sm font-bold text-white transition hover:brightness-95 active:scale-[0.99] shadow-xs">
+                    class="flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-primary hover:bg-primary-dark text-xs sm:text-sm font-bold text-white transition duration-200 active:scale-[0.99] shadow-md shadow-primary/20 cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -560,7 +560,7 @@
         <!-- هدر باتم شیت -->
         <div class="flex items-center justify-between border-b border-slate-100 px-5 py-3.5 shrink-0">
             <div class="flex items-center gap-2.5">
-                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
+                <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-soft text-primary border border-primary/20 shadow-2xs">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -583,14 +583,14 @@
         <!-- بدنه باتم شیت (اسکرول‌خور) -->
         <div class="overflow-y-auto px-5 py-4 space-y-4 text-xs sm:text-sm">
             <!-- بنر معرفی -->
-            <div class="rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 p-4 border border-orange-100">
-                <div class="flex items-center gap-2 font-bold text-orange-950 mb-1">
-                    <svg class="w-4 h-4 text-orange-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="rounded-2xl bg-gradient-to-r from-primary-soft/90 via-white to-primary-soft/40 p-4 border border-primary/20 shadow-2xs">
+                <div class="flex items-center gap-2 font-black text-primary-dark mb-1">
+                    <svg class="w-4 h-4 text-primary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span>تضمین آرامش خیال با بیمه سامان</span>
                 </div>
-                <p class="leading-relaxed text-slate-700">
+                <p class="leading-relaxed text-slate-700 text-xs sm:text-sm">
                     با انتخاب بیمه، دستگاه شما به مدت یک سال کامل در برابر حوادث غیرمترقبه تحت پوشش قرار می‌گیرد و در صورت بروز خسارت یا سرقت، بخش عمده هزینه‌ها توسط شرکت بیمه سامان جبران خواهد شد.
                 </p>
             </div>
@@ -598,8 +598,8 @@
             <!-- لیست پوشش‌ها -->
             <div class="space-y-3">
                 <!-- مورد ۱: سرقت -->
-                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
-                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-100 text-red-600">
+                <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary border border-primary/20">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
@@ -613,8 +613,8 @@
                 </div>
 
                 <!-- مورد ۲: شکستگی و سقوط -->
-                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
-                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-600">
+                <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-accent-hover border border-accent/25">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                         </svg>
@@ -628,8 +628,8 @@
                 </div>
 
                 <!-- مورد ۳: آبدیدگی -->
-                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
-                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-light border border-primary/20">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                         </svg>
@@ -643,8 +643,8 @@
                 </div>
 
                 <!-- مورد ۴: نوسانات برق و آتش‌سوزی -->
-                <div class="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
-                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-yellow-100 text-yellow-600">
+                <div class="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5">
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-dark border border-primary/20">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
@@ -659,7 +659,7 @@
             </div>
 
             <!-- شرایط و تعرفه -->
-            <div class="rounded-xl bg-slate-100 p-3.5 text-slate-600 space-y-1.5 text-xs">
+            <div class="rounded-2xl bg-slate-100/80 p-3.5 text-slate-600 space-y-1.5 text-xs">
                 <div class="flex items-center justify-between">
                     <span>هزینه بیمه (۲.۳٪ از قیمت محصول):</span>
                     <span class="font-bold text-slate-900 fa-num">{{ formatted_insurance_fee }} تومان</span>
@@ -678,7 +678,7 @@
         <!-- فوتر باتم شیت با دکمه بستن / جمع کردن -->
         <div class="border-t border-slate-100 bg-slate-50 p-4 shrink-0">
             <button type="button" id="close-insurance-sheet-btn"
-                class="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#f97316] py-3 px-6 text-sm sm:text-base font-bold text-white shadow-xs transition hover:bg-orange-600 active:scale-[0.99] cursor-pointer">
+                class="w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-primary via-primary-light to-primary-dark py-3.5 px-6 text-sm sm:text-base font-bold text-white shadow-lg shadow-primary/25 transition duration-200 hover:brightness-110 active:scale-[0.99] cursor-pointer">
                 بستن و بازگشت
             </button>
         </div>
@@ -940,9 +940,9 @@
             if (insuranceCard) {
                 if (isChecked) {
                     insuranceCard.classList.remove('border-slate-200', 'bg-white');
-                    insuranceCard.classList.add('border-[#f97316]', 'bg-[#fff9f4]');
+                    insuranceCard.classList.add('border-primary', 'bg-primary-soft/40');
                 } else {
-                    insuranceCard.classList.remove('border-[#f97316]', 'bg-[#fff9f4]');
+                    insuranceCard.classList.remove('border-primary', 'bg-primary-soft/40');
                     insuranceCard.classList.add('border-slate-200', 'bg-white');
                 }
             }
@@ -950,10 +950,10 @@
             if (insuranceCircle) {
                 if (isChecked) {
                     insuranceCircle.classList.remove('border-2', 'border-slate-300', 'bg-white');
-                    insuranceCircle.classList.add('bg-[#f97316]', 'text-white');
+                    insuranceCircle.classList.add('bg-primary', 'text-white');
                     insuranceCircle.innerHTML = '<svg class="h-3 w-3 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>';
                 } else {
-                    insuranceCircle.classList.remove('bg-[#f97316]', 'text-white');
+                    insuranceCircle.classList.remove('bg-primary', 'text-white');
                     insuranceCircle.classList.add('border-2', 'border-slate-300', 'bg-white');
                     insuranceCircle.innerHTML = '';
                 }

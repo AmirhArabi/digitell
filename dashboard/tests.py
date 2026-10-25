@@ -1,4 +1,4 @@
-"""تست‌های پنل مدیریت فروشگاه زیترو (دسترسی، CRUD و فرآیندهای فروش)."""
+"""تست‌های پنل مدیریت فروشگاه دیجی تل (دسترسی، CRUD و فرآیندهای فروش)."""
 import base64
 import json
 import re
@@ -482,14 +482,14 @@ class ContentAndOrderTests(DashboardBaseTestCase):
         self.assertIn('شماره سفارش', export.content.decode('utf-8-sig'))
 
         self.client.post(reverse('dashboard:settings'), {
-            'store_name': 'زیترو شاپ', 'slogan': 'شعار جدید', 'phone': '021-12345678',
-            'email': 'info@zitro.ir', 'address': 'تهران', 'working_hours': '۹ تا ۱۷',
-            'telegram': '@zitro', 'instagram': 'zitro', 'whatsapp': '09120000000',
+            'store_name': 'دیجی تل شاپ', 'slogan': 'شعار جدید', 'phone': '021-12345678',
+            'email': 'info@digitell.ir', 'address': 'تهران', 'working_hours': '۹ تا ۱۷',
+            'telegram': '@digitell', 'instagram': 'digitell', 'whatsapp': '09120000000',
             'shipping_cost': '59000', 'free_shipping_threshold': '5000000',
             'about_us': 'درباره ما', 'footer_note': 'تمام حقوق محفوظ است',
         })
         settings_obj = SiteSetting.get_settings()
-        self.assertEqual(settings_obj.store_name, 'زیترو شاپ')
+        self.assertEqual(settings_obj.store_name, 'دیجی تل شاپ')
         self.assertEqual(settings_obj.shipping_cost, 59_000)
         self.assertEqual(settings_obj.free_shipping_threshold, 5_000_000)
 

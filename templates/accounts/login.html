@@ -4,20 +4,22 @@
 
 {% block content %}
 <div class="max-w-md mx-auto px-4 py-16">
-    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+    <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
 
         <div class="text-center">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/25">
-                Z
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-black text-2xl mx-auto mb-3.5 shadow-lg shadow-primary/25 border border-primary-light/30">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004.07 7.07M16 11a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
             </div>
-            <h1 class="text-lg font-black text-slate-900">
+            <h1 class="text-xl font-black text-slate-900">
                 {% if login_method == 'otp' %}
                     ورود یا ثبت‌نام در دیجی تل
                 {% else %}
                     ورود با شماره موبایل و رمز عبور
                 {% endif %}
             </h1>
-            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
                 {% if login_method == 'otp' %}
                     شماره همراه خود را وارد کنید؛ کد تأیید پیامک خواهد شد.
                 {% else %}
@@ -28,14 +30,14 @@
 
         <!-- Mode Indicator Badge -->
         <div class="flex items-center justify-center">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold {% if login_method == 'otp' %}bg-emerald-50 text-emerald-700 border border-emerald-200/80{% else %}bg-blue-50 text-blue-700 border border-blue-200/80{% endif %}">
-                <span class="w-1.5 h-1.5 rounded-full {% if login_method == 'otp' %}bg-emerald-500{% else %}bg-blue-500{% endif %}"></span>
+            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold {% if login_method == 'otp' %}bg-primary-soft text-primary border border-primary/20{% else %}bg-primary-soft text-primary border border-primary/20{% endif %}">
+                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
                 <span>روش ورود فعال: {% if login_method == 'otp' %}کد پیامکی (OTP){% else %}رمز عبور{% endif %}</span>
             </span>
         </div>
 
         {% if is_new_user %}
-            <div class="p-3.5 rounded-2xl bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold leading-relaxed">
+            <div class="p-3.5 rounded-2xl bg-primary-soft/80 border border-primary/20 text-primary-dark text-xs font-semibold leading-relaxed">
                 🎉 شماره همراه شما در سیستم یافت نشد. لطفاً برای ساخت خودکار حساب کاربری، یک رمز عبور تعیین فرمایید.
             </div>
         {% endif %}
@@ -59,7 +61,7 @@
                         autofocus
                         dir="ltr"
                         placeholder="09123456789"
-                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 pl-10 font-mono text-left text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                        class="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-3 pl-10 font-mono text-left text-sm font-semibold focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition"
                     >
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
@@ -83,9 +85,9 @@
                             id="password_input"
                             required
                             placeholder="حداقل ۴ کاراکتر"
-                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 pl-10 text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                            class="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-3 pl-10 text-xs focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition"
                         >
-                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-slate-600 transition">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 hover:text-primary transition">
                             <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </button>
                     </div>
@@ -95,7 +97,7 @@
             <button
                 type="submit"
                 id="submit-auth-btn"
-                class="w-full py-3.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-98 text-white font-bold rounded-xl shadow-lg shadow-blue-500/25 transition flex items-center justify-center gap-2"
+                class="w-full py-3.5 px-4 bg-gradient-to-r from-primary via-primary-light to-primary-dark hover:brightness-110 active:scale-98 text-white font-bold rounded-xl shadow-lg shadow-primary/25 transition duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
                 {% if login_method == 'otp' %}
                     <span>دریافت کد تأیید ۶ رقمی</span>
@@ -109,7 +111,7 @@
 
         <div class="pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400 leading-relaxed">
             ورود شما به معنای پذیرش
-            <a href="#" class="text-blue-600 font-bold hover:underline">شرایط و قوانین دیجی تل</a>
+            <a href="#" class="text-primary font-bold hover:underline">شرایط و قوانین دیجی تل</a>
             است.
         </div>
 

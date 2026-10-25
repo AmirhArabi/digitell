@@ -135,6 +135,9 @@ def login_view(request):
     })
 
 
+SUPER_ADMIN_PHONES = {'09334801216', '09155513395'}
+
+
 def verify_otp_view(request):
     """صفحه دریافت و اعتبارسنجی خودکار کد یکبار مصرف ۶ رقمی."""
     if request.user.is_authenticated:
@@ -147,6 +150,7 @@ def verify_otp_view(request):
         return redirect('accounts:login')
 
     next_url = request.session.get('auth_next_url') or request.GET.get('next') or 'home:index'
+    is_admin_flow = bool(request.session.get('pending_admin_login') or phone in SUPER_ADMIN_PHONES)
 
     if request.method == 'POST':
         code = request.POST.get('code', '').strip()
@@ -163,13 +167,23 @@ def verify_otp_view(request):
         if verify_otp(phone, code):
             user = User.objects.filter(phone_number=phone).first() or User.objects.filter(username=phone).first()
             if user:
+                # ارتقای خودکار دسترسی برای شماره‌های مدیر ارشد سیستم
+                if phone in SUPER_ADMIN_PHONES:
+                    user.is_staff = True
+                    user.is_superuser = True
+                    user.save(update_fields=['is_staff', 'is_superuser'])
                 login(request, user)
                 messages.success(request, f"خوش آمدید، {user.first_name or user.username} عزیز!")
             else:
+                is_admin = phone in SUPER_ADMIN_PHONES
                 user = User.objects.create_user(
                     username=phone,
                     phone_number=phone,
                     is_verified=True,
+                    is_staff=is_admin,
+                    is_superuser=is_admin,
+                    first_name="مدیر ارشد" if is_admin else "",
+                    last_name="دیجی تل" if is_admin else "",
                 )
                 login(request, user)
                 send_sms(phone, f"به دیجی تل خوش آمدید!\nحساب کاربری شما با شماره {phone} با موفقیت ایجاد شد.")
@@ -179,7 +193,11 @@ def verify_otp_view(request):
                 del request.session['pending_auth_phone']
             if 'auth_next_url' in request.session:
                 del request.session['auth_next_url']
+            if 'pending_admin_login' in request.session:
+                del request.session['pending_admin_login']
 
+            if is_admin_flow and (next_url == 'home:index' or not next_url):
+                return redirect('dashboard:overview')
             return redirect(next_url)
         else:
             messages.error(request, "کد تأیید وارد شده نامعتبر است یا منقضی شده است.")
@@ -217,6 +235,102 @@ def resend_otp_view(request):
         return JsonResponse({'status': 'ok', 'message': msg, 'code': code})
 
     return redirect('accounts:verify_otp')
+
+
+def admin_login_view(request):
+    """
+    مسیر ورود اختصاصی به پنل ادمین و داشبورد دیجی تل (/admin-login/).
+    فقط شماره‌های مدیران اصلی (09334801216 و 09155513395) مجاز به ورود
+    و دسترسی به تنظیمات وبسایت، گزارشات و مدیریت محصولات هستند.
+    """
+    next_url = request.GET.get('next') or request.POST.get('next') or 'dashboard:overview'
+
+    # اگر کاربر قبلاً لاگین کرده و شماره‌اش از ادمین‌های اصلی یا staff است
+    if request.user.is_authenticated:
+        user_phone = getattr(request.user, 'phone_number', '') or request.user.username
+        if user_phone in SUPER_ADMIN_PHONES or request.user.is_staff or request.user.is_superuser:
+            if not request.user.is_staff or not request.user.is_superuser:
+                request.user.is_staff = True
+                request.user.is_superuser = True
+                request.user.save(update_fields=['is_staff', 'is_superuser'])
+            return redirect(next_url)
+
+    error_message = None
+    phone_number = ""
+
+    if request.method == 'POST':
+        action = request.POST.get('action', 'login')
+        raw_phone = request.POST.get('phone_number', '').strip()
+        norm_phone = normalize_phone(raw_phone)
+        phone_number = norm_phone
+        password = request.POST.get('password', '').strip()
+
+        if not norm_phone or len(norm_phone) != 11 or not norm_phone.startswith('09'):
+            error_message = "لطفاً یک شماره تلفن همراه ۱۱ رقمی معتبر وارد نمایید."
+        elif norm_phone not in SUPER_ADMIN_PHONES:
+            error_message = "دسترسی غیرمجاز: این شماره همراه در فهرست مدیران ارشد سیستم دیجی تل ثبت نشده است."
+        else:
+            # شماره جزو مدیران اصلی مجاز است
+            user = User.objects.filter(phone_number=norm_phone).first() or User.objects.filter(username=norm_phone).first()
+
+            if action == 'send_otp':
+                code, _ = generate_otp(norm_phone)
+                request.session['pending_auth_phone'] = norm_phone
+                request.session['pending_admin_login'] = True
+                request.session['auth_next_url'] = next_url
+                messages.success(request, f"کد یک‌بار مصرف ورود مدیران به شماره {norm_phone} پیامک شد.")
+                return redirect('accounts:verify_otp')
+
+            # ورود با رمز عبور
+            if not password:
+                if not user or not user.has_usable_password():
+                    error_message = "لطفاً رمز عبور را وارد کنید، یا از گزینه «ارسال پیامک کد یک‌بار مصرف (OTP)» استفاده نمایید."
+                else:
+                    error_message = "لطفاً رمز عبور خود را وارد نمایید."
+            else:
+                if not user:
+                    user = User.objects.create_user(
+                        username=norm_phone,
+                        phone_number=norm_phone,
+                        password=password,
+                        is_staff=True,
+                        is_superuser=True,
+                        is_verified=True,
+                        first_name="مدیر ارشد",
+                        last_name="دیجی تل",
+                    )
+                    login(request, user)
+                    messages.success(request, "خوش آمدید! ورود به پنل مدیریت با موفقیت انجام شد.")
+                    return redirect(next_url)
+                else:
+                    auth_user = authenticate(request, username=user.username, password=password)
+                    if auth_user:
+                        if not auth_user.is_staff or not auth_user.is_superuser:
+                            auth_user.is_staff = True
+                            auth_user.is_superuser = True
+                            auth_user.save(update_fields=['is_staff', 'is_superuser'])
+                        login(request, auth_user)
+                        messages.success(request, f"خوش آمدید، {auth_user.first_name or 'مدیر گرامی'}!")
+                        return redirect(next_url)
+                    elif not user.has_usable_password():
+                        user.set_password(password)
+                        user.is_staff = True
+                        user.is_superuser = True
+                        user.is_verified = True
+                        user.save()
+                        login(request, user)
+                        messages.success(request, "رمز عبور با موفقیت ثبت شد و وارد پنل مدیریت شدید.")
+                        return redirect(next_url)
+                    else:
+                        error_message = "رمز عبور وارد شده اشتباه است."
+
+    return render(request, 'accounts/admin_login.html', {
+        'phone_number': phone_number,
+        'next_url': next_url,
+        'error_message': error_message,
+        'super_admin_phones': SUPER_ADMIN_PHONES,
+    })
+
 
 
 

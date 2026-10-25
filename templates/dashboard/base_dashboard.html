@@ -16,7 +16,7 @@
 <script>
     (function () {
         try {
-            var saved = localStorage.getItem('zitro_dash_sidebar');
+            var saved = localStorage.getItem('digitell_dash_sidebar') || localStorage.getItem('zitro_dash_sidebar');
             if (saved === 'collapsed' || saved === 'full') {
                 document.body.setAttribute('data-sidebar', saved);
             }

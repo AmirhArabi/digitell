@@ -124,7 +124,7 @@ class ZitroShopTestCase(TestCase):
 
 
 class ProductPageDesignTests(TestCase):
-    """ساختار و چیدمان صفحه محصول (الگوی موبایل‌محور برگرفته از زیترو)."""
+    """ساختار و چیدمان صفحه محصول (الگوی مدرن موبایل‌محور دیجی‌تل)."""
 
     def setUp(self):
         self.client = Client()

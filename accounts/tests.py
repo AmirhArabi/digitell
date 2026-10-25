@@ -384,3 +384,69 @@ class DepositViewTests(TestCase):
         self.assertFalse(response.context['success'])
 
 
+class AdminLoginTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.admin1_phone = '09334801216'
+        self.admin2_phone = '09155513395'
+        self.regular_phone = '09121112233'
+
+    def test_admin_login_page_renders_successfully(self):
+        response = self.client.get('/admin-login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'ورود به پنل مدیریت')
+
+    def test_unauthorized_phone_rejected(self):
+        response = self.client.post('/admin-login/', {
+            'phone_number': self.regular_phone,
+            'password': 'somepassword',
+            'action': 'login',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'دسترسی غیرمجاز')
+
+    def test_authorized_super_admin_login_with_password(self):
+        # Admin 1 logs in
+        response = self.client.post('/admin-login/', {
+            'phone_number': self.admin1_phone,
+            'password': 'SecureAdminPass123',
+            'action': 'login',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/dashboard/', response.url)
+
+        user = User.objects.get(phone_number=self.admin1_phone)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+
+        # Check access to dashboard
+        dash_response = self.client.get('/dashboard/')
+        self.assertEqual(dash_response.status_code, 200)
+
+    def test_authorized_super_admin_login_with_otp(self):
+        from accounts.models import OTPCode
+        # Send OTP
+        response = self.client.post('/admin-login/', {
+            'phone_number': self.admin2_phone,
+            'action': 'send_otp',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('accounts:verify_otp'), response.url)
+
+        # Retrieve generated OTP
+        otp_obj = OTPCode.objects.filter(phone_number=self.admin2_phone, is_used=False).latest('created_at')
+
+        # Verify OTP
+        verify_response = self.client.post(reverse('accounts:verify_otp'), {
+            'phone': self.admin2_phone,
+            'code': otp_obj.code,
+        })
+        self.assertEqual(verify_response.status_code, 302)
+        self.assertIn('/dashboard/', verify_response.url)
+
+        user = User.objects.get(phone_number=self.admin2_phone)
+        self.assertTrue(user.is_staff)
+        self.assertTrue(user.is_superuser)
+
+
+

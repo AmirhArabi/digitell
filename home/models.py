@@ -35,12 +35,12 @@ class SiteSetting(models.Model):
         verbose_name="شعار فروشگاه"
     )
     phone = models.CharField(max_length=20, default="۰۲۱-۹۱۰۹۰۰۰۰", verbose_name="شماره تماس")
-    email = models.EmailField(default="info@zitro.ir", verbose_name="ایمیل پشتیبانی")
+    email = models.EmailField(default="info@digitell.ir", verbose_name="ایمیل پشتیبانی")
     address = models.CharField(max_length=255, default="تهران، خیابان ولیعصر، تقاطع انقلاب", verbose_name="آدرس فروشگاه")
     working_hours = models.CharField(max_length=100, default="شنبه تا چهارشنبه ۱۰:۳۰ الی ۱۸", verbose_name="ساعات کاری")
 
-    telegram = models.CharField(max_length=100, blank=True, default="@zitro_ir", verbose_name="تلگرام")
-    instagram = models.CharField(max_length=100, blank=True, default="zitro_ir", verbose_name="اینستاگرام")
+    telegram = models.CharField(max_length=100, blank=True, default="@digitell_ir", verbose_name="تلگرام")
+    instagram = models.CharField(max_length=100, blank=True, default="digitell_ir", verbose_name="اینستاگرام")
     whatsapp = models.CharField(max_length=100, blank=True, verbose_name="واتساپ")
 
     LOGIN_METHOD_CHOICES = [

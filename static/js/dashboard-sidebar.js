@@ -11,7 +11,7 @@
     'use strict';
 
     var body = document.body;
-    var STORAGE_KEY = 'zitro_dash_sidebar';
+    var STORAGE_KEY = 'digitell_dash_sidebar';
     var DESKTOP_QUERY = '(min-width: 1024px)';
     var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 

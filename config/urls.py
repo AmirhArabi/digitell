@@ -6,7 +6,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from accounts.views import admin_login_view
+
 urlpatterns = [
+    path('admin-login/', admin_login_view, name='admin_login'),
+    path('dashboard/login/', admin_login_view, name='dashboard_login'),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('cart/', include('cart.urls')),

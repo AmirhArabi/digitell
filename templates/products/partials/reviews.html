@@ -78,7 +78,7 @@
                     maxlength="150"
                     value="{{ form_title }}"
                     placeholder="عنوان نظر (اختیاری)"
-                    class="w-full bg-slate-50 p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
+                    class="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs transition"
                 >
 
                 <textarea
@@ -87,7 +87,7 @@
                     required
                     minlength="10"
                     placeholder="تجربهٔ خود از این کالا را بنویسید؛ کیفیت ساخت، کارایی و ارزش خرید..."
-                    class="w-full bg-slate-50 p-2.5 text-xs sm:text-sm leading-relaxed focus:bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-2xs"
+                    class="w-full bg-slate-50/80 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm leading-relaxed focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary shadow-2xs transition"
                 >{{ form_body }}</textarea>
 
                 <div class="flex items-center justify-between gap-3">
@@ -95,18 +95,18 @@
                         نظر شما بلافاصله منتشر می‌شود و می‌توانید آن را ویرایش کنید.
                     </p>
                     <button type="submit"
-                            class="shrink-0 bg-zitro-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition hover:opacity-90">
+                            class="shrink-0 bg-primary hover:bg-primary-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl shadow-md shadow-primary/20 transition duration-200 cursor-pointer active:scale-[0.99]">
                         {% if user_review %}ذخیرهٔ ویرایش{% else %}ثبت نظر{% endif %}
                     </button>
                 </div>
             </form>
         {% else %}
-            <div class="flex h-full flex-col items-center justify-center bg-slate-50/60 p-5 text-center shadow-2xs">
+            <div class="flex h-full flex-col items-center justify-center bg-slate-50/60 p-5 text-center shadow-2xs rounded-2xl">
                 <p class="text-xs sm:text-sm leading-relaxed text-slate-600">
                     برای ثبت امتیاز و نظر دربارهٔ این محصول ابتدا وارد حساب کاربری خود شوید.
                 </p>
                 <a href="{% url 'accounts:login' %}?next={{ product.get_absolute_url|urlencode }}"
-                   class="mt-3 inline-flex items-center gap-2 bg-zitro-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white transition hover:opacity-90">
+                   class="mt-3 inline-flex items-center gap-2 bg-primary hover:bg-primary-dark px-5 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl shadow-md shadow-primary/20 transition duration-200 cursor-pointer active:scale-[0.99]">
                     ورود / عضویت
                 </a>
             </div>
