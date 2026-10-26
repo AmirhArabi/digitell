@@ -1,0 +1,760 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+
+{% block title %}سامانه مدیریت پیامک و کمپین‌ها | پنل دیجی تل{% endblock %}
+{% block header_title %}مدیریت پیامک‌ها و وب‌سرویس SMS.ir{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- KPI Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- وضعیت و شارژ پنل -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white p-5 rounded-3xl border border-slate-700 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-slate-400 block mb-1">اعتبار وب‌سرویس SMS.ir</span>
+                <div class="text-2xl font-black font-mono">
+                    {% if panel_status.credit is not None %}
+                        {{ panel_status.credit|intcomma }} <span class="text-xs font-normal text-slate-300">ریال</span>
+                    {% else %}
+                        <span class="text-base text-amber-400 font-bold">{{ panel_status.status_message }}</span>
+                    {% endif %}
+                </div>
+                <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full {% if panel_status.is_configured %}bg-emerald-400 animate-pulse{% else %}bg-amber-400{% endif %}"></span>
+                    <span>خط: {{ panel_status.line_number }}</span>
+                </div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-white/10 text-white flex items-center justify-center font-bold text-xl">
+                💳
+            </div>
+        </div>
+
+        <!-- کل پیامک‌ها -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-slate-400 block mb-1">کل پیامک‌های ارسالی</span>
+                <span class="text-2xl font-black text-slate-900">{{ total_count|intcomma }}</span>
+                <div class="text-[11px] text-emerald-600 font-bold mt-1">
+                    {{ sent_count }} موفق {% if simulated_count %}({{ simulated_count }} شبیه‌سازی){% endif %}
+                </div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl">
+                📨
+            </div>
+        </div>
+
+        <!-- کدهای OTP -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-teal-600 block mb-1">پیامک‌های OTP و احراز هویت</span>
+                <span class="text-2xl font-black text-teal-700">{{ otp_count|intcomma }}</span>
+                <div class="text-[11px] text-slate-400 mt-1">
+                    پترن خدماتی سریع
+                </div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-xl">
+                🔐
+            </div>
+        </div>
+
+        <!-- کمپین‌ها -->
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-indigo-500 block mb-1">کمپین‌های پیامکی</span>
+                <span class="text-2xl font-black text-indigo-600">{{ campaigns_count|intcomma }}</span>
+                <div class="text-[11px] text-slate-400 mt-1">
+                    ارسال‌های گروهی و مناسبتی
+                </div>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                📢
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="bg-white p-2 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-1.5 text-xs font-bold">
+        <button type="button" onclick="switchTab('overview')" id="tab-btn-overview"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>📊</span>
+            <span>وضعیت و اتصال پنل</span>
+        </button>
+        <button type="button" onclick="switchTab('custom')" id="tab-btn-custom"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>✍️</span>
+            <span>ارسال پیامک دلخواه</span>
+        </button>
+        <button type="button" onclick="switchTab('pattern')" id="tab-btn-pattern"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>⚡</span>
+            <span>ارسال با الگو / پترن (OTP)</span>
+        </button>
+        <button type="button" onclick="switchTab('bulk')" id="tab-btn-bulk"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>📢</span>
+            <span>ارسال انبوه و کمپین</span>
+        </button>
+        <button type="button" onclick="switchTab('templates')" id="tab-btn-templates"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>📑</span>
+            <span>مدیریت قالب‌ها ({{ templates_list|length }})</span>
+        </button>
+        <button type="button" onclick="switchTab('logs')" id="tab-btn-logs"
+                class="tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+            <span>📜</span>
+            <span>تاریخچه و لاگ‌ها</span>
+        </button>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: OVERVIEW & PANEL STATUS -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-overview" class="tab-pane space-y-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">مشخصات اتصال وب‌سرویس SMS.ir (v2)</h3>
+                    <p class="text-xs text-slate-500 mt-1">اطلاعات زنده احراز هویت، خطوط ارسال و سهمیه پیامک</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="{% url 'dashboard:settings' %}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                        <span>⚙️ ویرایش کلید و خط در تنظیمات</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <span class="text-slate-400 block mb-1 font-semibold">کلید API وب‌سرویس</span>
+                    <span class="font-mono font-bold text-slate-800 text-sm dir-ltr block">{{ panel_status.api_key_masked }}</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">
+                        {% if panel_status.is_configured %}
+                            <span class="text-emerald-600 font-bold">● متصل و فعال</span>
+                        {% else %}
+                            <span class="text-amber-600 font-bold">● حالت شبیه‌سازی (بدون کلید)</span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <span class="text-slate-400 block mb-1 font-semibold">خط پیش‌فرض ارسال</span>
+                    <span class="font-mono font-bold text-slate-800 text-sm dir-ltr block">{{ panel_status.line_number }}</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">برای ارسال پیامک‌های متنی و انبوه</span>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <span class="text-slate-400 block mb-1 font-semibold">شناسه قالب پیش‌فرض OTP</span>
+                    <span class="font-mono font-bold text-slate-800 text-sm dir-ltr block">{{ panel_status.otp_template_id|default:"تنظیم نشده" }}</span>
+                    <span class="text-[11px] text-slate-500 mt-1 block">کد پترن تایید شماره همراه در ورود</span>
+                </div>
+            </div>
+
+            <!-- خطوط موجود در پنل -->
+            {% if panel_status.lines %}
+                <div class="space-y-3">
+                    <h4 class="font-bold text-xs text-slate-700">خطوط اختصاصی در دسترس اکانت شما:</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for line in panel_status.lines %}
+                            <div class="px-3 py-2 bg-slate-100 text-slate-800 rounded-xl font-mono text-xs font-bold border border-slate-200">
+                                {{ line }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- راهنمای شروع سریع -->
+            <div class="bg-blue-50/60 p-5 rounded-2xl border border-blue-200 text-xs text-blue-900 space-y-2">
+                <div class="font-bold flex items-center gap-2 text-sm">
+                    <span>💡</span>
+                    <span>راهنمای استفاده از پنل SMS.ir در دیجی تل:</span>
+                </div>
+                <ul class="list-disc list-inside space-y-1 text-slate-700 leading-relaxed pr-1">
+                    <li><strong>ارسال سریع OTP:</strong> در صفحه تنظیمات فروشگاه، شناسه قالب تایید شده (TemplateId) را وارد کنید تا پیامک‌های ورود با پترن خدماتی و سرعت زیر ۵ ثانیه برای کاربر ارسال شود.</li>
+                    <li><strong>ارسال متنی:</strong> برای پیامک‌های اطلاع‌رسانی، کمپین‌ها یا سبد خرید می‌توانید از خط پیامکی اختصاصی خود استفاده کنید.</li>
+                    <li><strong>حالت تست و شبیه‌سازی:</strong> در صورتی که کلید وب‌سرویس وارد نشده باشد، سیستم به صورت کاملاً خودکار در حالت شبیه‌سازی قرار می‌گیرد و پیام‌ها در کنسول و لاگ دیتابیس ثبت می‌شوند.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: SEND CUSTOM SMS -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-custom" class="tab-pane space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Form Column -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-5">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">ارسال پیامک دلخواه به مشتری</h3>
+                    <p class="text-xs text-slate-500 mt-1">ارسال پیامک اختصاصی به یک شماره موبایل یا انتخاب از بین مشتریان ثبت‌نامی</p>
+                </div>
+
+                <form method="post" action="{% url 'dashboard:sms' %}" class="space-y-4 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_single">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1.5">انتخاب مشتری (اختیاری)</label>
+                            <select id="customerSelect" onchange="applySelectedCustomer()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:bg-white focus:outline-none">
+                                <option value="">-- انتخاب از مشتریان اخیر --</option>
+                                {% for u in customers %}
+                                    <option value="{{ u.phone_number }}" data-name="{{ u.get_full_name|default:u.username }}">
+                                        {{ u.get_full_name|default:u.username }} ({{ u.phone_number }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1.5">شماره موبایل گیرنده <span class="text-rose-500">*</span></label>
+                            <input type="text" name="mobile" id="customMobile" placeholder="09123456789" dir="ltr" required
+                                   class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="font-semibold text-slate-700">متن پیامک <span class="text-rose-500">*</span></label>
+                            <div class="text-[11px] text-slate-400 font-bold" id="charCounter">
+                                ۰ کاراکتر (۱ صفحه فارسی)
+                            </div>
+                        </div>
+                        <textarea name="message" id="customMessage" rows="5" required oninput="updateCharCount()"
+                                  placeholder="متن پیامک خود را اینجا بنویسید..."
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:outline-none focus:border-blue-500 text-xs leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-slate-400 text-[11px]">ارسال از طریق خط: {{ panel_status.line_number }}</span>
+                        <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition flex items-center gap-2">
+                            <span>🚀</span>
+                            <span>ارسال پیامک</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Preview Column (Phone Mockup) -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col items-center justify-center">
+                <span class="text-xs font-bold text-slate-400 mb-3 block">پیش‌نمایش در موبایل مشتری</span>
+                <div class="w-64 bg-slate-900 rounded-3xl p-3 shadow-xl border-4 border-slate-800 text-white text-xs">
+                    <!-- Notch / Speaker -->
+                    <div class="w-16 h-3 bg-slate-800 rounded-full mx-auto mb-4"></div>
+                    <!-- Chat Header -->
+                    <div class="pb-3 border-b border-slate-800 text-center text-[11px]">
+                        <div class="font-bold text-slate-200">دیجی تل (Digitell)</div>
+                        <div class="text-[9px] text-slate-500 font-mono" id="previewSenderLine">{{ panel_status.line_number }}</div>
+                    </div>
+                    <!-- Message Bubble -->
+                    <div class="py-6 min-h-[160px] flex flex-col justify-end">
+                        <div class="bg-blue-600 text-white p-3 rounded-2xl rounded-br-xs text-[11px] leading-relaxed break-words" id="previewText">
+                            سلام، سفارش شما در دیجی تل ثبت شد...
+                        </div>
+                        <span class="text-[9px] text-slate-500 text-left mt-1">هم‌اکنون</span>
+                    </div>
+                    <!-- Bottom Bar -->
+                    <div class="w-20 h-1 bg-slate-700 rounded-full mx-auto mt-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: SEND PATTERN / OTP SMS -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-pattern" class="tab-pane space-y-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">ارسال با پترن / الگوی خدماتی (اعتبارسنجی)</h3>
+                <p class="text-xs text-slate-500 mt-1">ارسال پیامک بر اساس الگوهای تأییدشده در پنل SMS.ir با متغیرهای دلخواه (عبور از بلک‌لیست مخابرات)</p>
+            </div>
+
+            <form method="post" action="{% url 'dashboard:sms' %}" class="space-y-5 text-xs">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send_pattern">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">انتخاب از الگوهای ثبت شده</label>
+                        <select id="patternTemplateSelect" onchange="applyTemplateToPattern()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:bg-white focus:outline-none">
+                            <option value="">-- انتخاب قالب آماده --</option>
+                            {% for t in templates_list %}
+                                {% if t.template_id %}
+                                    <option value="{{ t.template_id }}" data-hint="{{ t.parameters_hint }}" data-text="{{ t.text }}">
+                                        {{ t.title }} (کد پترن: {{ t.template_id }})
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">شناسه پترن (TemplateId) <span class="text-rose-500">*</span></label>
+                        <input type="number" name="template_id" id="patternTemplateId" placeholder="100000" dir="ltr" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block font-semibold text-slate-700 mb-1.5">شماره موبایل گیرنده <span class="text-rose-500">*</span></label>
+                        <input type="text" name="mobile" placeholder="09123456789" dir="ltr" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- پارامترهای پترن -->
+                <div class="space-y-3 pt-3 border-t border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <label class="font-bold text-slate-800">پارامترها و متغیرهای الگو (Parameters):</label>
+                        <button type="button" onclick="addPatternParamRow()" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">
+                            + افزودن پارامتر جدید
+                        </button>
+                    </div>
+                    <div id="patternParamsContainer" class="space-y-2">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-1">نام متغیر (Parameter Name)</label>
+                                <input type="text" name="param_name_1" value="Code" dir="ltr" placeholder="مثال: Code یا Name" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] text-slate-500 mb-1">مقدار متغیر (Parameter Value)</label>
+                                <input type="text" name="param_value_1" placeholder="مثال: 58214" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+                    <button type="submit" class="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold transition flex items-center gap-2">
+                        <span>⚡</span>
+                        <span>ارسال پترن خدماتی</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: BULK SMS & CAMPAIGN -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-bulk" class="tab-pane space-y-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">ارسال پیامک انبوه و راه‌اندازی کمپین تبلیغاتی</h3>
+                <p class="text-xs text-slate-500 mt-1">ارسال پیامک گروهی به دسته‌های مختلف مشتریان یا شماره‌های اختصاصی</p>
+            </div>
+
+            <form method="post" action="{% url 'dashboard:sms' %}" class="space-y-5 text-xs" onsubmit="return confirm('آیا از ارسال پیامک به گروه مخاطبان انتخاب‌شده اطمینان دارید؟');">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send_bulk">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">عنوان کمپین <span class="text-rose-500">*</span></label>
+                        <input type="text" name="title" placeholder="مثال: جشنواره تخفیف پایان ماه" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1.5">گروه مخاطبان هدف <span class="text-rose-500">*</span></label>
+                        <select name="audience" id="audienceSelect" onchange="toggleCustomNumbersField()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:bg-white focus:outline-none">
+                            <option value="all">تمام کاربران سایت ({{ all_users_count }} شماره)</option>
+                            <option value="marketing">مشترکین خبرنامه پیامکی ({{ subscribers_count }} شماره)</option>
+                            <option value="buyers">خریداران دارای سفارش موفق ({{ buyers_count }} شماره)</option>
+                            <option value="abandoned_carts">دارندگان سبد خرید رهاشده ({{ abandoned_carts_count }} شماره)</option>
+                            <option value="custom">لیست دستی شماره‌ها (ورود دستی)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="customNumbersDiv" class="hidden">
+                    <label class="block font-semibold text-slate-700 mb-1.5">شماره‌های دلخواه (با کاما یا خط‌به‌خط جدا کنید)</label>
+                    <textarea name="custom_numbers" rows="3" placeholder="09120000000, 09350000000&#10;09190000000" dir="ltr"
+                              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs focus:bg-white focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">متن پیامک کمپین <span class="text-rose-500">*</span></label>
+                    <textarea name="message" rows="5" required placeholder="متن پیامک تبلیغاتی یا اطلاع‌رسانی خود را بنویسید..."
+                              class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none focus:border-blue-500 leading-relaxed"></textarea>
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                    <span class="text-slate-400 text-[11px]">ارسال با خط اختصاصی: {{ panel_status.line_number }}</span>
+                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition flex items-center gap-2">
+                        <span>📢</span>
+                        <span>شروع و ارسال کمپین</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- کمپین‌های قبلی -->
+        {% if campaigns_list %}
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-xs text-slate-700">
+                    آخرین کمپین‌های پیامکی ایجاد شده
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">عنوان کمپین</th>
+                                <th class="py-3 px-4">مخاطبان</th>
+                                <th class="py-3 px-4">گیرندگان</th>
+                                <th class="py-3 px-4">موفق / ناموفق</th>
+                                <th class="py-3 px-4">وضعیت</th>
+                                <th class="py-3 px-4">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for c in campaigns_list %}
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="py-3 px-4 font-bold text-slate-900">{{ c.title }}</td>
+                                    <td class="py-3 px-4 text-slate-600">{{ c.get_audience_display }}</td>
+                                    <td class="py-3 px-4 font-mono font-bold">{{ c.total_recipients }}</td>
+                                    <td class="py-3 px-4 font-mono text-emerald-600 font-bold">{{ c.successful_count }}</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold {% if c.status == 'sent' %}bg-emerald-50 text-emerald-700 border border-emerald-200{% else %}bg-amber-50 text-amber-700{% endif %}">
+                                            {{ c.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-500">{{ c.created_at|date:"Y/m/d H:i" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: TEMPLATES & PATTERNS -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-templates" class="tab-pane space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Create Template Form -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">تعریف الگوی جدید</h3>
+                    <p class="text-xs text-slate-500 mt-1">ذخیره قالب‌ها و شناسه پترن‌ها جهت استفاده مکرر</p>
+                </div>
+
+                <form method="post" action="{% url 'dashboard:sms' %}" class="space-y-4 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create_template">
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">عنوان الگو <span class="text-rose-500">*</span></label>
+                        <input type="text" name="title" placeholder="مثال: کد ورود کاربر" required
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:bg-white focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">نوع الگو</label>
+                        <select name="template_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus:bg-white focus:outline-none">
+                            <option value="pattern">الگوی خدماتی تأییدشده (پترن SMS.ir)</option>
+                            <option value="otp">کد تایید هویت (OTP)</option>
+                            <option value="order">اعلان وضعیت سفارش</option>
+                            <option value="cart">یادآوری سبد خرید رهاشده</option>
+                            <option value="marketing">کمپین و بازاریابی</option>
+                            <option value="text">متن عادی / دلخواه</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">شناسه الگو در SMS.ir (TemplateId)</label>
+                        <input type="number" name="template_id" placeholder="مثال: 123456" dir="ltr"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono text-xs focus:bg-white focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">راهنمای متغیرها</label>
+                        <input type="text" name="parameters_hint" placeholder="مثال: Code, Name" dir="ltr"
+                               class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 font-mono text-xs focus:bg-white focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">متن قالب <span class="text-rose-500">*</span></label>
+                        <textarea name="text" rows="3" required placeholder="سلام {Name} عزیز، کد ورود شما: {Code}"
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:bg-white focus:outline-none"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">
+                        ذخیره الگو
+                    </button>
+                </form>
+            </div>
+
+            <!-- Templates Table -->
+            <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 font-bold text-xs text-slate-700">
+                    الگوهای تعریف‌شده در سیستم
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="py-3 px-4">عنوان</th>
+                                <th class="py-3 px-4">نوع</th>
+                                <th class="py-3 px-4">کد پترن</th>
+                                <th class="py-3 px-4">متن الگو</th>
+                                <th class="py-3 px-4 text-center">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for t in templates_list %}
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="py-3 px-4 font-bold text-slate-900">{{ t.title }}</td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                                            {{ t.get_template_type_display }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4 font-mono font-bold text-teal-700">{{ t.template_id|default:"-" }}</td>
+                                    <td class="py-3 px-4 text-slate-600 max-w-xs truncate" title="{{ t.text }}">{{ t.text }}</td>
+                                    <td class="py-3 px-4 text-center">
+                                        <form method="post" action="{% url 'dashboard:sms' %}" onsubmit="return confirm('آیا از حذف این الگو اطمینان دارید؟');" class="inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_template">
+                                            <input type="hidden" name="template_pk" value="{{ t.pk }}">
+                                            <button type="submit" class="text-rose-600 hover:text-rose-800 font-bold text-xs">حذف</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="py-8 text-center text-slate-400">هنوز هیچ الگویی تعریف نشده است.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: LOGS & HISTORY -->
+    <!-- ======================================================== -->
+    <div id="tab-pane-logs" class="tab-pane space-y-4">
+        <!-- Search & Filter Bar -->
+        <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+            <input type="hidden" name="tab" value="logs">
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">جستجو (شماره گیرنده، متن پیام)</label>
+                <input type="search" name="q" value="{{ search_query }}" placeholder="0912... یا متن پیام"
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">نوع پیامک</label>
+                <select name="type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه انواع پیامک</option>
+                    {% for val, label in sms_type_choices %}
+                        <option value="{{ val }}" {% if type_filter == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="block font-semibold text-slate-600 mb-1.5">وضعیت ارسال</label>
+                <select name="status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                    <option value="">همه وضعیت‌ها</option>
+                    {% for val, label in status_choices %}
+                        <option value="{{ val }}" {% if status_filter == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex items-end gap-2">
+                <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال فیلتر</button>
+                <a href="?tab=logs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">پاکسازی</a>
+            </div>
+        </form>
+
+        <!-- Logs Table -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-right">
+                    <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200/80">
+                        <tr>
+                            <th class="py-3.5 px-4 w-12 text-center">#</th>
+                            <th class="py-3.5 px-4">گیرنده</th>
+                            <th class="py-3.5 px-4">نوع</th>
+                            <th class="py-3.5 px-4">متن پیامک</th>
+                            <th class="py-3.5 px-4">وضعیت</th>
+                            <th class="py-3.5 px-4">شناسه پیام</th>
+                            <th class="py-3.5 px-4">زمان ارسال</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for log in logs_page %}
+                            <tr class="hover:bg-slate-50/70 transition">
+                                <td class="py-3 px-4 text-center font-mono text-slate-400">{{ log.id }}</td>
+                                <td class="py-3 px-4 font-mono font-bold text-slate-900 dir-ltr text-right">{{ log.recipient }}</td>
+                                <td class="py-3 px-4">
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-700">
+                                        {{ log.get_sms_type_display }}
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 max-w-md text-slate-700 leading-relaxed">
+                                    <div class="truncate max-w-sm" title="{{ log.message }}">
+                                        {{ log.message }}
+                                    </div>
+                                    {% if log.error_message %}
+                                        <div class="text-[10px] text-rose-600 mt-0.5">{{ log.error_message }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 whitespace-nowrap">
+                                    {% if log.status == 'sent' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">ارسال موفق ✅</span>
+                                    {% elif log.status == 'failed' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">ناموفق ❌</span>
+                                    {% elif log.status == 'simulated' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">شبیه‌سازی شده 🧪</span>
+                                    {% else %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">در حال پردازش</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 font-mono text-[11px] text-slate-500">
+                                    {{ log.message_id|default:"-" }}
+                                </td>
+                                <td class="py-3 px-4 whitespace-nowrap text-slate-500">
+                                    <div>{{ log.created_at|date:"Y/m/d H:i" }}</div>
+                                    <div class="text-[10px] text-slate-400">{{ log.created_at|timesince }} پیش</div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="py-12 text-center text-slate-400 font-bold">
+                                    هیچ گزارش ارسالی یافت نشد.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if logs_page.has_other_pages %}
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-slate-600">
+                    <div>
+                        صفحه {{ logs_page.number }} از {{ logs_page.paginator.num_pages }}
+                    </div>
+                    <div class="flex items-center gap-1">
+                        {% if logs_page.has_previous %}
+                            <a href="?tab=logs{% if querystring %}&{{ querystring }}{% endif %}&page={{ logs_page.previous_page_number }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">قبلی</a>
+                        {% endif %}
+                        {% if logs_page.has_next %}
+                            <a href="?tab=logs{% if querystring %}&{{ querystring }}{% endif %}&page={{ logs_page.next_page_number }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">بعدی</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- Scripts for Interactivity -->
+<script>
+    // Tab Switching Logic
+    const tabs = ['overview', 'custom', 'pattern', 'bulk', 'templates', 'logs'];
+
+    function switchTab(tabName) {
+        tabs.forEach(t => {
+            const btn = document.getElementById(`tab-btn-${t}`);
+            const pane = document.getElementById(`tab-pane-${t}`);
+            if (btn && pane) {
+                if (t === tabName) {
+                    btn.className = "tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2 bg-blue-600 text-white shadow-xs";
+                    pane.classList.remove('hidden');
+                } else {
+                    btn.className = "tab-btn px-4 py-2.5 rounded-xl transition flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700";
+                    pane.classList.add('hidden');
+                }
+            }
+        });
+        // Update URL parameter without reload
+        const url = new URL(window.location);
+        url.searchParams.set('tab', tabName);
+        window.history.replaceState({}, '', url);
+    }
+
+    // Initialize active tab from URL or context
+    const initialTab = "{{ active_tab|default:'overview' }}";
+    switchTab(tabs.includes(initialTab) ? initialTab : 'overview');
+
+    // Customer selection in custom SMS
+    function applySelectedCustomer() {
+        const select = document.getElementById('customerSelect');
+        const phone = select.value;
+        if (phone) {
+            document.getElementById('customMobile').value = phone;
+        }
+    }
+
+    // Dynamic Character Counter & Mobile Mockup Update
+    function updateCharCount() {
+        const text = document.getElementById('customMessage').value;
+        const len = text.length;
+        // Persian SMS: 70 chars for 1st page, 64 for subsequent
+        let pages = 1;
+        if (len > 70) {
+            pages = Math.ceil(len / 67);
+        } else if (len === 0) {
+            pages = 1;
+        }
+        document.getElementById('charCounter').textContent = `${len} کاراکتر (${pages} صفحه پیامک)`;
+
+        // Update preview
+        const previewEl = document.getElementById('previewText');
+        if (previewEl) {
+            previewEl.textContent = text || 'سلام، سفارش شما در دیجی تل ثبت شد...';
+        }
+    }
+
+    // Pattern dynamic template selection
+    function applyTemplateToPattern() {
+        const select = document.getElementById('patternTemplateSelect');
+        const opt = select.options[select.selectedIndex];
+        if (opt && opt.value) {
+            document.getElementById('patternTemplateId').value = opt.value;
+        }
+    }
+
+    // Add Parameter Row in Pattern Sender
+    let paramCounter = 1;
+    function addPatternParamRow() {
+        paramCounter++;
+        const container = document.getElementById('patternParamsContainer');
+        const row = document.createElement('div');
+        row.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200';
+        row.innerHTML = `
+            <div>
+                <label class="block text-[11px] text-slate-500 mb-1">نام متغیر</label>
+                <input type="text" name="param_name_${paramCounter}" dir="ltr" placeholder="مثال: Name" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-xs">
+            </div>
+            <div>
+                <label class="block text-[11px] text-slate-500 mb-1">مقدار متغیر</label>
+                <input type="text" name="param_value_${paramCounter}" placeholder="مقدار" class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs">
+            </div>
+        `;
+        container.appendChild(row);
+    }
+
+    // Toggle custom numbers field in bulk SMS
+    function toggleCustomNumbersField() {
+        const audienceSelect = document.getElementById('audienceSelect');
+        const customDiv = document.getElementById('customNumbersDiv');
+        if (audienceSelect && customDiv) {
+            if (audienceSelect.value === 'custom') {
+                customDiv.classList.remove('hidden');
+            } else {
+                customDiv.classList.add('hidden');
+            }
+        }
+    }
+</script>
+{% endblock %}

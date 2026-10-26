@@ -27,19 +27,21 @@ def normalize_phone(phone: str) -> str:
 
 
 def send_sms(phone_number: str, message: str) -> bool:
-    """
-    ارسال پیامک (در محیط توسعه/شبیه‌سازی در کنسول و لاگ ثبت می‌شود
-    و قابلیت اتصال به وب‌سرویس‌هایی مانند کاوه‌نگار، پیامک دات‌کام یا ملی‌پیامک را دارد).
-    """
+    """ارسال پیامک از طریق سامانه پیامک با پشتیبانی از SMS.ir، لاگینگ و شبیه‌سازی."""
     norm_phone = normalize_phone(phone_number)
-    log_msg = f"\n{'='*50}\n[SMS SENT TO {norm_phone}]:\n{message}\n{'='*50}\n"
-    logger.info(log_msg)
-    print(log_msg)
-    return True
+    try:
+        from sms.services import send_sms as core_send_sms
+        return core_send_sms(norm_phone, message, sms_type='single')
+    except Exception as e:
+        logger.error("خطا در ارسال پیامک با سرویس مرکزی: %s", str(e))
+        log_msg = f"\n{'='*50}\n[SMS SENT TO {norm_phone}]:\n{message}\n{'='*50}\n"
+        logger.info(log_msg)
+        print(log_msg)
+        return True
 
 
 def generate_otp(phone_number: str, expiry_minutes: int = 2) -> tuple[str, OTPCode]:
-    """تولید کد تأیید ۶ رقمی تصادفی، ذخیره در دیتابیس و ارسال پیامک."""
+    """تولید کد تأیید ۶ رقمی تصادفی، ذخیره در دیتابیس و ارسال پیامک (با پشتیبانی از پترن SMS.ir)."""
     norm_phone = normalize_phone(phone_number)
     # Invalidate previous unused codes for this phone
     OTPCode.objects.filter(phone_number=norm_phone, is_used=False).update(is_used=True)
@@ -55,8 +57,15 @@ def generate_otp(phone_number: str, expiry_minutes: int = 2) -> tuple[str, OTPCo
         is_used=False,
     )
 
-    msg = f"کد تأیید ورود شما به دیجی تل: {code}\nاین کد به مدت ۲ دقیقه معتبر است."
-    send_sms(norm_phone, msg)
+    try:
+        from sms.services import send_otp_sms
+        send_otp_sms(norm_phone, code)
+    except Exception as e:
+        logger.error("خطا در ارسال OTP با سرویس پیامک: %s", str(e))
+        msg = f"کد تأیید ورود شما به دیجی تل: {code}\nاین کد به مدت ۲ دقیقه معتبر است."
+        log_msg = f"\n{'='*50}\n[SMS SENT TO {norm_phone}]:\n{msg}\n{'='*50}\n"
+        logger.info(log_msg)
+        print(log_msg)
 
     return code, otp_obj
 

@@ -2171,6 +2171,10 @@ def settings_view(request):
         login_method = request.POST.get('login_method', '').strip()
         if login_method in ['otp', 'password']:
             settings_obj.login_method = login_method
+        settings_obj.sms_api_key = request.POST.get('sms_api_key', '').strip()
+        settings_obj.sms_line_number = request.POST.get('sms_line_number', '').strip()
+        settings_obj.sms_otp_template_id = request.POST.get('sms_otp_template_id', '').strip()
+        settings_obj.sms_is_active = 'sms_is_active' in request.POST
         settings_obj.about_us = request.POST.get('about_us', '').strip()
         settings_obj.footer_note = request.POST.get('footer_note', '').strip()
         settings_obj.save()
@@ -2285,3 +2289,221 @@ def ticket_messages_partial_view(request, pk):
         'ticket': ticket,
         'messages_list': ticket.messages.select_related('sender'),
     })
+
+
+# --------------------------------------------------------------------------
+# سامانه پیامک و کمپین‌ها (SMS.ir v2)
+# --------------------------------------------------------------------------
+from django.urls import reverse
+from sms.models import SmsTemplate, SmsLog, SmsCampaign
+from sms.services import (
+    get_panel_status,
+    send_sms as sms_send_service,
+    send_pattern_sms,
+    send_bulk_campaign_sms,
+    normalize_phone,
+)
+
+
+@staff
+def sms_dashboard_view(request):
+    """داشبورد جامع مدیریت پیامک‌ها، کمپین‌ها، ارسال با پترن و آرشیو لاگ‌ها."""
+    active_tab = request.GET.get('tab', 'overview').strip()
+
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+
+        if action == 'send_single':
+            mobile = request.POST.get('mobile', '').strip()
+            user_id = request.POST.get('user_id', '').strip()
+            if user_id and user_id.isdigit():
+                target_user = User.objects.filter(pk=int(user_id)).first()
+                if target_user and target_user.phone_number:
+                    mobile = target_user.phone_number
+
+            message = request.POST.get('message', '').strip()
+            if not mobile or not message:
+                messages.error(request, "لطفاً شماره گیرنده و متن پیامک را وارد کنید.")
+            else:
+                success = sms_send_service(mobile, message, sms_type='single', sender_user=request.user)
+                if success:
+                    messages.success(request, f"پیامک با موفقیت برای {mobile} ارسال گردید.")
+                else:
+                    messages.error(request, "خطا در ارسال پیامک. لاگ ارسال را بررسی نمایید.")
+            return redirect(f"{reverse('dashboard:sms')}?tab=custom")
+
+        elif action == 'send_pattern':
+            mobile = request.POST.get('mobile', '').strip()
+            user_id = request.POST.get('user_id', '').strip()
+            if user_id and user_id.isdigit():
+                target_user = User.objects.filter(pk=int(user_id)).first()
+                if target_user and target_user.phone_number:
+                    mobile = target_user.phone_number
+
+            template_id_val = request.POST.get('template_id', '').strip()
+            template_id = to_int(template_id_val)
+
+            # استخراج پارامترهای پویا
+            parameters = {}
+            for key, val in request.POST.items():
+                if key.startswith('param_name_') and val.strip():
+                    idx = key.replace('param_name_', '')
+                    param_val = request.POST.get(f'param_value_{idx}', '').strip()
+                    if param_val:
+                        parameters[val.strip()] = param_val
+
+            if not mobile or not template_id:
+                messages.error(request, "شماره موبایل و شناسه الگو (TemplateId) الزامی هستند.")
+            else:
+                success, msg = send_pattern_sms(mobile, template_id, parameters, sender_user=request.user)
+                if success:
+                    messages.success(request, f"پیامک الگوی {template_id} با موفقیت ارسال شد.")
+                else:
+                    messages.error(request, f"خطا در ارسال الگو: {msg}")
+            return redirect(f"{reverse('dashboard:sms')}?tab=pattern")
+
+        elif action == 'send_bulk':
+            title = request.POST.get('title', 'کمپین پیامکی').strip() or 'کمپین پیامکی'
+            audience = request.POST.get('audience', 'all').strip()
+            message = request.POST.get('message', '').strip()
+            custom_numbers_raw = request.POST.get('custom_numbers', '').strip()
+
+            phone_numbers = []
+            if audience == 'all':
+                phone_numbers = list(User.objects.filter(phone_number__isnull=False).exclude(phone_number='').values_list('phone_number', flat=True))
+            elif audience == 'marketing':
+                phone_numbers = list(User.objects.filter(phone_number__isnull=False, sms_marketing_subscribed=True).exclude(phone_number='').values_list('phone_number', flat=True))
+            elif audience == 'buyers':
+                phone_numbers = list(User.objects.filter(phone_number__isnull=False, orders__status__in=['paid', 'delivered', 'shipped']).distinct().values_list('phone_number', flat=True))
+            elif audience == 'abandoned_carts':
+                abandoned_cutoff = timezone.now() - timedelta(hours=24)
+                phone_numbers = list(Cart.objects.filter(
+                    items__isnull=False,
+                    converted_order__isnull=True,
+                    updated_at__lte=abandoned_cutoff,
+                    user__isnull=False,
+                    user__phone_number__isnull=False
+                ).distinct().values_list('user__phone_number', flat=True))
+            elif audience == 'custom':
+                import re
+                phone_numbers = re.split(r'[\r\n,]+', custom_numbers_raw)
+
+            if not message:
+                messages.error(request, "متن پیامک کمپین نمی‌تواند خالی باشد.")
+            elif not phone_numbers:
+                messages.error(request, "هیچ شماره مخاطبی برای گروه انتخاب‌شده یافت نشد.")
+            else:
+                res = send_bulk_campaign_sms(phone_numbers, message, title=title, audience=audience, sender_user=request.user)
+                if res.get('status') == 1:
+                    messages.success(request, f"کمپین با موفقیت ثبت شد و به {res.get('count', 0)} مخاطب ارسال گردید.")
+                else:
+                    messages.error(request, f"خطا در ثبت کمپین: {res.get('message')}")
+            return redirect(f"{reverse('dashboard:sms')}?tab=bulk")
+
+        elif action == 'create_template':
+            title = request.POST.get('title', '').strip()
+            template_type = request.POST.get('template_type', 'pattern').strip()
+            template_id_val = to_int(request.POST.get('template_id', ''))
+            text = request.POST.get('text', '').strip()
+            parameters_hint = request.POST.get('parameters_hint', '').strip()
+
+            if not title or not text:
+                messages.error(request, "عنوان و متن الگو الزامی هستند.")
+            else:
+                SmsTemplate.objects.create(
+                    title=title,
+                    template_type=template_type,
+                    template_id=template_id_val or None,
+                    text=text,
+                    parameters_hint=parameters_hint,
+                )
+                messages.success(request, "الگوی جدید با موفقیت ذخیره شد.")
+            return redirect(f"{reverse('dashboard:sms')}?tab=templates")
+
+        elif action == 'delete_template':
+            template_pk = to_int(request.POST.get('template_pk', ''))
+            SmsTemplate.objects.filter(pk=template_pk).delete()
+            messages.success(request, "الگوی پیامک حذف گردید.")
+            return redirect(f"{reverse('dashboard:sms')}?tab=templates")
+
+    # آمار کلی و وضعیت پنل
+    panel_status = get_panel_status()
+    total_count = SmsLog.objects.count()
+    sent_count = SmsLog.objects.filter(status='sent').count()
+    failed_count = SmsLog.objects.filter(status='failed').count()
+    simulated_count = SmsLog.objects.filter(status='simulated').count()
+    otp_count = SmsLog.objects.filter(sms_type='otp').count()
+    campaigns_count = SmsCampaign.objects.count()
+
+    # اطلاعات مخاطبان
+    all_users_count = User.objects.filter(phone_number__isnull=False).exclude(phone_number='').count()
+    subscribers_count = User.objects.filter(phone_number__isnull=False, sms_marketing_subscribed=True).exclude(phone_number='').count()
+    buyers_count = User.objects.filter(phone_number__isnull=False, orders__status__in=['paid', 'delivered', 'shipped']).distinct().count()
+    abandoned_cutoff = timezone.now() - timedelta(hours=24)
+    from cart.models import Cart
+    abandoned_carts_count = Cart.objects.filter(
+        items__isnull=False,
+        converted_order__isnull=True,
+        updated_at__lte=abandoned_cutoff,
+        user__isnull=False,
+        user__phone_number__isnull=False
+    ).distinct().count()
+
+    # لیست مشتریان برای انتخاب
+    customers = (
+        User.objects.filter(phone_number__isnull=False)
+        .exclude(phone_number='')
+        .order_by('-date_joined')[:60]
+    )
+
+    # قالب‌ها و کمپین‌ها
+    templates_list = SmsTemplate.objects.all().order_by('-created_at')
+    campaigns_list = SmsCampaign.objects.all().order_by('-created_at')[:15]
+
+    # لاگ‌ها با فیلتر و جستجو
+    logs_qs = SmsLog.objects.select_related('template', 'sender_user').all().order_by('-created_at')
+    status_filter = request.GET.get('status', '').strip()
+    type_filter = request.GET.get('type', '').strip()
+    search_query = request.GET.get('q', '').strip()
+
+    if status_filter:
+        logs_qs = logs_qs.filter(status=status_filter)
+    if type_filter:
+        logs_qs = logs_qs.filter(sms_type=type_filter)
+    if search_query:
+        logs_qs = logs_qs.filter(
+            Q(recipient__icontains=search_query)
+            | Q(message__icontains=search_query)
+            | Q(error_message__icontains=search_query)
+        )
+
+    paginator = Paginator(logs_qs, 20)
+    page_number = request.GET.get('page')
+    logs_page = paginator.get_page(page_number)
+
+    context = {
+        'active_tab': active_tab,
+        'panel_status': panel_status,
+        'total_count': total_count,
+        'sent_count': sent_count,
+        'failed_count': failed_count,
+        'simulated_count': simulated_count,
+        'otp_count': otp_count,
+        'campaigns_count': campaigns_count,
+        'all_users_count': all_users_count,
+        'subscribers_count': subscribers_count,
+        'buyers_count': buyers_count,
+        'abandoned_carts_count': abandoned_carts_count,
+        'customers': customers,
+        'templates_list': templates_list,
+        'campaigns_list': campaigns_list,
+        'logs_page': logs_page,
+        'status_filter': status_filter,
+        'type_filter': type_filter,
+        'search_query': search_query,
+        'status_choices': SmsLog.STATUS_CHOICES,
+        'sms_type_choices': SmsLog.SMS_TYPE_CHOICES,
+        'querystring': _querystring_without_page(request),
+    }
+    return render(request, 'dashboard/sms.html', context)
+

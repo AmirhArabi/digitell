@@ -87,9 +87,15 @@ INSTALLED_APPS = [
     'home',
     'dashboard',
     'tickets',
+    'sms',
 ]
 
 AUTH_USER_MODEL = 'accounts.User'
+
+# تنظیمات سامانه پیامک (SMS.ir v2)
+SMS_IR_API_KEY = os.environ.get('SMS_IR_API_KEY', '').strip()
+SMS_IR_LINE_NUMBER = os.environ.get('SMS_IR_LINE_NUMBER', '').strip()
+SMS_IR_OTP_TEMPLATE_ID = os.environ.get('SMS_IR_OTP_TEMPLATE_ID', '').strip()
 
 MIDDLEWARE = [
     'utils.middleware.PerformanceMonitorMiddleware',

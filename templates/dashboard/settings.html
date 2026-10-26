@@ -92,9 +92,50 @@
             </div>
         </section>
 
+        <!-- تنظیمات سامانه پیامک (SMS.ir) -->
+        <section class="space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 class="font-bold text-sm text-slate-900 flex items-center gap-2">
+                    <span>۴. سامانه پیامک (SMS.ir v2)</span>
+                    <span class="text-[11px] font-normal text-teal-600 bg-teal-50 px-2.5 py-0.5 rounded-full">وب‌سرویس و OTP</span>
+                </h3>
+                <a href="{% url 'dashboard:sms' %}" class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">
+                    <span>ورود به داشبورد پیامک</span>
+                    <span>←</span>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="sm:col-span-2">
+                    <label class="block font-semibold text-slate-700 mb-1.5">کلید وب‌سرویس SMS.ir (X-API-KEY)</label>
+                    <input type="password" name="sms_api_key" value="{{ settings.sms_api_key }}" dir="ltr" placeholder="کلید دریافتی از پنل پیامک..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    <p class="text-[11px] text-slate-400 mt-1">از بخش کلیدهای وب‌سرویس در پنل SMS.ir قابل دریافت است.</p>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">خط اختصاصی ارسال</label>
+                    <input type="text" name="sms_line_number" value="{{ settings.sms_line_number }}" dir="ltr" placeholder="3000..."
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    <p class="text-[11px] text-slate-400 mt-1">شماره خط پیامکی برای پیامک‌های متنی و انبوه.</p>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">شناسه پترن OTP (TemplateId)</label>
+                    <input type="text" name="sms_otp_template_id" value="{{ settings.sms_otp_template_id }}" dir="ltr" placeholder="مثال: 100000"
+                           class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-mono text-xs focus:bg-white focus:outline-none focus:border-blue-500">
+                    <p class="text-[11px] text-slate-400 mt-1">جهت ارسال سریع و عبور از بلک‌لیست مخابرات با پارامتر Code.</p>
+                </div>
+                <div class="sm:col-span-2 flex items-center pt-6">
+                    <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-xs text-slate-700">
+                        <input type="checkbox" name="sms_is_active" value="true" {% if settings.sms_is_active %}checked{% endif %} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-4 h-4">
+                        <span>ارسال واقعی پیامک فعال باشد (در صورت غیرفعال بودن پیام‌ها در وضعیت شبیه‌سازی لاگ می‌شوند)</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
         <!-- ارتباطات -->
         <section class="space-y-4">
-            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۴. شبکه‌های اجتماعی و ارتباط با مشتری</h3>
+            <h3 class="font-bold text-sm text-slate-900 pb-3 border-b border-slate-100">۵. شبکه‌های اجتماعی و ارتباط با مشتری</h3>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block font-semibold text-slate-700 mb-1.5">تلگرام</label>

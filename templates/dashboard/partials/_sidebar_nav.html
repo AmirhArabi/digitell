@@ -49,6 +49,17 @@
                 {% if open_ticket_count %}<span class="side-badge side-badge-alert">{{ open_ticket_count }}</span>{% endif %}
             </a>
         </li>
+        <li>
+            <a href="{% url 'dashboard:sms' %}"
+               class="side-item{% if 'sms' in url_name %} is-active{% endif %}"
+               title="سامانه پیامک و کمپین‌ها"
+               {% if 'sms' in url_name %}aria-current="page"{% endif %}>
+                <span class="side-icon" aria-hidden="true">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </span>
+                <span class="side-label">سامانه پیامک</span>
+            </a>
+        </li>
     </ul>
 
     <p class="side-group-label">مدیریت فروشگاه</p>

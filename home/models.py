@@ -61,6 +61,29 @@ class SiteSetting(models.Model):
         verbose_name="روش ورود و ثبت‌نام مشتریان",
         help_text="تعیین شیوه احراز هویت با شماره تماس در فروشگاه: رمز عبور یا کد پیامکی OTP"
     )
+    sms_api_key = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="کلید وب‌سرویس SMS.ir (X-API-KEY)",
+        help_text="کلید اختصاصی وب‌سرویس دریافتی از پنل پیامک SMS.ir"
+    )
+    sms_line_number = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="شماره خط اختصاصی پیامک",
+        help_text="شماره خط پیامکی برای ارسال‌های متنی و انبوه (مثلاً ۳۰۰۰...)"
+    )
+    sms_otp_template_id = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="شناسه قالب تأیید هویت OTP (TemplateId)",
+        help_text="شناسه الگوی اعتبارسنجی تأییدشده در SMS.ir (جهت ارسال سریع و عبور از بلک‌لیست)"
+    )
+    sms_is_active = models.BooleanField(
+        default=True,
+        verbose_name="ارسال پیامک فعال باشد",
+        help_text="در صورت غیرفعال بودن، پیامک‌ها در حالت شبیه‌سازی/لاگ باقی می‌مانند"
+    )
     about_us = models.TextField(blank=True, verbose_name="درباره فروشگاه")
     footer_note = models.CharField(max_length=255, blank=True, verbose_name="متن پاورقی سایت")
 

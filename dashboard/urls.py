@@ -11,6 +11,8 @@ urlpatterns = [
     path('carts/<int:pk>/send-sms/', views.cart_send_recovery_sms_view, name='cart_send_sms'),
     path('carts/bulk-sms/', views.cart_bulk_sms_view, name='cart_bulk_sms'),
     path('carts/campaign/', views.cart_recovery_campaign_view, name='cart_recovery_campaign'),
+    # سامانه پیامک
+    path('sms/', views.sms_dashboard_view, name='sms'),
     # admin login
     path('admin-login/', views.admin_login_view, name='admin_login'),
     # نمای کلی و گزارش‌ها
