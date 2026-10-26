@@ -1,0 +1,291 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+
+{% block title %}جزئیات سبد خرید #{{ cart.id }} | پنل دیجی تل{% endblock %}
+{% block header_title %}جزئیات و بازیابی سبد خرید #{{ cart.id }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- Top Navigation & Actions -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'dashboard:cart_list' %}" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                <span>←</span>
+                <span>بازگشت به فهرست سبدها</span>
+            </a>
+            <span class="text-slate-300">|</span>
+            <span class="text-xs font-bold text-slate-500">شناسه سبد: <strong class="text-slate-800">#{{ cart.id }}</strong></span>
+            
+            {% with status=cart.lifecycle_status %}
+                {% if status == 'abandoned' %}
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">سبد رهاشده</span>
+                {% elif status == 'active' %}
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">سبد فعال</span>
+                {% elif status == 'converted' %}
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">تبدیل‌شده به سفارش</span>
+                {% else %}
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">سبد خالی</span>
+                {% endif %}
+            {% endwith %}
+
+            {% if cart.recovery_status == 'recovered' %}
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">بازیابی موفق ✅</span>
+            {% elif cart.recovery_status == 'contacted' %}
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">تماس برقرار شده</span>
+            {% endif %}
+        </div>
+
+        {% if cart.converted_order %}
+            <div>
+                <a href="{% url 'dashboard:order_detail' cart.converted_order.pk %}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5">
+                    <span>مشاهده سفارش منتسب: {{ cart.converted_order.order_number }}</span>
+                    <span>→</span>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Main Column (Left): Items & History -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- Items Table -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="font-bold text-sm text-slate-800">اقلام موجود در سبد ({{ cart.total_items }} قلم کالا)</h3>
+                    <span class="text-xs font-bold text-slate-500">ارزش تخمینی کل: <strong class="text-slate-900">{{ cart.formatted_total_price }} تومان</strong></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                            <tr>
+                                <th class="py-3 px-4">کالا</th>
+                                <th class="py-3 px-4">کد (SKU)</th>
+                                <th class="py-3 px-4">قیمت واحد</th>
+                                <th class="py-3 px-4 text-center">تعداد</th>
+                                <th class="py-3 px-4">مبلغ ردیف</th>
+                                <th class="py-3 px-4">موجودی فعلی</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for item in items %}
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="py-3 px-4">
+                                        <div class="font-bold text-slate-900">{{ item.product.title }}</div>
+                                        <div class="text-[10px] text-slate-400">{{ item.product.category.name|default:"-" }}</div>
+                                    </td>
+                                    <td class="py-3 px-4 font-mono text-slate-600">{{ item.product.sku|default:"-" }}</td>
+                                    <td class="py-3 px-4 font-mono text-slate-800">{{ item.product.price|intcomma }} تومان</td>
+                                    <td class="py-3 px-4 text-center font-bold font-mono">{{ item.quantity }}</td>
+                                    <td class="py-3 px-4 font-black text-slate-900">{{ item.line_total|intcomma }} تومان</td>
+                                    <td class="py-3 px-4">
+                                        {% if item.product.stock_qty >= item.quantity %}
+                                            <span class="text-emerald-600 font-bold">موجود ({{ item.product.stock_qty }})</span>
+                                        {% else %}
+                                            <span class="text-rose-600 font-bold">کسری موجودی (تنها {{ item.product.stock_qty }} عدد)</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="py-8 text-center text-slate-400 font-bold">سبد خرید خالی است.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- History of Recovery Attempts -->
+            <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+                <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                    <h3 class="font-bold text-sm text-slate-800">تاریخچه تلاش‌های پیگیری و پیامک‌ها</h3>
+                    <span class="text-xs font-bold text-slate-400">{{ attempts.count }} تلاش ثبت‌شده</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs text-right">
+                        <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                            <tr>
+                                <th class="py-3 px-4">گام</th>
+                                <th class="py-3 px-4">نوع پیام</th>
+                                <th class="py-3 px-4">گیرنده</th>
+                                <th class="py-3 px-4">وضعیت</th>
+                                <th class="py-3 px-4">کد تخفیف</th>
+                                <th class="py-3 px-4">تاریخ ارسال</th>
+                                <th class="py-3 px-4">جزئیات / خطا</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            {% for attempt in attempts %}
+                                <tr class="hover:bg-slate-50/50">
+                                    <td class="py-3 px-4 font-mono font-bold">گام {{ attempt.step }}</td>
+                                    <td class="py-3 px-4">{{ attempt.get_message_type_display }}</td>
+                                    <td class="py-3 px-4 font-mono text-[11px]">{{ attempt.recipient_phone|default:"-" }}</td>
+                                    <td class="py-3 px-4">
+                                        {% if attempt.status == 'sent' %}
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700">ارسال شد</span>
+                                        {% elif attempt.status == 'failed' %}
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700">خطا</span>
+                                        {% elif attempt.status == 'skipped' %}
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">رد شد</span>
+                                        {% else %}
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">{{ attempt.get_status_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-4 font-mono font-bold text-indigo-600">
+                                        {{ attempt.coupon.code|default:"-" }}
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-500 text-[11px]">
+                                        {{ attempt.sent_at|date:"Y/m/d H:i"|default:attempt.created_at|date:"Y/m/d H:i" }}
+                                    </td>
+                                    <td class="py-3 px-4 text-slate-500 max-w-xs truncate" title="{{ attempt.error_detail|default:attempt.skip_reason|default:attempt.message_text }}">
+                                        {{ attempt.skip_reason|default:attempt.error_detail|default:attempt.message_text|slice:":40" }}...
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="py-8 text-center text-slate-400 font-bold">تاکنون تلاشی برای این سبد ثبت نشده است.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Note & Status Form -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 class="font-bold text-sm text-slate-800">یادداشت داخلی و وضعیت دستی</h3>
+                <form method="post" class="space-y-3 text-xs">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="save_note">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block font-semibold text-slate-600 mb-1">تغییر وضعیت بازیابی</label>
+                            <select name="recovery_status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                                {% for val, label in recovery_choices %}
+                                    <option value="{{ val }}" {% if cart.recovery_status == val %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">یادداشت داخلی مدیر درباره این مشتری/سبد</label>
+                        <textarea name="admin_note" rows="3" placeholder="یادداشت‌های پیگیری تلفنی، توضیحات مشتری..."
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:outline-none focus:bg-white">{{ cart.admin_note }}</textarea>
+                    </div>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold transition">
+                        ذخیره یادداشت و وضعیت
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar Column (Right): Customer Details & Send SMS -->
+        <div class="space-y-6">
+
+            <!-- Customer Card -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 class="font-bold text-sm text-slate-800">اطلاعات مشتری</h3>
+                <div class="space-y-2.5 text-xs">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <span class="text-slate-400">نام:</span>
+                        <span class="font-bold text-slate-900">{{ cart.customer_display_name }}</span>
+                    </div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <span class="text-slate-400">شماره موبایل:</span>
+                        <span class="font-bold font-mono text-slate-900">{{ cart.customer_phone|default:"مهمان (بدون شماره)" }}</span>
+                    </div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <span class="text-slate-400">عضویت در خبرنامه پیامکی:</span>
+                        {% if cart.user %}
+                            {% if cart.user.sms_marketing_subscribed %}
+                                <span class="text-emerald-600 font-bold">بله (مجاز به پیامک تبلیغاتی)</span>
+                            {% else %}
+                                <span class="text-rose-600 font-bold">انصراف داده (ارسال ممنوع)</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-slate-500 font-bold">مهمان (بررسی در تسویه)</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+                        <span class="text-slate-400">تاریخ ایجاد سبد:</span>
+                        <span class="text-slate-700">{{ cart.created_at|date:"Y/m/d H:i" }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-400">آخرین فعالیت:</span>
+                        <span class="text-slate-700">{{ cart.updated_at|timesince }} پیش</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recovery Action Box -->
+            <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-sm text-slate-800">ارسال پیامک بازیابی</h3>
+                    {% if is_eligible %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">واجد شرایط</span>
+                    {% else %}
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200" title="{{ eligibility_reason }}">عدم صلاحیت</span>
+                    {% endif %}
+                </div>
+
+                {% if not is_eligible %}
+                    <div class="p-3 bg-rose-50 text-rose-700 text-xs rounded-xl font-bold">
+                        علت عدم صلاحیت: {{ eligibility_reason }}
+                    </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'dashboard:cart_send_sms' cart.pk %}" class="space-y-3 text-xs">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">نوع اقدام و پیام</label>
+                        <select name="message_type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            <option value="reminder">گام ۱: یادآوری سبد بدون تخفیف</option>
+                            <option value="discount">گام ۲: پیشنهاد کد تخفیف اختصاصی</option>
+                            <option value="custom">پیامک اختصاصی اپراتور</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1">متن پیامک دلخواه (اختیاری)</label>
+                        <textarea name="custom_text" rows="3" placeholder="در صورت خالی بودن، متن قالب کمپین ارسال خواهد شد. برچسب‌های مجاز: {name}, {cart_url}, {coupon_code}"
+                                  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:outline-none focus:bg-white"></textarea>
+                    </div>
+
+                    <div class="space-y-1.5 pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+                            <input type="checkbox" name="include_coupon" value="true" class="rounded border-slate-300 text-blue-600">
+                            <span>تولید خودکار کد تخفیف اختصاصی</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-amber-700 font-bold">
+                            <input type="checkbox" name="dry_run" value="true" class="rounded border-slate-300 text-amber-600">
+                            <span>حالت آزمایشی (بدون ارسال واقعی SMS)</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" onclick="return confirm('آیا از ارسال پیامک برای این مشتری مطمئن هستید؟');"
+                            class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition flex items-center justify-center gap-2">
+                        <span>ارسال پیامک بازیابی</span>
+                        <span>✉️</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Campaign Info Snippet -->
+            {% if active_campaign %}
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs space-y-2">
+                    <span class="font-bold text-slate-700 block">کمپین فعال: {{ active_campaign.name }}</span>
+                    <p class="text-slate-500 leading-relaxed text-[11px]">
+                        آستانه رهاشدگی: {{ active_campaign.abandonment_threshold_hours }} ساعت |
+                        تخفیف: {{ active_campaign.discount_value }} {{ active_campaign.get_discount_type_display }}
+                    </p>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -158,3 +158,77 @@ def cart_remove_view(request, item_id):
         return render(request, 'cart/partials/cart_table.html', context)
 
     return redirect('cart:cart_detail')
+
+
+def cart_recover_view(request, token):
+    """
+    بازیابی امن سبد خرید از طریق لینک پیامک یادآوری:
+    - بررسی صحت و انقضای توکن
+    - اعتبارسنجی موجودی و قیمت جاری اقلام
+    - هماهنگ‌سازی سشن یا هدایت برای ورود
+    - اعمال خودکار کد تخفیف اختصاصی در صورت وجود
+    """
+    from django.utils import timezone
+    cart = Cart.objects.filter(recovery_token=token).prefetch_related('items__product').first()
+    if not cart:
+        messages.error(request, "لینک بازیابی سبد خرید نامعتبر است.")
+        return redirect('cart:cart_detail')
+
+    if cart.recovery_token_expires_at and cart.recovery_token_expires_at < timezone.now():
+        messages.warning(request, "مهلت استفاده از این لینک بازیابی به پایان رسیده است.")
+        return redirect('cart:cart_detail')
+
+    if cart.converted_order_id:
+        messages.info(request, "این سبد خرید قبلاً به سفارش تبدیل شده است.")
+        return redirect('cart:cart_detail')
+
+    if not cart.user:
+        if not request.session.session_key:
+            request.session.create()
+        if request.user.is_authenticated:
+            user_cart, _ = Cart.objects.get_or_create(user=request.user)
+            for item in cart.items.all():
+                u_item, created = CartItem.objects.get_or_create(cart=user_cart, product=item.product)
+                if not created:
+                    u_item.quantity += item.quantity
+                else:
+                    u_item.quantity = item.quantity
+                u_item.save()
+            cart.recovery_status = 'recovered'
+            cart.save(update_fields=['recovery_status'])
+        else:
+            # همگام‌سازی سشن مهمان
+            if cart.session_key != request.session.session_key:
+                # اگر سشن متفاوتی در همان مرورگر هست، انتقال اقلام
+                curr_cart, _ = Cart.objects.get_or_create(session_key=request.session.session_key)
+                for item in cart.items.all():
+                    c_item, created = CartItem.objects.get_or_create(cart=curr_cart, product=item.product)
+                    if not created:
+                        c_item.quantity = max(c_item.quantity, item.quantity)
+                    else:
+                        c_item.quantity = item.quantity
+                    c_item.save()
+    else:
+        if not request.user.is_authenticated:
+            messages.info(request, f"سلام {cart.customer_display_name}! لطفاً جهت مشاهده سبد خرید خود وارد شوید.")
+            return redirect(f"/accounts/login/?next=/cart/recover/{token}/")
+        elif request.user != cart.user:
+            messages.warning(request, "شما با حساب کاربری دیگری وارد شده‌اید. لطفاً با حساب اصلی خود وارد شوید.")
+            return redirect('cart:cart_detail')
+
+    last_attempt = cart.recovery_attempts.filter(coupon__isnull=False, status='sent').order_by('-created_at').first()
+    if last_attempt and last_attempt.coupon and not last_attempt.coupon.is_expired:
+        request.session['coupon_code'] = last_attempt.coupon.code
+        messages.success(request, f"سبد خرید شما بازیابی شد و کد تخفیف «{last_attempt.coupon.code}» برای شما فعال گردید!")
+    else:
+        messages.success(request, "سبد خرید شما با موفقیت بازیابی شد.")
+
+    for item in cart.items.all():
+        if item.product.available_qty < item.quantity:
+            messages.warning(
+                request,
+                f"موجودی کالای «{item.product.title}» محدود است (موجودی فعلی: {item.product.available_qty})."
+            )
+
+    return redirect('cart:cart_detail')
+

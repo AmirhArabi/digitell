@@ -1,0 +1,270 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+
+{% block title %}مدیریت و بازیابی سبدهای خرید | پنل دیجی تل{% endblock %}
+{% block header_title %}مدیریت و بازیابی سبدهای خرید ({{ total_count }} سبد){% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-7xl">
+
+    <!-- KPI Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-slate-400 block mb-1">کل سبدهای خرید</span>
+                <span class="text-2xl font-black text-slate-900">{{ total_count|intcomma }}</span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                🛒
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-amber-500 block mb-1">سبدهای رهاشده</span>
+                <span class="text-2xl font-black text-amber-600">{{ abandoned_count|intcomma }}</span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                ⏳
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-indigo-500 block mb-1">در حال پیگیری</span>
+                <span class="text-2xl font-black text-indigo-600">{{ contacted_count|intcomma }}</span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                📱
+            </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div>
+                <span class="text-xs font-bold text-emerald-500 block mb-1">بازیابی‌شده (خرید موفق)</span>
+                <span class="text-2xl font-black text-emerald-600">{{ recovered_count|intcomma }}</span>
+            </div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                ✅
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick filter buttons & Campaign Link -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs font-bold">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="text-slate-400 pl-2">فیلتر چرخه عمر:</span>
+            <a href="{% url 'dashboard:cart_list' %}" class="px-3 py-1.5 rounded-xl transition {% if not status_filter %}bg-blue-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">همه ({{ total_count }})</a>
+            <a href="?status=abandoned" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'abandoned' %}bg-amber-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای رهاشده ({{ abandoned_count }})</a>
+            <a href="?status=active" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'active' %}bg-emerald-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای فعال</a>
+            <a href="?status=converted" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'converted' %}bg-purple-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">تبدیل‌شده به سفارش</a>
+            <a href="?recovery=contacted" class="px-3 py-1.5 rounded-xl transition {% if recovery_filter == 'contacted' %}bg-indigo-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">پیامک ارسال‌شده ({{ contacted_count }})</a>
+        </div>
+        <div>
+            <a href="{% url 'dashboard:cart_recovery_campaign' %}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition inline-flex items-center gap-2">
+                <span>⚙️ تنظیمات کمپین خودکار</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Advanced Search Form -->
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+        <div class="lg:col-span-2">
+            <label class="block font-semibold text-slate-600 mb-1.5">جستجو (شناسه، نام مشتری، موبایل، سشن)</label>
+            <input type="search" name="q" value="{{ search_query }}" placeholder="نام، شماره ۰۹۱۲ یا کد سبد..."
+                   class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">وضعیت بازیابی</label>
+            <select name="recovery" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                <option value="">همه وضعیت‌ها</option>
+                {% for value, label in recovery_choices %}
+                    <option value="{{ value }}" {% if recovery_filter == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="flex items-end gap-2">
+            <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">جستجو</button>
+            <a href="{% url 'dashboard:cart_list' %}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">پاکسازی</a>
+        </div>
+    </form>
+
+    <!-- Bulk Actions & Carts Table Form -->
+    <form method="post" action="{% url 'dashboard:cart_bulk_sms' %}" id="bulkForm">
+        {% csrf_token %}
+        <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-xs">
+            
+            <!-- Bulk Toolbar -->
+            <div class="p-4 bg-slate-50/70 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-3">
+                    <label class="inline-flex items-center gap-2 cursor-pointer font-bold text-slate-700">
+                        <input type="checkbox" id="selectAll" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span>انتخاب همه سبدها</span>
+                    </label>
+                    <span id="selectedCount" class="text-slate-400 font-bold">(۰ سبد انتخاب شده)</span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" name="message" placeholder="متن پیامک گروهی (اختیاری؛ خالی = پیامک قالب کمپین)" class="bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs w-64 focus:outline-none">
+                    <label class="inline-flex items-center gap-1.5 text-slate-600 cursor-pointer">
+                        <input type="checkbox" name="include_coupon" value="true" class="rounded border-slate-300 text-blue-600">
+                        <span>تولید کد تخفیف</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5 text-slate-600 cursor-pointer">
+                        <input type="checkbox" name="dry_run" value="true" class="rounded border-slate-300 text-amber-600">
+                        <span class="text-amber-700 font-bold">آزمایشی (Dry-run)</span>
+                    </label>
+                    <button type="submit" onclick="return confirm('آیا از ارسال پیامک برای سبدهای انتخاب‌شده اطمینان دارید؟');" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">
+                        ارسال پیامک گروهی
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-right">
+                    <thead class="bg-slate-50 text-slate-500 border-b border-slate-200/80 font-bold">
+                        <tr>
+                            <th class="py-3.5 px-4 w-10 text-center">#</th>
+                            <th class="py-3.5 px-4">شناسه</th>
+                            <th class="py-3.5 px-4">مشتری و تماس</th>
+                            <th class="py-3.5 px-4">اقلام داخل سبد</th>
+                            <th class="py-3.5 px-4">ارزش تخمینی</th>
+                            <th class="py-3.5 px-4">آخرین فعالیت</th>
+                            <th class="py-3.5 px-4">چرخه عمر</th>
+                            <th class="py-3.5 px-4">وضعیت بازیابی</th>
+                            <th class="py-3.5 px-4">پیامک‌ها</th>
+                            <th class="py-3.5 px-4 text-center">عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        {% for cart in carts %}
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="py-3.5 px-4 text-center">
+                                    <input type="checkbox" name="carts" value="{{ cart.id }}" class="cart-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                                </td>
+                                <td class="py-3.5 px-4 font-mono font-bold text-slate-900">
+                                    #{{ cart.id }}
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900">{{ cart.customer_display_name }}</div>
+                                    <div class="text-slate-500 font-mono text-[11px]">
+                                        {{ cart.customer_phone|default:"بدون شماره تماس" }}
+                                    </div>
+                                    {% if cart.session_key and not cart.user %}
+                                        <div class="text-[10px] text-slate-400 font-mono truncate max-w-[120px]" title="{{ cart.session_key }}">
+                                            سشن: {{ cart.session_key|slice:":8" }}...
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 px-4 max-w-xs">
+                                    <div class="flex flex-wrap gap-1.5 items-center">
+                                        {% for item in cart.items.all %}
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 text-slate-800 text-[11px] font-medium border border-slate-200">
+                                                <span>{{ item.product.title }}</span>
+                                                <span class="bg-blue-600 text-white rounded-full px-1.5 text-[9px] font-bold">{{ item.quantity }}</span>
+                                            </span>
+                                        {% empty %}
+                                            <span class="text-slate-400 text-[11px]">سبد خالی است</span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 font-black text-slate-900 whitespace-nowrap">
+                                    {{ cart.formatted_total_price }} تومان
+                                </td>
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    <div class="text-slate-700">{{ cart.updated_at|date:"Y/m/d H:i" }}</div>
+                                    <div class="text-[10px] text-slate-400">{{ cart.updated_at|timesince }} پیش</div>
+                                </td>
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    {% with status=cart.lifecycle_status %}
+                                        {% if status == 'abandoned' %}
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">رهاشده</span>
+                                        {% elif status == 'active' %}
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">فعال</span>
+                                        {% elif status == 'converted' %}
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-50 text-purple-700 border border-purple-200">تبدیل‌شده</span>
+                                        {% else %}
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">خالی</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td class="py-3.5 px-4 whitespace-nowrap">
+                                    {% if cart.recovery_status == 'recovered' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">بازیابی‌شده ✅</span>
+                                    {% elif cart.recovery_status == 'contacted' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">پیامک ارسال‌شده</span>
+                                    {% elif cart.recovery_status == 'scheduled' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">برنامه‌ریزی‌شده</span>
+                                    {% elif cart.recovery_status == 'excluded' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">مستثناشده</span>
+                                    {% elif cart.recovery_status == 'failed' %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">ناموفق</span>
+                                    {% else %}
+                                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-50 text-slate-500 border border-slate-200">پیگیری‌نشده</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3.5 px-4 text-center font-bold font-mono">
+                                    {{ cart.attempts_count }}
+                                </td>
+                                <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="{% url 'dashboard:cart_detail' cart.pk %}" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg font-bold transition text-xs">
+                                            جزئیات و اقدام
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="10" class="py-12 text-center text-slate-400 font-bold">
+                                    هیچ سبد خریدی با شرایط مورد نظر یافت نشد.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if carts.has_other_pages %}
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-slate-600">
+                    <div>
+                        صفحه {{ carts.number }} از {{ carts.paginator.num_pages }}
+                    </div>
+                    <div class="flex items-center gap-1">
+                        {% if carts.has_previous %}
+                            <a href="?page={{ carts.previous_page_number }}&status={{ status_filter }}&recovery={{ recovery_filter }}&q={{ search_query }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">قبلی</a>
+                        {% endif %}
+                        {% if carts.has_next %}
+                            <a href="?page={{ carts.next_page_number }}&status={{ status_filter }}&recovery={{ recovery_filter }}&q={{ search_query }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">بعدی</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<script>
+    // Selection management for bulk actions
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.cart-checkbox');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateCount() {
+        const count = document.querySelectorAll('.cart-checkbox:checked').length;
+        selectedCount.textContent = `(${count} سبد انتخاب شده)`;
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateCount();
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateCount);
+    });
+</script>
+{% endblock %}

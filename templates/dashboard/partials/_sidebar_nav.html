@@ -130,6 +130,11 @@
                 </a>
             </li>
             <li>
+                <a href="{% url 'dashboard:cart_list' %}" class="side-subitem{% if 'cart' in url_name %} is-active{% endif %}" {% if 'cart' in url_name %}aria-current=\"page\"{% endif %}>
+                    <span class="side-dot" aria-hidden="true"></span><span class="side-label">سبدهای خرید</span>
+                </a>
+            </li>
+            <li>
                 <a href="{% url 'dashboard:coupons' %}" class="side-subitem{% if 'coupon' in url_name %} is-active{% endif %}" {% if 'coupon' in url_name %}aria-current="page"{% endif %}>
                     <span class="side-dot" aria-hidden="true"></span><span class="side-label">کدهای تخفیف</span>
                 </a>

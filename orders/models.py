@@ -35,6 +35,20 @@ class Coupon(models.Model):
     )
     max_uses = models.PositiveIntegerField(default=0, verbose_name="سقف تعداد استفاده", help_text="۰ = بدون محدودیت")
     used_count = models.PositiveIntegerField(default=0, verbose_name="تعداد استفاده شده")
+    for_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='personal_coupons',
+        verbose_name="اختصاصی کاربر"
+    )
+    source = models.CharField(
+        max_length=50,
+        blank=True,
+        default='',
+        verbose_name="منبع تولید کد"
+    )
     valid_from = models.DateTimeField(null=True, blank=True, verbose_name="شروع اعتبار")
     valid_until = models.DateTimeField(null=True, blank=True, verbose_name="پایان اعتبار")
     is_active = models.BooleanField(default=True, verbose_name="فعال")
@@ -62,7 +76,7 @@ class Coupon(models.Model):
             return None
         return max(self.max_uses - self.used_count, 0)
 
-    def validate_for(self, amount):
+    def validate_for(self, amount, user=None):
         """(مجاز بودن، پیام خطا، مبلغ تخفیف) را برمی‌گرداند."""
         now = timezone.now()
         if not self.is_active:
@@ -73,6 +87,8 @@ class Coupon(models.Model):
             return False, "مهلت استفاده از این کد تخفیف به پایان رسیده است.", 0
         if self.max_uses and self.used_count >= self.max_uses:
             return False, "ظرفیت استفاده از این کد تخفیف تکمیل شده است.", 0
+        if self.for_user_id and (not user or getattr(user, 'id', None) != self.for_user_id):
+            return False, "این کد تخفیف فقط برای حساب کاربری ویژه مجاز است.", 0
         if amount < self.min_order_amount:
             return False, f"حداقل مبلغ سفارش برای این کد {self.min_order_amount:,} تومان است.", 0
 

@@ -1,0 +1,133 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load humanize %}
+
+{% block title %}تنظیمات کمپین بازیابی سبد خرید | پنل دیجی تل{% endblock %}
+{% block header_title %}تنظیمات کمپین و شاخص‌های بازیابی سبدهای رهاشده{% endblock %}
+
+{% block content %}
+<div class="space-y-6 max-w-5xl">
+
+    <!-- Back to carts -->
+    <div>
+        <a href="{% url 'dashboard:cart_list' %}" class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold transition inline-flex items-center gap-1.5 hover:bg-slate-50">
+            <span>←</span>
+            <span>بازگشت به فهرست سبدهای خرید</span>
+        </a>
+    </div>
+
+    <!-- Campaign Analytics Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+            <span class="text-xs font-bold text-slate-400 block mb-1">کل تلاش‌های بازیابی</span>
+            <span class="text-2xl font-black text-slate-900">{{ total_attempts|intcomma }}</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+            <span class="text-xs font-bold text-blue-500 block mb-1">پیامک‌های تحویل‌شده</span>
+            <span class="text-2xl font-black text-blue-600">{{ successful_sms|intcomma }}</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+            <span class="text-xs font-bold text-emerald-500 block mb-1">سفارش‌های منتسب</span>
+            <span class="text-2xl font-black text-emerald-600">{{ converted_attempts|intcomma }}</span>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
+            <span class="text-xs font-bold text-indigo-500 block mb-1">نرخ تبدیل کمپین</span>
+            <span class="text-2xl font-black text-indigo-600">{{ conversion_rate }}٪</span>
+        </div>
+    </div>
+
+    <!-- Campaign Form -->
+    <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-6">
+        <div class="border-b border-slate-100 pb-4 flex items-center justify-between">
+            <div>
+                <h3 class="font-bold text-base text-slate-900">قواعد و پیام‌های کمپین هوشمند بازیابی</h3>
+                <p class="text-xs text-slate-400 mt-1">این تنظیمات توسط فرمان پس‌زمینه (Management Command) برای ارسال خودکار پیامک‌ها استفاده می‌شود.</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-xs font-bold {% if campaign.is_active %}bg-emerald-50 text-emerald-700{% else %}bg-slate-100 text-slate-500{% endif %}">
+                {% if campaign.is_active %}کمپین فعال است{% else %}کمپین غیرفعال{% endif %}
+            </span>
+        </div>
+
+        <form method="post" class="space-y-5 text-xs">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">نام کمپین</label>
+                    <input type="text" name="name" value="{{ campaign.name }}" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs focus:bg-white focus:outline-none">
+                </div>
+                <div class="flex items-center pt-6">
+                    <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
+                        <input type="checkbox" name="is_active" value="true" {% if campaign.is_active %}checked{% endif %} class="rounded border-slate-300 text-blue-600 w-4 h-4">
+                        <span>فعال بودن فرآیند خودکار کمپین</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Delays and Thresholds -->
+            <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/70 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">آستانه رهاشدگی (ساعت)</label>
+                    <input type="number" name="abandonment_threshold_hours" value="{{ campaign.abandonment_threshold_hours }}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    <span class="text-[10px] text-slate-400 mt-1 block">پیش‌فرض: ۲۴ ساعت عدم فعالیت</span>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">تأخیر پیام مرحله ۱ (ساعت)</label>
+                    <input type="number" name="step1_delay_hours" value="{{ campaign.step1_delay_hours }}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    <span class="text-[10px] text-slate-400 mt-1 block">فاصله پس از رهاشدگی</span>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">تأخیر پیام مرحله ۲ (ساعت)</label>
+                    <input type="number" name="step2_delay_hours" value="{{ campaign.step2_delay_hours }}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    <span class="text-[10px] text-slate-400 mt-1 block">فاصله پس از مرحله اول</span>
+                </div>
+            </div>
+
+            <!-- Discount rules -->
+            <div class="p-4 bg-slate-50/80 rounded-2xl border border-slate-200/70 space-y-4">
+                <h4 class="font-bold text-slate-800 text-xs">قواعد کد تخفیف اختصاصی (مرحله ۲)</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1.5">نوع تخفیف</label>
+                        <select name="discount_type" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                            <option value="percent" {% if campaign.discount_type == 'percent' %}selected{% endif %}>درصدی (٪)</option>
+                            <option value="amount" {% if campaign.discount_type == 'amount' %}selected{% endif %}>مبلغ ثابت (تومان)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1.5">مقدار تخفیف</label>
+                        <input type="number" name="discount_value" value="{{ campaign.discount_value }}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1.5">حداکثر سقف تخفیف (تومان)</label>
+                        <input type="number" name="discount_max_amount" value="{{ campaign.discount_max_amount|default:'' }}" placeholder="اختیاری" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-1.5">اعتبار کوپن (ساعت)</label>
+                        <input type="number" name="discount_validity_hours" value="{{ campaign.discount_validity_hours }}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Templates -->
+            <div class="space-y-4">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">قالب پیامک مرحله ۱ (یادآوری بدون تخفیف)</label>
+                    <textarea name="message_template_step1" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none">{{ campaign.message_template_step1 }}</textarea>
+                    <span class="text-[10px] text-slate-400 mt-1 block">برچسب‌های قابل جایگذاری: {name}, {cart_url}</span>
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1.5">قالب پیامک مرحله ۲ (پیشنهاد تخفیف)</label>
+                    <textarea name="message_template_step2" rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:bg-white focus:outline-none">{{ campaign.message_template_step2 }}</textarea>
+                    <span class="text-[10px] text-slate-400 mt-1 block">برچسب‌های قابل جایگذاری: {name}, {cart_url}, {coupon_code}, {discount_desc}</span>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+                <button type="submit" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">
+                    ذخیره تغییرات کمپین
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

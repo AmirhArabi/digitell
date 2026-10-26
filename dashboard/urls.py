@@ -5,6 +5,14 @@ from . import views
 app_name = 'dashboard'
 
 urlpatterns = [
+    path('api/category-attributes/<int:pk>/', views.category_attributes_api, name='category_attributes_api'),
+    path('carts/', views.cart_list_view, name='cart_list'),
+    path('carts/<int:pk>/', views.cart_detail_view, name='cart_detail'),
+    path('carts/<int:pk>/send-sms/', views.cart_send_recovery_sms_view, name='cart_send_sms'),
+    path('carts/bulk-sms/', views.cart_bulk_sms_view, name='cart_bulk_sms'),
+    path('carts/campaign/', views.cart_recovery_campaign_view, name='cart_recovery_campaign'),
+    # admin login
+    path('admin-login/', views.admin_login_view, name='admin_login'),
     # نمای کلی و گزارش‌ها
     path('', views.overview_view, name='overview'),
     path('reports/', views.reports_view, name='reports'),

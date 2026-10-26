@@ -7,17 +7,15 @@
     <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
 
         <div class="text-center">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-primary to-primary-dark text-white flex items-center justify-center font-black text-2xl mx-auto mb-3.5 shadow-lg shadow-primary/25 border border-primary-light/30">
+            <div class="w-16 h-16 rounded-2xl bg-white flex items-center justify-center mx-auto mb-3.5 shadow-lg border border-primary-light/30">
+                <img src="/media/logo-digi.webp" alt="دیجی تل" class="w-full h-full object-contain" />
+            </div>
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004.07 7.07M16 11a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </div>
             <h1 class="text-xl font-black text-slate-900">
-                {% if login_method == 'otp' %}
-                    ورود یا ثبت‌نام در دیجی تل
-                {% else %}
-                    ورود با شماره موبایل و رمز عبور
-                {% endif %}
+                ورود یا ثبت‌نام در دیجی تل
             </h1>
             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
                 {% if login_method == 'otp' %}
@@ -29,12 +27,7 @@
         </div>
 
         <!-- Mode Indicator Badge -->
-        <div class="flex items-center justify-center">
-            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-bold {% if login_method == 'otp' %}bg-primary-soft text-primary border border-primary/20{% else %}bg-primary-soft text-primary border border-primary/20{% endif %}">
-                <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                <span>روش ورود فعال: {% if login_method == 'otp' %}کد پیامکی (OTP){% else %}رمز عبور{% endif %}</span>
-            </span>
-        </div>
+
 
         {% if is_new_user %}
             <div class="p-3.5 rounded-2xl bg-primary-soft/80 border border-primary/20 text-primary-dark text-xs font-semibold leading-relaxed">

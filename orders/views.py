@@ -50,7 +50,8 @@ def _payment_summary(request, cart):
     if code:
         coupon = Coupon.objects.filter(code=code).first()
         if coupon:
-            is_valid, message, coupon_discount = coupon.validate_for(cart.total_price)
+            user = request.user if request.user.is_authenticated else None
+            is_valid, message, coupon_discount = coupon.validate_for(cart.total_price, user=user)
             if not is_valid:
                 coupon_error = message
                 coupon_discount = 0
@@ -91,7 +92,8 @@ def apply_coupon_view(request):
             if not coupon:
                 messages.error(request, "کد تخفیف وارد‌شده معتبر نیست.")
             else:
-                is_valid, message, _ = coupon.validate_for(cart.total_price)
+                user = request.user if request.user.is_authenticated else None
+                is_valid, message, _ = coupon.validate_for(cart.total_price, user=user)
                 if is_valid:
                     request.session['coupon_code'] = code
                     messages.success(request, f"کد تخفیف «{code}» اعمال شد.")
@@ -256,6 +258,11 @@ def checkout_view(request):
                     )
 
                 order.reserve_stock()
+                try:
+                    from cart.recovery_services import track_order_recovery
+                    track_order_recovery(order, cart)
+                except Exception:
+                    pass
         except InsufficientStockError as error:
             messages.error(request, _stock_error_message(error))
             return render(request, 'orders/checkout.html', {

@@ -204,3 +204,58 @@ class OTPCode(models.Model):
         return not self.is_used and timezone.now() <= self.expires_at
 
 
+
+# --------------------------------------------------------------------------
+# باشگاه مشتریان (Loyalty)
+# --------------------------------------------------------------------------
+class CustomerProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name='شماره موبایل')
+    birth_date = models.DateField(null=True, blank=True, verbose_name='تاریخ تولد')
+    preferred_category = models.CharField(max_length=100, blank=True, verbose_name='دسته‌بندی مورد علاقه')
+    segment = models.CharField(max_length=50, blank=True, verbose_name='بخش بازاریابی')
+
+    def __str__(self):
+        return f"پروفایل {self.user.username or self.user.id}"
+
+class LoyaltyPoint(models.Model):
+    profile = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='points')
+    amount = models.PositiveIntegerField(default=0)
+    earned_at = models.DateTimeField(auto_now_add=True)
+    source = models.CharField(max_length=50, blank=True, verbose_name='منبع امتیاز')
+    description = models.TextField(blank=True, verbose_name='توضیح')
+
+    class Meta:
+        verbose_name = 'امتیاز وفاداری'
+        verbose_name_plural = 'امتیازهای وفاداری'
+
+    def __str__(self):
+        return f"{self.amount} امتیاز برای {self.profile}" 
+
+class Reward(models.Model):
+    name = models.CharField(max_length=100, verbose_name='نام جایزه')
+    description = models.TextField(blank=True, verbose_name='توضیح')
+    required_points = models.PositiveIntegerField(verbose_name='امتیاز لازم')
+    active = models.BooleanField(default=True, verbose_name='فعال')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'جایزه وفاداری'
+        verbose_name_plural = 'جوایز وفاداری'
+
+    def __str__(self):
+        return self.name
+
+class CustomerActivityLog(models.Model):
+    profile = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='activities')
+    activity_type = models.CharField(max_length=50, verbose_name='نوع فعالیت')
+    description = models.TextField(blank=True, verbose_name='توضیح')
+    performed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'فعالیت مشتری'
+        verbose_name_plural = 'فعالیت‌های مشتری'
+        ordering = ['-performed_at']
+
+    def __str__(self):
+        return f"{self.activity_type} - {self.profile}"
