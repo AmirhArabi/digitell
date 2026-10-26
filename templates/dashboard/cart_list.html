@@ -54,11 +54,15 @@
     <div class="bg-white p-4 rounded-2xl border border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs font-bold">
         <div class="flex flex-wrap items-center gap-2">
             <span class="text-slate-400 pl-2">فیلتر چرخه عمر:</span>
-            <a href="{% url 'dashboard:cart_list' %}" class="px-3 py-1.5 rounded-xl transition {% if not status_filter %}bg-blue-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">همه ({{ total_count }})</a>
-            <a href="?status=abandoned" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'abandoned' %}bg-amber-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای رهاشده ({{ abandoned_count }})</a>
-            <a href="?status=active" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'active' %}bg-emerald-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای فعال</a>
-            <a href="?status=converted" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'converted' %}bg-purple-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">تبدیل‌شده به سفارش</a>
-            <a href="?recovery=contacted" class="px-3 py-1.5 rounded-xl transition {% if recovery_filter == 'contacted' %}bg-indigo-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">پیامک ارسال‌شده ({{ contacted_count }})</a>
+            <a href="{% url 'dashboard:cart_list' %}" class="px-3 py-1.5 rounded-xl transition {% if not status_filter and not customer_filter and not recovery_filter %}bg-blue-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">همه ({{ total_count }})</a>
+            <a href="?status=abandoned{% if customer_filter %}&customer={{ customer_filter }}{% endif %}{% if recovery_filter %}&recovery={{ recovery_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'abandoned' %}bg-amber-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای رهاشده ({{ abandoned_count }})</a>
+            <a href="?status=active{% if customer_filter %}&customer={{ customer_filter }}{% endif %}{% if recovery_filter %}&recovery={{ recovery_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'active' %}bg-emerald-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">سبدهای فعال</a>
+            <a href="?status=converted{% if customer_filter %}&customer={{ customer_filter }}{% endif %}{% if recovery_filter %}&recovery={{ recovery_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if status_filter == 'converted' %}bg-purple-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">تبدیل‌شده به سفارش</a>
+            <a href="?recovery=contacted{% if customer_filter %}&customer={{ customer_filter }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if recovery_filter == 'contacted' %}bg-indigo-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">پیامک ارسال‌شده ({{ contacted_count }})</a>
+            <span class="text-slate-300 mx-1">|</span>
+            <span class="text-slate-400 pl-1">مشتری:</span>
+            <a href="?customer=authenticated{% if status_filter %}&status={{ status_filter }}{% endif %}{% if recovery_filter %}&recovery={{ recovery_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if customer_filter == 'authenticated' %}bg-teal-600 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">فقط کاربران وارد شده ({{ authenticated_count }})</a>
+            <a href="?customer=guest{% if status_filter %}&status={{ status_filter }}{% endif %}{% if recovery_filter %}&recovery={{ recovery_filter }}{% endif %}" class="px-3 py-1.5 rounded-xl transition {% if customer_filter == 'guest' %}bg-slate-700 text-white{% else %}bg-slate-100 hover:bg-slate-200 text-slate-700{% endif %}">کاربران مهمان ({{ guest_count }})</a>
         </div>
         <div>
             <a href="{% url 'dashboard:cart_recovery_campaign' %}" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl transition inline-flex items-center gap-2">
@@ -68,11 +72,22 @@
     </div>
 
     <!-- Advanced Search Form -->
-    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+    <form method="get" class="bg-white p-4 rounded-2xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+        {% if status_filter %}
+            <input type="hidden" name="status" value="{{ status_filter }}">
+        {% endif %}
         <div class="lg:col-span-2">
             <label class="block font-semibold text-slate-600 mb-1.5">جستجو (شناسه، نام مشتری، موبایل، سشن)</label>
             <input type="search" name="q" value="{{ search_query }}" placeholder="نام، شماره ۰۹۱۲ یا کد سبد..."
                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none focus:border-blue-500">
+        </div>
+        <div>
+            <label class="block font-semibold text-slate-600 mb-1.5">فیلتر مشتری</label>
+            <select name="customer" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:bg-white focus:outline-none">
+                <option value="">همه مشتریان (وارد شده و مهمان)</option>
+                <option value="authenticated" {% if customer_filter == 'authenticated' %}selected{% endif %}>فقط کاربران وارد شده (عضو)</option>
+                <option value="guest" {% if customer_filter == 'guest' %}selected{% endif %}>کاربران مهمان</option>
+            </select>
         </div>
         <div>
             <label class="block font-semibold text-slate-600 mb-1.5">وضعیت بازیابی</label>
@@ -84,7 +99,7 @@
             </select>
         </div>
         <div class="flex items-end gap-2">
-            <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">جستجو</button>
+            <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition">اعمال فیلتر</button>
             <a href="{% url 'dashboard:cart_list' %}" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition">پاکسازی</a>
         </div>
     </form>
@@ -146,8 +161,22 @@
                                     #{{ cart.id }}
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <div class="font-bold text-slate-900">{{ cart.customer_display_name }}</div>
-                                    <div class="text-slate-500 font-mono text-[11px]">
+                                    <div class="flex items-center gap-1.5">
+                                        {% if cart.user %}
+                                            <a href="{% url 'dashboard:customer_detail' cart.user.pk %}" class="font-bold text-blue-700 hover:underline">
+                                                {{ cart.customer_display_name }}
+                                            </a>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 border border-teal-200">
+                                                کاربر وارد شده
+                                            </span>
+                                        {% else %}
+                                            <span class="font-bold text-slate-800">{{ cart.customer_display_name }}</span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                                مهمان
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-slate-500 font-mono text-[11px] mt-0.5">
                                         {{ cart.customer_phone|default:"بدون شماره تماس" }}
                                     </div>
                                     {% if cart.session_key and not cart.user %}
@@ -233,10 +262,10 @@
                     </div>
                     <div class="flex items-center gap-1">
                         {% if carts.has_previous %}
-                            <a href="?page={{ carts.previous_page_number }}&status={{ status_filter }}&recovery={{ recovery_filter }}&q={{ search_query }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">قبلی</a>
+                            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ carts.previous_page_number }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">قبلی</a>
                         {% endif %}
                         {% if carts.has_next %}
-                            <a href="?page={{ carts.next_page_number }}&status={{ status_filter }}&recovery={{ recovery_filter }}&q={{ search_query }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">بعدی</a>
+                            <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ carts.next_page_number }}" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition">بعدی</a>
                         {% endif %}
                     </div>
                 </div>

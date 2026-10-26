@@ -225,6 +225,22 @@ class CartDashboardViewTests(TestCase):
         self.assertContains(response, 'لپ‌تاپ ذن‌بوک ۱۴')
         self.assertContains(response, 'customer1')
 
+    def test_dashboard_cart_list_filter_authenticated_users(self):
+        self.client.login(username='staff_admin', password='adminpassword')
+        guest_cart = Cart.objects.create(session_key='guest_session_12345678')
+        response = self.client.get(reverse('dashboard:cart_list') + '?customer=authenticated')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'customer1')
+        self.assertNotContains(response, 'guest_session_12345678')
+
+    def test_dashboard_cart_list_filter_guest_users(self):
+        self.client.login(username='staff_admin', password='adminpassword')
+        guest_cart = Cart.objects.create(session_key='guest_session_87654321')
+        response = self.client.get(reverse('dashboard:cart_list') + '?customer=guest')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'guest_session_87654321')
+        self.assertNotContains(response, 'customer1')
+
     def test_dashboard_cart_detail_view(self):
         self.client.login(username='staff_admin', password='adminpassword')
         response = self.client.get(reverse('dashboard:cart_detail', kwargs={'pk': self.cart.pk}))

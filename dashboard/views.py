@@ -251,6 +251,7 @@ def cart_list_view(request):
     """فهرست سبدهای خرید با فیلترهای پیشرفته، جستجو و آمار بازیابی."""
     status_filter = request.GET.get('status', '').strip()  # all, abandoned, active, converted, empty
     recovery_filter = request.GET.get('recovery', '').strip()
+    customer_filter = (request.GET.get('customer') or request.GET.get('user') or request.GET.get('customer_type') or '').strip()
     search_query = request.GET.get('q', '').strip()
 
     queryset = (
@@ -269,6 +270,21 @@ def cart_list_view(request):
             | Q(user__last_name__icontains=search_query)
             | Q(user__phone_number__icontains=search_query)
         )
+
+    if customer_filter:
+        if customer_filter in ('authenticated', 'logged_in', 'registered', 'user'):
+            queryset = queryset.filter(user__isnull=False)
+        elif customer_filter in ('guest', 'anonymous'):
+            queryset = queryset.filter(user__isnull=True)
+        elif customer_filter.isdigit():
+            queryset = queryset.filter(user_id=int(customer_filter))
+        else:
+            queryset = queryset.filter(
+                Q(user__username__icontains=customer_filter)
+                | Q(user__phone_number__icontains=customer_filter)
+                | Q(user__first_name__icontains=customer_filter)
+                | Q(user__last_name__icontains=customer_filter)
+            )
 
     if recovery_filter:
         queryset = queryset.filter(recovery_status=recovery_filter)
@@ -294,6 +310,8 @@ def cart_list_view(request):
         queryset = queryset.filter(items__isnull=True)
 
     total_carts_count = Cart.objects.count()
+    authenticated_count = Cart.objects.filter(user__isnull=False).count()
+    guest_count = Cart.objects.filter(user__isnull=True).count()
     abandoned_count = Cart.objects.filter(
         items__isnull=False,
         converted_order__isnull=True,
@@ -309,13 +327,17 @@ def cart_list_view(request):
     context = {
         'carts': carts_page,
         'total_count': total_carts_count,
+        'authenticated_count': authenticated_count,
+        'guest_count': guest_count,
         'abandoned_count': abandoned_count,
         'recovered_count': recovered_count,
         'contacted_count': contacted_count,
         'status_filter': status_filter,
         'recovery_filter': recovery_filter,
+        'customer_filter': customer_filter,
         'search_query': search_query,
         'recovery_choices': Cart.RECOVERY_CHOICES,
+        'querystring': _querystring_without_page(request),
     }
     return render(request, 'dashboard/cart_list.html', context)
 
