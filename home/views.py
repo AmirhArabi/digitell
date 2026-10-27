@@ -39,6 +39,11 @@ def index_view(request):
         category__slug__in=['laptops', 'gaming']
     ).select_related('category', 'brand')[:4]
 
+    # Latest products (جدیدترین محصولات)
+    latest_products = Product.objects.filter(
+        is_active=True
+    ).select_related('category', 'brand').prefetch_related('images').order_by('-created_at')[:8]
+
     # Brands for marquee
     brands = Brand.objects.filter(is_active=True).order_by('order')
 
@@ -51,6 +56,7 @@ def index_view(request):
         'categories': categories,
         'special_offers': special_offers,
         'featured_products': featured_products,
+        'latest_products': latest_products,
         'smartphone_products': smartphone_products,
         'laptop_gaming_products': laptop_gaming_products,
         'brands': brands,

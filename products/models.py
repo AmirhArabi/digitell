@@ -52,6 +52,13 @@ class Brand(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def logo_url(self):
+        if self.logo:
+            return self.logo.url
+        return "/static/img/brands/default-brand.svg"
+
+
 
 class CategoryAttribute(models.Model):
     """ویژگی قابل استفاده برای محصولات یک دسته (مثلاً «حافظه داخلی» برای دسته موبایل)."""

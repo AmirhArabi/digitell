@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
 
 {% block title %}{% if brand %}ویرایش برند{% else %}افزودن برند{% endif %} | پنل دیجی تل{% endblock %}
 {% block header_title %}{% if brand %}ویرایش برند: {{ brand.name }}{% else %}ثبت برند جدید{% endif %}{% endblock %}
@@ -29,7 +30,15 @@
                 <label class="block font-semibold text-slate-700 mb-1.5">لوگو برند</label>
                 <input type="file" name="logo" accept="image/*"
                        class="w-full bg-slate-50 border border-dashed border-slate-300 rounded-xl p-2.5 focus:outline-none">
-                {% if brand.logo %}<img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-16 h-16 object-contain rounded-xl border border-slate-200 mt-2 bg-white">{% endif %}
+                <div class="mt-2 flex items-center gap-2">
+                    {% if brand.logo %}
+                        <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="w-14 h-14 object-contain rounded-xl border border-slate-200 bg-white p-1">
+                        <span class="text-[11px] text-slate-500">لوگوی ثبت‌شده فعلی</span>
+                    {% else %}
+                        <img src="{% static 'img/brands/default-brand.svg' %}" alt="تصویر پیش‌فرض" class="w-12 h-12 object-contain rounded-xl border border-dashed border-slate-300 bg-slate-50 p-1 opacity-70">
+                        <span class="text-[11px] text-slate-400">در صورت عدم بارگذاری، تصویر پیش‌فرض نمایش داده می‌شود</span>
+                    {% endif %}
+                </div>
             </div>
             <div class="sm:col-span-2">
                 <label class="flex items-center gap-2 p-3 rounded-2xl border border-slate-200 cursor-pointer font-semibold text-slate-700">
