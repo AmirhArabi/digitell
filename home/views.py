@@ -19,30 +19,30 @@ def index_view(request):
     special_offers = Product.objects.filter(
         is_active=True,
         is_special_offer=True
-    ).select_related('category', 'brand').prefetch_related('images')[:6]
+    ).select_related('category', 'brand').prefetch_related('images')[:8]
 
     # Featured products
     featured_products = Product.objects.filter(
         is_active=True,
         is_featured=True
-    ).select_related('category', 'brand').prefetch_related('images')[:8]
+    ).select_related('category', 'brand').prefetch_related('images')[:6]
 
     # Smartphones category products
     smartphone_products = Product.objects.filter(
         is_active=True,
         category__slug='smartphones'
-    ).select_related('category', 'brand')[:4]
+    ).select_related('category', 'brand')[:6]
 
     # Laptops & Gaming
     laptop_gaming_products = Product.objects.filter(
         is_active=True,
         category__slug__in=['laptops', 'gaming']
-    ).select_related('category', 'brand')[:4]
+    ).select_related('category', 'brand')[:6]
 
     # Latest products (جدیدترین محصولات)
     latest_products = Product.objects.filter(
         is_active=True
-    ).select_related('category', 'brand').prefetch_related('images').order_by('-created_at')[:8]
+    ).select_related('category', 'brand').prefetch_related('images').order_by('-created_at')[:6]
 
     # Brands for marquee
     brands = Brand.objects.filter(is_active=True).order_by('order')

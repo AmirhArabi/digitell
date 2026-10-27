@@ -154,38 +154,39 @@
         {% endcache %}
     </section>
 
-    <!-- Special Offers Box (پیشنهاد شگفت‌انگیز دیجی تل - گرادیانت مدرن برند و رنگ‌های مکمل) -->
+    <!-- Special Offers Box (پیشنهاد شگفت‌انگیز دیجی تل) -->
     {% if special_offers %}
     <section
-        class="relative overflow-hidden rounded-3xl bg-gradient-to-l from-blue-700 via-indigo-700 to-rose-600 p-6 sm:p-8 text-white shadow-xl shadow-indigo-600/20 border border-white/10">
+        style="background: #0f0c29; background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29); background: linear-gradient(to right, #24243e, #302b63, #0f0c29);"
+        class="relative overflow-hidden rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-slate-900/40 border border-white/10">
         <!-- Ambient decorative glow -->
-        <div class="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-blue-400/20 blur-3xl"></div>
-        <div class="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-rose-500/25 blur-3xl"></div>
+        <div class="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-indigo-500/15 blur-3xl"></div>
+        <div class="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-purple-500/20 blur-3xl"></div>
 
-        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/20">
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/15">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl shadow-inner">
+                    class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-2xl border border-white/10 shadow-inner">
                     🔥
                 </div>
                 <div>
                     <h2 class="text-xl font-black">پیشنهاد شگفت‌انگیز دیجی تل</h2>
-                    <p class="text-xs text-blue-100">تخفیف‌های ویژه با تعداد و زمان محدود</p>
+                    <p class="text-xs text-slate-300">تخفیف‌های ویژه با تعداد و زمان محدود</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-2">
-                <span class="text-xs text-blue-100">فرصت باقی‌مانده:</span>
-                <div class="flex items-center gap-1 font-mono text-xs font-bold" id="special-timer-container">
-                    <span id="special-timer-hours" class="bg-black/30 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">12</span>:
-                    <span id="special-timer-minutes" class="bg-black/30 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">45</span>:
-                    <span id="special-timer-seconds" class="bg-black/30 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">30</span>
+                <span class="text-xs text-slate-300">فرصت باقی‌مانده:</span>
+                <div class="flex items-center gap-1 font-mono text-xs font-bold" id="special-timer-container" dir="ltr">
+                    <span id="special-timer-hours" class="bg-black/40 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">12</span>:
+                    <span id="special-timer-minutes" class="bg-black/40 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">45</span>:
+                    <span id="special-timer-seconds" class="bg-black/40 backdrop-blur-xs px-2 py-1 rounded-md min-w-[28px] text-center inline-block border border-white/15 transition-transform duration-200">30</span>
                 </div>
             </div>
         </div>
 
-        <!-- Products row in special offer (Mobile Slider / Desktop Grid) -->
-        <div class="relative z-10 flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-2 px-2 sm:mx-0 sm:px-0">
+        <!-- Products row in special offer (Mobile Slider / Desktop 8 Products Grid) -->
+        <div class="relative z-10 flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-8 xl:grid-cols-8 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-2 px-2 sm:mx-0 sm:px-0">
             {% for product in special_offers %}
             <a href="{{ product.get_absolute_url }}"
                 class="shrink-0 w-[130px] sm:w-auto snap-start bg-white rounded-2xl p-2 sm:p-2.5 text-slate-800 flex flex-col justify-between hover:scale-102 transition shadow-sm group">
@@ -225,7 +226,7 @@
     </section>
     {% endif %}
 
-    <!-- Featured Products Section -->
+    <!-- Featured Products Section (نمایش ۶ محصول در ویوپورت دسکتاپ) -->
     <section>
         <div class="flex items-center justify-between mb-6">
             <h2 class="font-black text-lg text-slate-900 flex items-center gap-2">
@@ -237,7 +238,7 @@
             </a>
         </div>
 
-        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in featured_products %}
             <div class="shrink-0 w-[140px] sm:w-auto snap-start flex flex-col">
                 {% include 'products/partials/product_card.html' with product=product %}
@@ -300,7 +301,7 @@
             </a>
         </div>
 
-        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in latest_products %}
             <div class="shrink-0 w-[140px] sm:w-auto snap-start flex flex-col">
                 {% include 'products/partials/product_card.html' with product=product %}
@@ -322,7 +323,7 @@
         {% endfor %}
     </div>
 
-    <!-- Smartphones Category Row -->
+    <!-- Smartphones Category Row (نمایش ۶ محصول در ویوپورت دسکتاپ) -->
     {% if smartphone_products %}
     <section>
         <div class="flex items-center justify-between mb-6">
@@ -336,7 +337,7 @@
             </a>
         </div>
 
-        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in smartphone_products %}
             <div class="shrink-0 w-[140px] sm:w-auto snap-start flex flex-col">
                 {% include 'products/partials/product_card.html' with product=product %}
@@ -346,7 +347,7 @@
     </section>
     {% endif %}
 
-    <!-- Laptops & Gaming Category Row -->
+    <!-- Laptops & Gaming Category Row (نمایش ۶ محصول در ویوپورت دسکتاپ) -->
     {% if laptop_gaming_products %}
     <section>
         <div class="flex items-center justify-between mb-6">
@@ -360,7 +361,7 @@
             </a>
         </div>
 
-        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div class="flex sm:grid overflow-x-auto sm:overflow-visible sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-2.5 sm:gap-3 pb-3 sm:pb-0 no-scrollbar snap-x snap-mandatory -mx-4 px-4 sm:mx-0 sm:px-0">
             {% for product in laptop_gaming_products %}
             <div class="shrink-0 w-[140px] sm:w-auto snap-start flex flex-col">
                 {% include 'products/partials/product_card.html' with product=product %}
